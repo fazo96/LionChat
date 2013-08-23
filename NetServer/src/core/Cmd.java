@@ -265,10 +265,10 @@ public class Cmd {
                     c.send("SERVER IN ARRESTO PER COMANDO TUO\n");
                     if (c.isLoggedIn()) {
                         Server.out("SERVER IN ARRESTO PER COMANDO DELL'UTENTE" + c.getScreenName(true));
-                        ClientHandler.sendToAdmins("SERVER IN ARRESTO PER COMANDO DELL'UTENTE " + c.getScreenName(true) + "\n");
+                        ClientHandler.send("SERVER IN ARRESTO PER COMANDO DELL'UTENTE " + c.getScreenName(true) + "\n",Settings.groupAdmin);
                     } else {
                         Server.out("SERVER IN ARRESTO PER COMANDO DELL'UTENTE" + c.getScreenName(true));
-                        ClientHandler.sendToAdmins("SERVER IN ARRESTO PER COMANDO DELL'UTENTE " + c.getScreenName(true) + "\n");
+                        ClientHandler.send("SERVER IN ARRESTO PER COMANDO DELL'UTENTE " + c.getScreenName(true) + "\n", Settings.groupAdmin);
                     }
                 }
                 Server.stop();
@@ -278,7 +278,7 @@ public class Cmd {
             if (cmd[0].equalsIgnoreCase("/kick")) {
                 if (l == 0) {
                     if (c != null) {
-                        c.sendToAdmins(c.getScreenName(true) + " Disconnette tutti!\n");
+                        c.send(c.getScreenName(true) + " Disconnette tutti!\n", Settings.groupAdmin);
                         if (c.isLoggedIn()) {
                             c.sendToAll(c.getScreenName(true) + " Disconnette tutti!\n");
                         } else {
@@ -292,7 +292,7 @@ public class Cmd {
                     if ((ch = ClientHandler.get(cmd[1])) != null) {
                         if (c != null) {
                             //c.send("Disconnetto tutti!\n");
-                            c.sendToAdmins(c.getScreenName(true) + " disconnette " + ch.getScreenName(true) + "\n");
+                            c.send(c.getScreenName(true) + " disconnette " + ch.getScreenName(true) + "\n",Settings.groupAdmin);
                             if (c.isLoggedIn()) {
                                 Server.out(c.getScreenName(true) + " disconnette tutti!\n");
                             } else {
