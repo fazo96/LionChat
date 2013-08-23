@@ -219,39 +219,5 @@ public class GUI extends javax.swing.JFrame {
         }
         ip = cnt.get(0);
         port = Integer.parseInt(cnt.get(1));
-        /*FileReader fr = null;
-         try {
-         fr = new FileReader("settings.txt");
-         } catch (FileNotFoundException ex) {
-         Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-         append("Settings file not found! Using default settings\nTo create a"
-         + " settings file, place it next to this jar executable and "
-         + "name it settings.txt\nInside there should be 2 lines, "
-         + "the first with the ip and the second with the port\n");
-         return;
-         }
-         BufferedReader br = new BufferedReader(fr);
-         try {
-         ip = br.readLine();
-         } catch (IOException ex) {
-         Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-         append("Could not read IP from settings file. Using localhost\n");
-         ip = "localhost";
-         }
-         try {
-         port = Integer.parseInt(br.readLine());
-         } catch (IOException ex) {
-         Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-         append("Could not read port from settings file. Using 7777\n");
-         port = 7777;
-         } catch (NumberFormatException ex) {
-         append("Could not read port from settings file. Using 7777\n");
-         port = 7777;
-         }
-         try {
-         fr.close();
-         } catch (IOException ex) {
-         //Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-         }*/
     }
 }
