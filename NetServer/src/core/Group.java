@@ -14,19 +14,23 @@ import utilz.Utils;
  */
 public class Group {
 
-    private static ArrayList<Group> groups = new ArrayList<Group>();
-    private static Group defaultGroup = null;
-    private String name = "group";
-    private static ArrayList<String> permissions = new ArrayList<String>();
-    //private String permissions = "";
+    private static ArrayList<Group> groups = new ArrayList<Group>(); //lista dei gruppi, per ora poco utile
+    private static Group defaultGroup = null; //Il gruppo default per i client appena connessi
+    private String name = "group"; //Nome del gruppo
+    private static ArrayList<String> permissions = new ArrayList<String>(); //lista dei permessi per ogni gruppo
 
+    //la rimozione dei gruppi non è supportata perchè per ora sarebbe un'inutilità e una
+    //perdita di tempo da programmare.
+    //La maggior parte di questo codice non è usato, più avanti se sarà utile ok, altrimenti
+    //sarà rimosso
+    
     public Group(String name, String permissions) {
         this.name = name;
         this.permissions = Utils.toList(permissions, " ");
-        if (groups.isEmpty()) {
+        if (groups.isEmpty()) { //il primo gruppo diventa il gruppo default
             setDefaultGroup(this);
         }
-        groups.add(this);
+        groups.add(this); //aggiungo il gruppo alla lista.
         Server.out("Inizializzato gruppo " + name);
     }
 
