@@ -23,32 +23,41 @@ public class GUI extends javax.swing.JFrame {
      * Creates new form GUI
      */
     public GUI() {
-        initComponents();
-        setTitle("Client");
-        System.out.println("GUI Avviata");
+        initComponents(); //inizializzo i componenti grafici
+        setTitle("Client"); //imposto titolo finestra
+        System.out.println("GUI Avviata"); //output su console
+        //Imposto alla textArea di andare a capo automaticamente
+        //quando si arriva al limite di caratteri orizzontali
         textArea.setLineWrap(true);
+        //Imposto autoscroll
         DefaultCaret caret = (DefaultCaret) textArea.getCaret();
-        //textArea.setContentType("text/html");
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        gui = this;
+        gui = this; //creo un puntatore all'istanza che sto creando
+        //Cerco di dare il focus al textfield, così non bisogna cliccarci
+        //col mouse
         textField.requestFocusInWindow();
-        start();
+        start(); //mi connetto.
     }
     private static GUI gui;
 
     private void start() {
-        getSettings();
+        getSettings(); //provo a leggere ip e porta da file
         append("Provo a connettermi a " + ip + ":" + port + "\n");
-        Connection.connect(ip, port);
+        Connection.connect(ip, port); //connessione effettiva
     }
 
-    public static GUI get() {
+    public static GUI get() { //ritorno l'istanza in esecuzione.
         return gui;
     }
 
     public void append(String text) {
+        //scrivo un messaggio alla gui e in console senza andare a capo
         textArea.append(text);
         System.out.print(text);
+    }
+
+    public void clear() { //svuoto la textArea
+        textArea.setText("");
     }
 
     /**
@@ -82,7 +91,7 @@ public class GUI extends javax.swing.JFrame {
         });
 
         sendButton.setFont(new java.awt.Font("Arial", 0, 10)); // NOI18N
-        sendButton.setText("Send");
+        sendButton.setText("Invia");
         sendButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 sendButtonActionPerformed(evt);
@@ -137,26 +146,35 @@ public class GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
-        // TODO add your handling code here:
-        if (Connection.isConnected() && textField.getText() != "") {
-            Connection.send(textField.getText());
+        //Questa funzione viene chiamata quando viene premuto il tasto Invia
+        if (Connection.isConnected()) {
+            if (textField.getText() != "" && Utils.isValid(textField.getText())) {
+                //sono connesso e il testo è valido
+                Connection.send(textField.getText());
+            } else {
+                //Sono connesso ma il testo non è valido
+                append("Stringa non valida!\n");
+            }
         } else {
+            //Non sono connesso ma è stato premuto send
             append("Nuovo tentativo di connessione:\n");
-            Connection.connect(ip, port);
+            Connection.connect(ip, port); //provo a riccnnettermi
         }
-        textField.setText("");
-        System.out.println("[DEBUG] Send");
+        textField.setText(""); //dopo tutto, resetto il contenuto del textfield
+        //restituisco il focus al textfield, così se l'utente ha premuto send col
+        //mouse non deve cliccare anche sul textfield
+        textField.requestFocusInWindow();
+
     }//GEN-LAST:event_sendButtonActionPerformed
 
     private void jPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel1KeyPressed
-        // TODO add your handling code here:
-        //if(evt.getKeyCode()==evt.VK_ENTER)sendButtonActionPerformed(null);
+        //Inutile
     }//GEN-LAST:event_jPanel1KeyPressed
 
     private void textFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textFieldKeyPressed
-        // TODO add your handling code here:
-        if (evt.getKeyCode() == evt.VK_ENTER) {
-            sendButtonActionPerformed(null);
+        // Viene chiamato quando viene premuto un tasto e il focus è sul textfield
+        if (evt.getKeyCode() == evt.VK_ENTER) { //se il tasto è invio
+            sendButtonActionPerformed(null); //simula la pressione di send
         }
     }//GEN-LAST:event_textFieldKeyPressed
 
@@ -204,18 +222,29 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JTextField textField;
     // End of variables declaration//GEN-END:variables
 
+    //legge da file ip e porta. Se non riesce, rimangono i default
     private void getSettings() {
-        ArrayList<String> cnt;
-        cnt = Utils.toList(Filez.getFileContent("settings.txt")," ");
-        if (cnt == null) {
-            append("File impostazioni non trovato!\nCreazione automatica.\n");
-            Filez.writeFile("settings.txt", ip+" "+port);
-            return;
+        ArrayList<String> cnt=null;
+        //leggo il file e creo una lista di stringhe contenute
+        append("Inizio lettura file settings.txt\n5 tentativi.\n");
+        for (int i = 0; i < 5; i++) {
+            append("Tentativo di lettura numero "+(i+1)+"\n");
+            cnt = Utils.toList(Filez.getFileContent("settings.txt"), " ");
+            if (cnt == null) { //se la lista è nulla, c'è stato un errore di lettura
+                append("File impostazioni non trovato!\nCreazione automatica.\n");
+                Filez.writeFile("settings.txt", ip + " " + port);
+                continue; //non c'è nulla da fare, quindi ritorno
+            }
+            append("Lettura riuscita\n");
+            break;
         }
-        if (cnt.size() != 2) {
+        if(cnt==null){
+            append("[ERRORE] Lettura fallita! Utilizzo impostazioni di default\n");
+        } else
+        if (cnt.size() != 2) { //se gli elementi non sono due, il file non è valido
             append("Errore: file di configurazione con numero parametri errati (" + cnt.size() + ")\n"
                     + "Per crearlo tu, inserisci SOLO l'IP e la PORTA del server separati da uno spazio\n");
-            return;
+            return; //non c'è nulla da fare, ritorno
         }
         ip = cnt.get(0);
         port = Integer.parseInt(cnt.get(1));
