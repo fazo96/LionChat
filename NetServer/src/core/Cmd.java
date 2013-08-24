@@ -27,10 +27,11 @@ public class Cmd {
         }
         if (!s.startsWith("/")) { //se il messaggio ricevuto non inizia con "/" allora non è un comando
             if (c == null) {
-                ClientHandler.sendToAll("[ SERVER ]: " + s + "\n");
+                Server.out("[ Server ]: "+s);
+                ClientHandler.sendToAll("[ Server ]: " + s + "\n");
                 return;
             }
-            Server.out("[ "+c.getScreenName(true)+"]: "+s);
+            Server.out("[ "+c.getScreenName(true)+" ]: "+s);
             ClientHandler.send("[ " + c.getScreenName(false) + " ]: " + s + "\n", Settings.groupGuest, Settings.groupUser);
             ClientHandler.send("[ " + c.getScreenName(true) + " ]: " + s + "\n", Settings.groupAdmin);
             return;
@@ -75,11 +76,13 @@ public class Cmd {
                     c.send("Utilizzo: /password vecchiapass nuovapass\n");
                     return;
                 }
-                if (cmd[1] != c.getPassword()) {
+                if (!cmd[1].equals(c.getPassword())) {
                     c.send("Password errata.\n");
                     return;
                 }
                 c.setPassword(cmd[2]);
+                c.send("Password cambiata con successo.\n");
+                c.save();
                 return;
             }
         }
