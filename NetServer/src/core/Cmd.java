@@ -244,18 +244,6 @@ public class Cmd {
                 if (c != null) {
                     c.send("Dati server salvati!\n");
                 }
-                /*if (l == 1) { //questo codice salva tutti gli utenti o un solo utente. Deprecato
-                 ClientHandler.saveAll();
-                 } else {
-                 ClientHandler ch;
-                 if ((ch = ClientHandler.get(cmd[1])) != null) {
-                 ch.save();
-                 } else if (c == null) {
-                 Server.out("Utente non esiste.");
-                 } else {
-                 c.send("Utente non esiste\n");
-                 }
-                 }*/
                 return;
             }
         }
