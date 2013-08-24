@@ -1,9 +1,11 @@
 *.class
 
 # Package Files #
-#*.jar
-#*.war
-#*.ear
+*.jar
+*.war
+*.ear
+# File del server
+*.dat
 
 # Netbeans
 NetClient/nbproject/private/
