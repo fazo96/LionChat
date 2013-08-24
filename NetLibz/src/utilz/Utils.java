@@ -12,7 +12,8 @@ import java.util.ArrayList;
  */
 public class Utils {
 
-    public static int nanoToSec(Long n) { //fa una semplice divisione: da nanoscondi a secondi
+    public static int nanoToSec(Long n) { 
+        //fa una semplice divisione: da nanoscondi a secondi, passando da Long a Int
         return (int) (n / 1000000000);
     }
 
@@ -26,40 +27,42 @@ public class Utils {
     }
 
     public static ArrayList<String> toList(String s, String regex) { //passa da una stringa a una lista.
-        if (regex == null) {
+        if (regex == null) { //il divisore di default è uno spazio
             regex = " ";
         }
-        if (s == null) {
+        if (s == null) { //se la stringa è nulla, la lista sarà nulla
             return null;
         }
-        ArrayList<String> content = new ArrayList<String>();
-        String b[] = s.split(regex);
-        for (String c : b) {
+        String b[] = s.split(regex); //divido la stirnga con il regex e la metto in un array
+        ArrayList<String> content = new ArrayList<String>(b.length);
+        for (String c : b) { //inserisco gli elementi dell'array nell'array dinamico
             content.add(c);
         }
-        return content;
+        return content; //restituisco array dinamico
     }
 
     public static void mergeLists(ArrayList<String> a, ArrayList<String> b) {
         //copia il contenuto di B in a
-        for (String c : b) {
+        for (String c : b) { //aggiungo gli elementi di b ad a
             if (!a.contains(c)) {
                 a.add(c);
             }
         }
     }
 
-    public static String fromList(ArrayList<String> ss, String divisor) { //passa da una lista a una stringa
-        if (ss == null) {
+    public static String fromList(ArrayList<String> ss, String divisor) { 
+        //passa da una lista a una stringa
+        if (ss == null) { //lista nulla = stringa nulla
             return null;
         }
-        if (divisor == null) {
+        if (divisor == null) { //imposto divisore default come uno spazio
             divisor = " ";
         }
-        String a = ss.get(0);
-        for (int i = 1; i < ss.size(); i++) {
+        String a = ss.get(0);//aggiungo il primo elemento
+        for (int i = 1; i < ss.size(); i++) { 
+            //aggiungo uno spazio e l'elemento i
             a += divisor + ss.get(i);
         }
-        return a;
+        return a; //ritorno la stringa ricomposta
     }
 }
