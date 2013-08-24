@@ -9,6 +9,7 @@ import static java.lang.Thread.sleep;
 import java.net.ServerSocket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import utilz.Utils;
 
 /*
  * To change this template, choose Tools | Templates
@@ -22,7 +23,7 @@ public class Server {
 
     private static Thread listener; //thread che accetta le connessioni dei client
     private static Thread keepAlive; //thread che invia dati a tutti e fa svariati controlli.
-    private static Long startTime=null; //contiene in nanosecondi la data e l'ora in cui è partito il server
+    private static int startTime=-1; //contiene in secondi la data e l'ora in cui è partito il server
 
     public static void main(String args[]) {
         System.out.println("Tento di caricare configurazione precendente.");
@@ -44,7 +45,7 @@ public class Server {
             @Override
             public void run() { //Funzione che viene eseguita nel thread separato.
                 ServerSocket ss = null;
-                startTime=System.nanoTime(); //dichiaro server avviato e salvo l'ora in una variabile
+                startTime=Utils.nanoToSec(System.nanoTime()); //dichiaro server avviato e salvo l'ora in una variabile
                 try {
                     System.out.println("Aspetto connessione...");
                     ss = new ServerSocket(Settings.getPort());
@@ -73,7 +74,7 @@ public class Server {
         }
     }
 
-    public static Long getStartTime() {
+    public static int getStartTime() {
         return startTime;
     }
  public static void save(){
