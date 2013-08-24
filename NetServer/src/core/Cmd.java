@@ -4,15 +4,8 @@
  */
 package core;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.ClientHandler;
 import net.Server;
-import utilz.Filez;
 import utilz.Utils;
 
 /**
@@ -50,11 +43,6 @@ public class Cmd {
 
         if (c != null && c.getGroup() == Settings.groupGuest) {  //COMANDI PER UTENTI NON LOGGATI
             if (cmd[0].equalsIgnoreCase("/login")) { //comando per il login
-                /*if (c.getGroup() == Settings.groupUser) {
-                 //non fa niente se client è già loggato
-                 c.send("Già loggato!\n");
-                 return;
-                 } */
                 if (l != 3) { //errore nei parametri.
                     c.send("Utilizzo: /login nome password\n");
                     return;

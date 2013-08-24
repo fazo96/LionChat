@@ -17,16 +17,16 @@ public class Group {
     private static ArrayList<Group> groups = new ArrayList<Group>(); //lista dei gruppi, per ora poco utile
     private static Group defaultGroup = null; //Il gruppo default per i client appena connessi
     private String name = "group"; //Nome del gruppo
-    private static ArrayList<String> permissions = new ArrayList<String>(); //lista dei permessi per ogni gruppo
+   // private static ArrayList<String> permissions = new ArrayList<String>(); //lista dei permessi per ogni gruppo
 
     //la rimozione dei gruppi non è supportata perchè per ora sarebbe un'inutilità e una
     //perdita di tempo da programmare.
     //La maggior parte di questo codice non è usato, più avanti se sarà utile ok, altrimenti
     //sarà rimosso
     
-    public Group(String name, String permissions) {
+    public Group(String name/*, String permissions*/) {
         this.name = name;
-        this.permissions = Utils.toList(permissions, " ");
+        //this.permissions = Utils.toList(permissions, " ");
         if (groups.isEmpty()) { //il primo gruppo diventa il gruppo default
             setDefaultGroup(this);
         }
@@ -64,7 +64,7 @@ public class Group {
         this.name = name;
     }
 
-    public static ArrayList<String> getPermissions() {
+    /*public static ArrayList<String> getPermissions() {
         return permissions;
-    }
+    }*/
 }
