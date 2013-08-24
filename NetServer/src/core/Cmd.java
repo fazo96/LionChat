@@ -261,9 +261,9 @@ public class Cmd {
         }
 
         if (c == null) {
-            Server.out("Comando sconosciuto.");
+            Server.out("Comando sconosciuto o comando non utilizzabile dal server.");
         } else {
-            c.send("Comando sconosciuto.\n");
+            c.send("Comando sconosciuto o non eseguibile dal gruppo "+c.getGroup().getName()+" al quale sei assegnato.\n");
         }
     }
 
