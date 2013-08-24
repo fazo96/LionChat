@@ -30,6 +30,7 @@ public class Cmd {
                 ClientHandler.sendToAll("[ SERVER ]: " + s + "\n");
                 return;
             }
+            Server.out("[ "+c.getScreenName(true)+"]: "+s);
             ClientHandler.send("[ " + c.getScreenName(false) + " ]: " + s + "\n", Settings.groupGuest, Settings.groupUser);
             ClientHandler.send("[ " + c.getScreenName(true) + " ]: " + s + "\n", Settings.groupAdmin);
             return;
@@ -209,7 +210,7 @@ public class Cmd {
                             c.sendToAll(c.getScreenName(true) + " Disconnette tutti!\n");
                         }
                     } else {
-                        c.send("Disconnetto tutti!\n");
+                        Server.out("Disconnetto tutti!");
                     }
                     ClientHandler.disconnectAll();
                     return;
