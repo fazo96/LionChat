@@ -5,6 +5,10 @@
 #*.war
 #*.ear
 
+# Netbeans
+NetClient/nbproject/private/
+NetServer/nbproject/private/
+NetLibz/nbproject/private/
 NetClient/build/
 NetServer/build/
 NetLibz/build/
