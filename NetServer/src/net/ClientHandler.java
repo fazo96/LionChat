@@ -243,7 +243,7 @@ public class ClientHandler {
             return true;
         } else if (pass.equalsIgnoreCase(ff.get(1))) {
             setName(lname);
-            setPassword(password);
+            setPassword(pass);
             send("Password corretta! Connesso come " + getName() + "\n");
             Group ggg = Group.get(pass);
             if (ggg == null) {
@@ -324,6 +324,7 @@ public class ClientHandler {
     }
 
     public void setPassword(String password) {
+        Server.out("[DEBUG] Password per "+getScreenName(true)+" è cambiata da "+this.password+" a "+password);
         this.password = password;
     }
 
