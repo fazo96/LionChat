@@ -153,7 +153,7 @@ public class GUI extends javax.swing.JFrame {
                 Connection.send(textField.getText());
             } else {
                 //Sono connesso ma il testo non è valido
-                append("Stringa non valida!\n");
+                System.out.println("Stringa non valida!\n");
             }
         } else {
             //Non sono connesso ma è stato premuto send
