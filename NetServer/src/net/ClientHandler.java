@@ -260,6 +260,7 @@ public class ClientHandler {
     }
 
     public void logout() {
+        if(group==Settings.groupGuest)return;
         password = null;
         group = Settings.groupGuest;
         send(getScreenName(false) + " ha eseguito il logout\n", Settings.groupGuest, Settings.groupUser);
