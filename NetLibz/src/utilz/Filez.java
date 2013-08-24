@@ -47,9 +47,9 @@ public class Filez {
         System.out.println("[LIB] make file");
         try { System.out.println("[LIB] make file " + filepath + "\n");
             File file = new File(filepath);
-            /*if (!file.exists()) {
+            if (!file.exists()) {
                 makeFile(filepath);
-            }*/
+            }
             FileWriter fw = null;
             try {
             System.out.println("[LIB] Init filewriter " + filepath + "\n");
