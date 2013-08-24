@@ -82,7 +82,7 @@ public class ClientHandler {
             }
         };
         receiver.start(); //Faccio partire il thread che riceve i messaggi del client
-        group=Settings.groupGuest; //imposto il gruppo guest
+        group = Settings.groupGuest; //imposto il gruppo guest
         clients.add(this); //Aggiungo questo client alla lista dei client
         send(getIP() + " si è connesso!\n", Settings.groupAdmin);
         sendToAll("Qualcuno si è connesso!\n");
@@ -150,7 +150,11 @@ public class ClientHandler {
     }
 
     public static void send(String msg, Group g) {
-        Server.out("[SEND][" + g.getName() + "] " + msg);
+        if (g == null) {
+            Server.out("[SEND][ALL] " + msg);
+        } else {
+            Server.out("[SEND][" + g.getName() + "] " + msg);
+        }
         for (ClientHandler cl : clients) {
             if (g == null || cl.getGroup() == g) {
                 cl.send(msg);
@@ -159,11 +163,14 @@ public class ClientHandler {
     }
 
     public static void send(String msg, Group g, Group g2) {
-        send(msg,g); send(msg,g2); 
+        send(msg, g);
+        send(msg, g2);
     }
 
     public static void send(String msg, Group g, Group g2, Group g3) {
-        send(msg,g); send(msg,g2); send(msg,g3);
+        send(msg, g);
+        send(msg, g2);
+        send(msg, g3);
     }
 
     public void save() {
