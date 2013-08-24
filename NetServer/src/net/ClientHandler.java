@@ -157,27 +157,27 @@ public class ClientHandler {
     }
 
     public static void send(String msg, Group g) {
-        if (g == null) {
-            Server.out("[SEND][ALL] " + msg);
-        } else {
-            Server.out("[SEND][" + g.getName() + "] " + msg);
-        }
         for (ClientHandler cl : clients) {
             if (g == null || cl.getGroup() == g) {
                 cl.send(msg);
             }
         }
+        /*if (g == null) {
+            Server.out("[SEND][ALL] " + msg);
+        } else Server.out("[SEND][" + g.getName() + "] " + msg);*/
     }
 
     public static void send(String msg, Group g, Group g2) {
         send(msg, g);
         send(msg, g2);
+        //Server.out("[SEND][" + g.getName() + "]["+g2.getName()+"] " + msg);
     }
 
     public static void send(String msg, Group g, Group g2, Group g3) {
         send(msg, g);
         send(msg, g2);
         send(msg, g3);
+        //Server.out("[SEND][" + g.getName() + "]["+g2.getName()+"]["+g3.getName()+"] " + msg);
     }
 
     public void save() {
@@ -189,7 +189,7 @@ public class ClientHandler {
             Filez.writeFile("./utenti/"
                     + name
                     + ".dat", name
-                    + " " + password
+                    + " " + getPassword()
                     + " " + group.getName()
                     + " " + getIP()); //scrivo su file
         } catch (Exception ex) {
@@ -234,16 +234,17 @@ public class ClientHandler {
         ArrayList<String> ff = Utils.toList(Filez.getFileContent("./utenti/" + lname + ".dat"), " ");
         if (ff == null || ff.size() < 2) {
             setName(lname);
-            ClientHandler.send("Registrato nuovo utente " + lname + " con password " + pass + "\n", Settings.groupAdmin);
-            Server.out("Registrato nuovo utente " + lname + " con password " + pass + "\n");
             setPassword(pass);
-            send("Registrato come nuovo utente: " + getScreenName(false) + "\n");
             setGroup(Settings.groupUser);
             save();
+            ClientHandler.send("Registrato nuovo utente " + getName() + " con password " + getPassword() + "\n", Settings.groupAdmin);
+            Server.out("Registrato nuovo utente " + getName() + " con password " + getPassword() + "\n");
+            send("Registrato come nuovo utente: " + getScreenName(false) + "\n");
             return true;
         } else if (pass.equalsIgnoreCase(ff.get(1))) {
-            send("Password corretta! Connesso come " + lname + "\n");
             setName(lname);
+            setPassword(password);
+            send("Password corretta! Connesso come " + getName() + "\n");
             Group ggg = Group.get(pass);
             if (ggg == null) {
                 setGroup(Settings.groupUser);
@@ -318,6 +319,7 @@ public class ClientHandler {
     }
 
     public String getPassword() {
+        Server.out("[DEBUG]Password per "+getScreenName(true)+" e' "+password);
         return password;
     }
 
