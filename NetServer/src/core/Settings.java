@@ -15,6 +15,7 @@ public class Settings {
 
     private static int port;
     private static String helpMsg, adminHelpMsg, motd;
+    public static String status="";
     public static Group groupGuest, groupUser, groupAdmin;
     private static boolean init = false;
 
