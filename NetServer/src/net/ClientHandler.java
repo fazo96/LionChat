@@ -82,6 +82,7 @@ public class ClientHandler {
             }
         };
         receiver.start(); //Faccio partire il thread che riceve i messaggi del client
+        group=Settings.groupGuest; //imposto il gruppo guest
         clients.add(this); //Aggiungo questo client alla lista dei client
         send(getIP() + " si è connesso!\n", Settings.groupAdmin);
         sendToAll("Qualcuno si è connesso!\n");
