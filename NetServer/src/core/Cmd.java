@@ -178,7 +178,7 @@ public class Cmd {
                 if (c == null) {
                     Server.out(Server.getStatus());
                 } else {
-                    c.send(Server.getStatus()+ "\n");
+                    c.send(Server.getStatus() + "\n");
                 }
                 return;
             }
@@ -200,7 +200,7 @@ public class Cmd {
             }
 
             if (cmd[0].equalsIgnoreCase("/kick")) {
-                if (l == 0) {
+                if (l == 1) {
                     if (c != null) {
                         c.send(c.getScreenName(true) + " Disconnette tutti!\n", Settings.groupAdmin);
                         if (c.getGroup() == Settings.groupUser) {
@@ -213,26 +213,26 @@ public class Cmd {
                     }
                     ClientHandler.disconnectAll();
                     return;
-                } else {
+                } else if (l == 2) {
                     ClientHandler ch;
                     if ((ch = ClientHandler.get(cmd[1])) != null) {
                         if (c != null) {
                             //c.send("Disconnetto tutti!\n");
                             c.send(c.getScreenName(true) + " disconnette " + ch.getScreenName(true) + "\n", Settings.groupAdmin);
-                            if (c.getGroup() == Settings.groupUser) {
-                                Server.out(c.getScreenName(true) + " disconnette tutti!\n");
-                            } else {
-                                Server.out(c.getScreenName(true) + " disconnette tutti!\n");
-                            }
+                        } else {
+                            Server.out("Disconnessione di " + ch.getScreenName(true));
                         }
                         ch.disconnect();
                         return;
                     } else if (c == null) {
                         Server.out("Utente non esiste.");
-
                     } else {
                         c.send("Utente non esiste\n");
                     }
+                } else if (c == null) {
+                    Server.out("Uso: /kick\nOppure /kick Utente");
+                } else {
+                    c.send("Uso: /kick\nOppure /kick Utente\n");
                 }
                 return;
             }
@@ -263,7 +263,7 @@ public class Cmd {
         if (c == null) {
             Server.out("Comando sconosciuto o comando non utilizzabile dal server.");
         } else {
-            c.send("Comando sconosciuto o non eseguibile dal gruppo "+c.getGroup().getName()+" al quale sei assegnato.\n");
+            c.send("Comando sconosciuto o non eseguibile dal gruppo \"" + c.getGroup().getName() + "\" al quale sei assegnato.\n");
         }
     }
 
