@@ -5,6 +5,8 @@
 package core;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.ClientHandler;
 import net.Server;
 import utilz.Filez;
@@ -32,11 +34,7 @@ public class Cmd {
                 ClientHandler.sendToAll("[ SERVER ]: " + s + "\n");
                 return;
             }
-            if (!c.isLoggedIn()) {
-                ClientHandler.sendToAll("[ " + c.getScreenName(false) + " ]: " + s + "\n");
-            } else {
-                ClientHandler.sendToAll("[ " + c.getScreenName(false) + " ]: " + s + "\n");
-            }
+            ClientHandler.sendToAll("[ " + c.getScreenName(false) + " ]: " + s + "\n");
             return;
         }
         String cmd[] = s.split(" "); //divido il messaggio ricevuto a ogni spazio.
@@ -52,7 +50,7 @@ public class Cmd {
 
         if (c != null) {  //COMANDI PER UTENTI NON LOGGATI
             if (cmd[0].equalsIgnoreCase("/login")) { //comando per il login
-                if (c.isLoggedIn()) {
+                if (c.getGroup() == Settings.groupUser) {
                     c.send("Già loggato!\n");
                     return;
                 } //non fa niente se client è già loggato
@@ -60,41 +58,11 @@ public class Cmd {
                     c.send("Utilizzo: /login nome password\n");
                     return;
                 }
-                ArrayList<String> ff = Utils.toList(Filez.getFileContent("./utenti/" + cmd[1] + ".dat"), " ");
-                if (ff == null || ff.size() < 2) {
-                    c.setName(cmd[1]);
-                    ClientHandler.send("Registrato nuovo utente " + cmd[1] + " con password " + cmd[2] + "\n", Settings.groupAdmin);
-                    Server.out("Registrato nuovo utente " + cmd[1] + " con password " + cmd[2] + "\n");
-                    c.setPassword(cmd[2]);
-                    c.send("Registrato come nuovo utente: " + c.getScreenName(false) + "\n");
-                    c.setLoggedIn(true);
-                    c.save();
-                    return;
-                } else if (cmd[2].equalsIgnoreCase(ff.get(1))) {
-                    c.send("Password corretta! Connesso come " + cmd[1] + "\n");
-                    c.setName(cmd[1]);
-                    Group ggg = Group.get(cmd[2]);
-                    if (ggg != null) {
-                        c.setGroup(Group.getDefaultGroup());
-                    } else {
-                        c.setGroup(ggg);
-                    }
-                    /*if (ff.get(3) == null || ff.get(3).equalsIgnoreCase("utente")) {
-                     c.setAdmin(false);
-                     } else if (ff.get(3).equals("admin")) {
-                     c.setAdmin(true);
-                     }*/
-                    c.setLoggedIn(true);
-                    c.save();
-                    ClientHandler.send(c.getScreenName(true) + " si è loggato!\n", Settings.groupAdmin);
-                    ClientHandler.send(c.getScreenName(true) + " si è loggato!\n", Settings.groupGuest, Settings.groupUser);
-                } else {
-                    c.send("Password errata!\n");
-                }
+                c.login(cmd[1], cmd[2]);
                 return;
             }
         }
-        if (c != null && c.isLoggedIn()) {
+        if (c != null && c.getGroup() == Settings.groupUser) {
             //Comandi esclusivi per un utente loggato, non per il server
             if (cmd[0].equalsIgnoreCase("/admin")) {
                 if (c.getGroup() == Settings.groupAdmin) {
@@ -109,9 +77,7 @@ public class Cmd {
                 return;
             }
             if (cmd[0].equalsIgnoreCase("/logout")) { //comando per il logout
-                c.setName(null);
-                c.setLoggedIn(false);
-                c.send("Disconnesso!\n");
+                c.logout();
                 return;
             }
             if (cmd[0].equalsIgnoreCase("/password")) {
@@ -127,7 +93,7 @@ public class Cmd {
                 return;
             }
         }
-        if (c == null || c.isLoggedIn()) {
+        if (c == null || c.getGroup() == Settings.groupUser) {
             //Comandi per server o per utenti loggati
             if (cmd[0].equalsIgnoreCase("/chi")) { //Stampa lista utenti
                 String list = "";
@@ -182,7 +148,7 @@ public class Cmd {
                 return;
             }
             if (cmd[0].equalsIgnoreCase("/setGroup")) {
-                if (l != 3) {
+                if (l != 3 && l != 2) {
                     if (c == null) {
                         Server.out("Uso: /setGroup nome gruppo");
                     } else {
@@ -199,8 +165,26 @@ public class Cmd {
                     }
                     return;
                 }
-                ch.setGroup(Settings.groupAdmin);
-                //ch.setAdmin(true);
+                if (l == 2) {
+                    if (c == null) {
+                        Server.out("L'utente fa parte del gruppo " + ch.getGroup().getName());
+                    } else {
+                        c.send("L'utente fa parte del gruppo " + ch.getGroup().getName() + "\n");
+                    }
+                    return;
+                }
+                Group g;
+                if ((g = Group.get(cmd[2])) == null) {
+                    if (c == null) {
+                        Server.out("Gruppo non esiste!");
+                    } else {
+                        c.send("Gruppo non esiste!\n");
+                    }
+                } else if (g == Settings.groupGuest) {
+                    ch.logout();
+                } else {
+                    ch.setGroup(g);
+                }
                 return;
             }
             /*if (cmd[0].equalsIgnoreCase("/setAdmin")) {
@@ -251,11 +235,12 @@ public class Cmd {
                         + "s\nMemoria Usata: " + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 100000) + "MB"
                         + " / " + (Runtime.getRuntime().totalMemory() / 100000) + "MB"
                         + "\nMemoria Massima: " + (Runtime.getRuntime().maxMemory() / 100000) + "MB"
+                        + "\nThread in esecuzione: " + Thread.activeCount()
                         + "\nCPU Cores disponibili: " + Runtime.getRuntime().availableProcessors();
                 if (c == null) {
                     Server.out(Settings.status);
                 } else {
-                    c.send(Settings.status);
+                    c.send(Settings.status+"\n");
                 }
                 return;
             }
@@ -264,7 +249,7 @@ public class Cmd {
                     Server.out("SERVER IN ARRESTO PER COMANDO SERVER");
                 } else {
                     c.send("SERVER IN ARRESTO PER COMANDO TUO\n");
-                    if (c.isLoggedIn()) {
+                    if (c.getGroup() == Settings.groupUser) {
                         Server.out("SERVER IN ARRESTO PER COMANDO DELL'UTENTE" + c.getScreenName(true));
                         ClientHandler.send("SERVER IN ARRESTO PER COMANDO DELL'UTENTE " + c.getScreenName(true) + "\n", Settings.groupAdmin);
                     } else {
@@ -280,7 +265,7 @@ public class Cmd {
                 if (l == 0) {
                     if (c != null) {
                         c.send(c.getScreenName(true) + " Disconnette tutti!\n", Settings.groupAdmin);
-                        if (c.isLoggedIn()) {
+                        if (c.getGroup() == Settings.groupUser) {
                             c.sendToAll(c.getScreenName(true) + " Disconnette tutti!\n");
                         } else {
                             c.sendToAll(c.getScreenName(true) + " Disconnette tutti!\n");
@@ -296,7 +281,7 @@ public class Cmd {
                         if (c != null) {
                             //c.send("Disconnetto tutti!\n");
                             c.send(c.getScreenName(true) + " disconnette " + ch.getScreenName(true) + "\n", Settings.groupAdmin);
-                            if (c.isLoggedIn()) {
+                            if (c.getGroup() == Settings.groupUser) {
                                 Server.out(c.getScreenName(true) + " disconnette tutti!\n");
                             } else {
                                 Server.out(c.getScreenName(true) + " disconnette tutti!\n");
