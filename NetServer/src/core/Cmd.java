@@ -27,11 +27,11 @@ public class Cmd {
         }
         if (!s.startsWith("/")) { //se il messaggio ricevuto non inizia con "/" allora non è un comando
             if (c == null) {
-                Server.out("[ Server ]: "+s);
+                Server.out("[ Server ]: " + s);
                 ClientHandler.sendToAll("[ Server ]: " + s + "\n");
                 return;
             }
-            Server.out("[ "+c.getScreenName(true)+" ]: "+s);
+            Server.out("[ " + c.getScreenName(true) + " ]: " + s);
             ClientHandler.send("[ " + c.getScreenName(false) + " ]: " + s + "\n", Settings.groupGuest, Settings.groupUser);
             ClientHandler.send("[ " + c.getScreenName(true) + " ]: " + s + "\n", Settings.groupAdmin);
             return;
@@ -162,16 +162,23 @@ public class Cmd {
                     }
                     return;
                 }
-                Group g;
-                if ((g = Group.get(cmd[2])) == null) {
+                Group g = Group.get(cmd[2]);
+                if (g == null) { //gruppo non esiste
                     if (c == null) {
                         Server.out("Gruppo non esiste!");
                     } else {
                         c.send("Gruppo non esiste!\n");
                     }
-                } else if (g == Settings.groupGuest) {
+                } else if (g == c.getGroup()) { //utente fa gia parte del gruppo
+                } else if (g == Settings.groupGuest) { //utente va disconnesso
+                    if(c==null){
+                        Server.out("Logout forzato per "+ch.getScreenName(true));
+                    } ClientHandler.send("Logout forzato per "+ch.getScreenName(false)+"\n",Settings.groupAdmin);
                     ch.logout();
-                } else {
+                } else { //tutto ok, imposto gruppo
+                    if(c==null){
+                        Server.out(ch.getScreenName(true)+" fa ora parte del gruppo "+g.getName());
+                    }  ClientHandler.send(ch.getScreenName(true)+" fa ora parte del gruppo "+g.getName()+"\n",Settings.groupAdmin);
                     ch.setGroup(g);
                 }
                 return;
