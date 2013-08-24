@@ -1,2 +1,2 @@
 # LionChat
-For now the comments are in italian. I'm going to translate everything soon
+Chat client/server basata su java con possibilità di moderazione. Chat vocale e altre funzioni sono pianificate.
