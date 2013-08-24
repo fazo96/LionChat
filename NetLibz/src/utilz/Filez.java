@@ -22,12 +22,17 @@ public class Filez {
 
     public static boolean makeFile(String s) { //consente di creare un file. ritorna falso se fallisce
         File file = new File(s);
-        try{File parent = file.getParentFile();
-        if (!parent.exists() && !parent.mkdirs()) {
+        try {
+            File parent = file.getParentFile();
+            if (!parent.exists() && !parent.mkdirs()) {
+                System.out.println("[LIB] impossibile creare file " + s + "\n");
+                return false;
+                //throw new IllegalStateException("Couldn't create: " + parent);
+            }
+        } catch (Exception ex) {
             System.out.println("[LIB] impossibile creare file " + s + "\n");
             return false;
-            //throw new IllegalStateException("Couldn't create: " + parent);
-        }}catch(Exception ex){ System.out.println("[LIB] impossibile creare file " + s + "\n"); return false; }
+        }
         try {
             file.createNewFile();
         } catch (IOException ex) {
@@ -39,29 +44,37 @@ public class Filez {
     }
 
     public static boolean writeFile(String filepath, String content) { //scrive un file, sostituendo il contenuto con la strnga specificata
-        File file = new File(filepath);
-        if (!file.exists()) {
-            makeFile(filepath);
+        System.out.println("[LIB] make file");
+        try { System.out.println("[LIB] make file " + filepath + "\n");
+            File file = new File(filepath);
+            /*if (!file.exists()) {
+                makeFile(filepath);
+            }*/
+            FileWriter fw = null;
+            try {
+            System.out.println("[LIB] Init filewriter " + filepath + "\n");
+                fw = new FileWriter(file);
+            } catch (IOException ex) {
+                Logger.getLogger(Filez.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+            try {
+            System.out.println("[LIB] Write content " + filepath + "\n");
+                fw.write(content);
+            } catch (IOException ex) {
+                Logger.getLogger(Filez.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+            try {
+            System.out.println("[LIB] Close file " + filepath + "\n");
+                fw.close();
+            } catch (IOException ex) {
+                Logger.getLogger(Filez.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            System.out.println("[LIB] Scritto file " + filepath + "\n");
+        } catch (Throwable t) {
+            Logger.getLogger(Filez.class.getName()).log(Level.SEVERE, null, t);
         }
-        FileWriter fw = null;
-        try {
-            fw = new FileWriter(file);
-        } catch (IOException ex) {
-            Logger.getLogger(Filez.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-        try {
-            fw.write(content);
-        } catch (IOException ex) {
-            Logger.getLogger(Filez.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-        try {
-            fw.close();
-        } catch (IOException ex) {
-            Logger.getLogger(Filez.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        System.out.println("[LIB] Scritto file " + filepath + "\n");
         return true;
     }
 
