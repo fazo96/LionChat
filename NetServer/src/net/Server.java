@@ -116,7 +116,10 @@ public class Server {
     }
 
     public static void out(String s) {
-        System.out.println(s);
-
+        if (s.endsWith("\n")) {
+            System.out.print(s);
+        } else {
+            System.out.println(s);
+        }
     }
 }
