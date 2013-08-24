@@ -198,6 +198,20 @@ public class ClientHandler {
         }
     }
 
+    public static String getClientList(boolean showIP) {
+        String list = "";
+        int i = 0;
+        for (ClientHandler ch : ClientHandler.getClients()) {
+            i++;
+            if (showIP) {
+                list += i + " - " + ch.getScreenName(true) + "\n";
+            } else {
+                list += i + " - " + ch.getScreenName(false) + "\n";
+            }
+        }
+        return list;
+    }
+
     public void keepAlive() {
         if (oos == null) {
             Server.out("[DEBUG] Tentativo di tenere viva una connessine nulla\n");

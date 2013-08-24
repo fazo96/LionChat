@@ -5,6 +5,9 @@
 package core;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.ClientHandler;
@@ -34,26 +37,24 @@ public class Cmd {
                 ClientHandler.sendToAll("[ SERVER ]: " + s + "\n");
                 return;
             }
-            ClientHandler.sendToAll("[ " + c.getScreenName(false) + " ]: " + s + "\n");
+            ClientHandler.send("[ " + c.getScreenName(false) + " ]: " + s + "\n", Settings.groupGuest, Settings.groupUser);
+            ClientHandler.send("[ " + c.getScreenName(true) + " ]: " + s + "\n", Settings.groupAdmin);
             return;
         }
         String cmd[] = s.split(" "); //divido il messaggio ricevuto a ogni spazio.
         int l = cmd.length;
-        /*Server.out("INIZIO COMANDO"); //debug che stampa le parti del comando.
-         for(int i=0;i<l;i++)
-         Server.out(cmd[i]);
-         Server.out("FINE COMANDO");*/
         if (l <= 0) {
             c.send("Errore: Comando vuoto\n");
             return; //comando vuoto, inutile continuare
         }
 
-        if (c != null) {  //COMANDI PER UTENTI NON LOGGATI
+        if (c != null && c.getGroup() == Settings.groupGuest) {  //COMANDI PER UTENTI NON LOGGATI
             if (cmd[0].equalsIgnoreCase("/login")) { //comando per il login
-                if (c.getGroup() == Settings.groupUser) {
-                    c.send("Già loggato!\n");
-                    return;
-                } //non fa niente se client è già loggato
+                /*if (c.getGroup() == Settings.groupUser) {
+                 //non fa niente se client è già loggato
+                 c.send("Già loggato!\n");
+                 return;
+                 } */
                 if (l != 3) { //errore nei parametri.
                     c.send("Utilizzo: /login nome password\n");
                     return;
@@ -62,7 +63,7 @@ public class Cmd {
                 return;
             }
         }
-        if (c != null && c.getGroup() == Settings.groupUser) {
+        if (c != null && (c.getGroup() == Settings.groupUser || c.getGroup() == Settings.groupAdmin)) {
             //Comandi esclusivi per un utente loggato, non per il server
             if (cmd[0].equalsIgnoreCase("/admin")) {
                 if (c.getGroup() == Settings.groupAdmin) {
@@ -93,11 +94,9 @@ public class Cmd {
                 return;
             }
         }
-        if (c == null || c.getGroup() == Settings.groupUser) {
+        if (c == null || c.getGroup() == Settings.groupUser || c.getGroup() == Settings.groupAdmin) {
             //Comandi per server o per utenti loggati
             if (cmd[0].equalsIgnoreCase("/chi")) { //Stampa lista utenti
-                String list = "";
-                int i = 0;
                 if (ClientHandler.getClients().isEmpty()) {
                     if (c == null) {
                         Server.out("Nessuno connesso");
@@ -106,16 +105,14 @@ public class Cmd {
                     }
                     return;
                 }
-                for (ClientHandler ch : ClientHandler.getClients()) {
-                    i++;
-                    if (c == null || c.getGroup() == Settings.groupAdmin) {
-                        list += i + " - " + ch.getScreenName(true) + "\n";
-                    } else {
-                        list += i + " - " + ch.getScreenName(false) + "\n";
-                    }
+                String list;
+                if (c == null || c.getGroup() == Settings.groupAdmin) {
+                    list = ClientHandler.getClientList(true);
+                } else {
+                    list = ClientHandler.getClientList(false);
                 }
                 if (c == null) {
-                    System.out.print(list);
+                    Server.out(list);
                 } else {
                     c.send(list);
                 }
@@ -187,60 +184,13 @@ public class Cmd {
                 }
                 return;
             }
-            /*if (cmd[0].equalsIgnoreCase("/setAdmin")) {
-             if (l != 2) {
-             if (c == null) {
-             Server.out("Uso: /setAdmin nome");
-             } else {
-             c.send("Uso: /setAdmin nome\n");
-             }
-             return;
-             }
-             ClientHandler ch;
-             if ((ch = ClientHandler.get(cmd[1])) == null) {
-             if (c == null) {
-             Server.out("Utente non esiste!");
-             } else {
-             c.send("Utente non esiste!\n");
-             }
-             return;
-             }
-             ch.setGroup(Settings.groupAdmin);
-             //ch.setAdmin(true);
-             return;
-             }
-             if (cmd[0].equalsIgnoreCase("/unsetAdmin")) {
-             if (l != 2) {
-             if (c == null) {
-             Server.out("Uso: /unsetAdmin nome");
-             } else {
-             c.send("Uso: /unsetAdmin nome\n");
-             }
-             return;
-             }
-             ClientHandler ch;
-             if ((ch = ClientHandler.get(cmd[1])) == null) {
-             if (c == null) {
-             Server.out("Utente non esiste!");
-             } else {
-             c.send("Utente non esiste!\n");
-             }
-             return;
-             }
-             ch.setGroup(Settings.groupUser);
-             return;
-             }*/
+
             if (cmd[0].equalsIgnoreCase("/status")) { //STATO DEL SERVER
-                Settings.status = "Uptime: " + (Utils.nanoToSec(System.nanoTime()) - Server.getStartTime())
-                        + "s\nMemoria Usata: " + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 100000) + "MB"
-                        + " / " + (Runtime.getRuntime().totalMemory() / 100000) + "MB"
-                        + "\nMemoria Massima: " + (Runtime.getRuntime().maxMemory() / 100000) + "MB"
-                        + "\nThread in esecuzione: " + Thread.activeCount()
-                        + "\nCPU Cores disponibili: " + Runtime.getRuntime().availableProcessors();
+                //Date d= Server.getTimePassed();
                 if (c == null) {
-                    Server.out(Settings.status);
+                    Server.out(Server.getStatus());
                 } else {
-                    c.send(Settings.status+"\n");
+                    c.send(Server.getStatus()+ "\n");
                 }
                 return;
             }
