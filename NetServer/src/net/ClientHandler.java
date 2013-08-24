@@ -232,7 +232,7 @@ public class ClientHandler {
             return false;
         }
         ArrayList<String> ff = Utils.toList(Filez.getFileContent("./utenti/" + lname + ".dat"), " ");
-        if (ff == null || ff.size() < 2) {
+        if (ff == null || ff.size() < 3) {
             setName(lname);
             setPassword(pass);
             setGroup(Settings.groupUser);
@@ -241,11 +241,11 @@ public class ClientHandler {
             Server.out("Registrato nuovo utente " + getName() + " con password " + getPassword() + "\n");
             send("Registrato come nuovo utente: " + getScreenName(false) + "\n");
             return true;
-        } else if (pass.equalsIgnoreCase(ff.get(1))) {
+        } else if (pass.equals(ff.get(1))) {
             setName(lname);
             setPassword(pass);
             send("Password corretta! Connesso come " + getName() + "\n");
-            Group ggg = Group.get(pass);
+            Group ggg = Group.get(ff.get(2));
             if (ggg == null) {
                 setGroup(Settings.groupUser);
             } else {
