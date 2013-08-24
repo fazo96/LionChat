@@ -26,6 +26,7 @@ public class Server {
     private static int startTime=-1; //contiene in secondi la data e l'ora in cui è partito il server
 
     public static void main(String args[]) {
+        Thread.currentThread().setName("Main Thread");
         System.out.println("Tento di caricare configurazione precendente.");
         Settings.init();
         System.out.println("NetServer avviato sulla porta " + Settings.getPort());
@@ -60,7 +61,7 @@ public class Server {
                     }
                 }
             }
-        };
+        }; listener.setName("Listener Thread");
         listener.start(); //Faccio partire il listener 
         BufferedReader t = new BufferedReader(new InputStreamReader(System.in));
         String cmd;
