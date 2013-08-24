@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import utilz.Filez;
 import utilz.SyncObject;
+import utilz.Utils;
 
 /*
  * To change this template, choose Tools | Templates
@@ -34,7 +35,7 @@ public class ClientHandler {
     private ObjectOutputStream oos;
     private Thread receiver;
     private Group group;
-    private boolean connected = false, logged = false;
+    private boolean connected = false;
 
     public ClientHandler(final Socket s) {
         this.s = s;
@@ -61,16 +62,17 @@ public class ClientHandler {
             public void run() {
                 Object o = null;
                 while (true) {
+                    try { //25 ms di pausa
+                        sleep(25);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     try {
                         o = ois.readObject();
                     } catch (IOException ex) {
                         Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                         disconnect();
-                        if (logged) {
-                            Server.out(getIP() + " errore nella lettura. Connessione chiusa.");
-                        } else {
-                            Server.out(name + " ( " + getIP() + " ) errore nella lettura. Connessione chiusa.");
-                        }
+                        Server.out(getScreenName(true) + " errore nella lettura. Connessione chiusa.");
                     } catch (ClassNotFoundException ex) {
                         Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -81,16 +83,17 @@ public class ClientHandler {
                 }
             }
         };
+        receiver.setName(getIP()); //rinomino il thread con l'ip del client assegnato
         receiver.start(); //Faccio partire il thread che riceve i messaggi del client
         group = Settings.groupGuest; //imposto il gruppo guest
         clients.add(this); //Aggiungo questo client alla lista dei client
         send(getIP() + " si è connesso!\n", Settings.groupAdmin);
         sendToAll("Qualcuno si è connesso!\n");
         Server.out("Inizializzati Input e Output streams per " + getIP() + " con successo e aggiunto alla lista client.\n");
-        if (getIP().equals("127.0.0.1")) {
-            setGroup(Settings.groupAdmin);
-            send("Benvenuto localhost! Poteri admin consegnati.\n");
-        }
+        /*if (getIP().equals("127.0.0.1")) {
+         setGroup(Settings.groupAdmin);
+         send("Benvenuto localhost! Poteri admin consegnati.\n");
+         }*/
     }
 
     public boolean send(String msg) {
@@ -113,9 +116,10 @@ public class ClientHandler {
         if (!connected) {
             return;
         }
-        if (!logged) {
+        if (name == null) {
             Server.out("Disconnetto " + getIP());
-            sendToAll(getIP() + " si è disconnesso!\n");
+            send(getIP() + " si è disconnesso!\n", Settings.groupAdmin);
+            send("Utente si è disconnesso!\n", Settings.groupUser, Settings.groupGuest);
         } else {
             Server.out("Disconnetto " + name + " (" + getIP() + ")");
             sendToAll(name + " si è disconnesso!\n");
@@ -132,9 +136,12 @@ public class ClientHandler {
     public static ClientHandler get(String n) {
         for (ClientHandler ch : clients) {
             if (ch.isConnected()) {
-                if (ch.isLoggedIn() && ch.getName().equals(n)) {
+                //Controllo se il nome combacia alla stringa data
+                if (ch.getName() != null && ch.getName().equals(n)) {
                     return ch;
-                } else if (ch.getIP().equals(n)) {
+                }
+                //Controllo se l'IP combacia alla stringa data
+                if (ch.getIP().equals(n)) {
                     return ch;
                 }
 
@@ -174,11 +181,21 @@ public class ClientHandler {
     }
 
     public void save() {
-        if (!logged) {
+        if (group == Settings.groupGuest) {
             //Server.out("Non puoi salvare un utente sloggato "+getScreenName(true)+ "!");
             return;
         }
-        Filez.writeFile("./utenti/" + name + ".dat", name + " " + password + " " + group.getName() + " " + getIP()); //scrivo su file
+        try {
+            Filez.writeFile("./utenti/"
+                    + name
+                    + ".dat", name
+                    + " " + password
+                    + " " + group.getName()
+                    + " " + getIP()); //scrivo su file
+        } catch (Exception ex) {
+            Server.out("Errore nel salvare il file per l'utente " + getScreenName(true));
+            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void keepAlive() {
@@ -195,6 +212,47 @@ public class ClientHandler {
         }
     }
 
+    public boolean login(String lname, String pass) {
+        if (lname == null || pass == null) {
+            send("[BUG DETECT] Errore nel login\n");
+            return false;
+        }
+        ArrayList<String> ff = Utils.toList(Filez.getFileContent("./utenti/" + lname + ".dat"), " ");
+        if (ff == null || ff.size() < 2) {
+            setName(lname);
+            ClientHandler.send("Registrato nuovo utente " + lname + " con password " + pass + "\n", Settings.groupAdmin);
+            Server.out("Registrato nuovo utente " + lname + " con password " + pass + "\n");
+            setPassword(pass);
+            send("Registrato come nuovo utente: " + getScreenName(false) + "\n");
+            setGroup(Settings.groupUser);
+            save();
+            return true;
+        } else if (pass.equalsIgnoreCase(ff.get(1))) {
+            send("Password corretta! Connesso come " + lname + "\n");
+            setName(lname);
+            Group ggg = Group.get(pass);
+            if (ggg == null) {
+                setGroup(Settings.groupUser);
+            } else {
+                setGroup(ggg);
+            }
+            ClientHandler.send(getScreenName(true) + " si è loggato!\n", Settings.groupAdmin);
+            ClientHandler.send(getScreenName(false) + " si è loggato!\n", Settings.groupGuest, Settings.groupUser);
+        } else {
+            send("Password errata!\n");
+        }
+        return true;
+    }
+
+    public void logout() {
+        password = null;
+        group = Settings.groupGuest;
+        send(getScreenName(false) + " ha eseguito il logout\n", Settings.groupGuest, Settings.groupUser);
+        send(getScreenName(true) + " ha eseguito il logout\n", Settings.groupAdmin);
+        name = null;
+
+    }
+
     public Group getGroup() {
         return group;
     }
@@ -205,13 +263,13 @@ public class ClientHandler {
 
     public String getScreenName(boolean showIP) {
         if (showIP) {
-            if (logged) {
+            if (name != null) {
                 return name + " ( " + getIP() + " )";
             } else {
                 return getIP();
             }
         } else {
-            if (logged) {
+            if (name != null) {
                 return name;
             } else {
                 return "Utente";
@@ -272,19 +330,12 @@ public class ClientHandler {
         return connected;
     }
 
-    public boolean isLoggedIn() {
-        return logged;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setLoggedIn(boolean logged) {
-        this.logged = logged;
+        receiver.setName(getScreenName(true));
     }
 }
