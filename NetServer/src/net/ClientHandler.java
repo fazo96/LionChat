@@ -65,7 +65,12 @@ public class ClientHandler {
         } catch (IOException ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        if(getIP()!="127.0.0.1"&&get(getIP())!=null){ //Questo IP e' già connesso! (non vale per localhost che può connettersi piu volte)
+            send("[ERRORE] Il tuo IP è già connesso!\n");
+            Server.out(getIP()+" ha tentato di conenttersi con più di un client alla volta!");
+            send(getIP()+" ha tentato di conenttersi con più di un client alla volta!\n",Settings.groupAdmin);
+            return;
+        }
         receiver = new Thread() {
             @Override
             public void run() {
@@ -335,7 +340,7 @@ public class ClientHandler {
         }
     }
 
-    public String getIP() {
+    public final String getIP() {
         return s.getInetAddress().getHostAddress();
         //return s.getInetAddress().toString().split("\\")[1];
         //return s.getInetAddress().toString().substring(1);
