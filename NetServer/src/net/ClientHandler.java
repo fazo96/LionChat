@@ -2,19 +2,19 @@
  LionChat Server/Client desktop chat application
  Copyright (C) 2013  Enrico Fasoli
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
  */
-
 package net;
 
+import core.Channel;
 import core.Cmd;
 import core.Group;
 import core.Settings;
@@ -122,6 +122,16 @@ public class ClientHandler {
         return true;
     }
 
+    public void sendToChannel(String msg, Channel c) {
+        for (ClientHandler ch : c.getClients()) {
+            if (!ch.isConnected()||!ch.getGroup().can("channel")) {
+                c.getClients().remove(ch);
+            } else {
+                ch.send(msg);
+            }
+        }
+    }
+
     public void disconnect() {
         if (!connected) {
             return;
@@ -173,8 +183,8 @@ public class ClientHandler {
             }
         }
         /*if (g == null) {
-            Server.out("[SEND][ALL] " + msg);
-        } else Server.out("[SEND][" + g.getName() + "] " + msg);*/
+         Server.out("[SEND][ALL] " + msg);
+         } else Server.out("[SEND][" + g.getName() + "] " + msg);*/
     }
 
     public static void send(String msg, Group g, Group g2) {
@@ -270,7 +280,9 @@ public class ClientHandler {
     }
 
     public void logout() {
-        if(group==Settings.groupGuest)return;
+        if (group == Settings.groupGuest) {
+            return;
+        }
         password = null;
         group = Settings.groupGuest;
         send(getScreenName(false) + " ha eseguito il logout\n", Settings.groupGuest, Settings.groupUser);
@@ -330,12 +342,12 @@ public class ClientHandler {
     }
 
     public String getPassword() {
-        Server.out("[DEBUG]Password per "+getScreenName(true)+" e' "+password);
+        Server.out("[DEBUG]Password per " + getScreenName(true) + " e' " + password);
         return password;
     }
 
     public void setPassword(String password) {
-        Server.out("[DEBUG] Password per "+getScreenName(true)+" è cambiata da "+this.password+" a "+password);
+        Server.out("[DEBUG] Password per " + getScreenName(true) + " è cambiata da " + this.password + " a " + password);
         this.password = password;
     }
 
