@@ -94,7 +94,7 @@ public class Connection {
                     return;
                 }
                 GUI.get().append("Connesso!\n");
-                Object o = null;
+                Object o = null; String s="";
                 while (true) {
                     //GUI.get().append("[DEBUG] Started receive loop\n");
                     try {
@@ -119,8 +119,10 @@ public class Connection {
                     //GUI.get().append("[DEBUG] Received something\n");
                     if(o==null) continue; //oggetto nullo: salto
                     if (o instanceof String) { 
+                        s=(String)o; //se la stringa inizia con lo / rimuovo la prima parola
+                        if(s.startsWith("/")) s=s.split(" ", 2)[1]; 
                         //l'oggetto è una stringa, la stampo nella GUI
-                        GUI.get().append((String) o);
+                        GUI.get().append(s);
                     }else if(o instanceof SyncObject); //se non metto questa istruzione, il programma darà ClassNotFoundException.
                 }
                 //Il ciclo infinito si è rotto. Si è verificata disconnessione
