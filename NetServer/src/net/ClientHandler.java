@@ -208,22 +208,24 @@ public class ClientHandler {
     }
 
     public static String getClientList(boolean showIP) {
-        String list = "Utenti connessi: "+clients.size();
+        String list = "Utenti connessi: " + clients.size();
         int i = 0, guests = 0;
         for (ClientHandler ch : clients) {
             i++;
             if (ch.getGroup() == Settings.groupGuest) {
                 guests++;
                 if (showIP) {
-                    list += "\n"+ i + " - [ " + ch.getGroup().getName() + " ] "/*(showIP?("[ "+ch.getGroup().getName())+" ] ":"")*/ + ch.getScreenName(true);
+                    list += "\n" + i + " - [ " + ch.getGroup().getName() + " ] "/*(showIP?("[ "+ch.getGroup().getName())+" ] ":"")*/ + ch.getScreenName(true);
                     continue;
                 }
-            } else list += "\n"+ i + " - [ " + ch.getGroup().getName() + " ] "/*(showIP?("[ "+ch.getGroup().getName())+" ] ":"")*/ + ch.getScreenName(showIP);
+            } else {
+                list += "\n" + i + " - [ " + ch.getGroup().getName() + " ] "/*(showIP?("[ "+ch.getGroup().getName())+" ] ":"")*/ + ch.getScreenName(showIP);
+            }
         }
-        if(!showIP){
-            list+="\nGuests: "+guests;
+        if (!showIP) {
+            list += "\nGuests: " + guests;
         }
-        return list+"\n";
+        return list + "\n";
     }
 
     public void keepAlive() {
@@ -246,7 +248,7 @@ public class ClientHandler {
             return false;
         }
         ArrayList<String> ff = Utils.toList(Filez.getFileContent("./utenti/" + lname + ".dat"), " ");
-        if (ff == null || ff.size() < 3) {
+        if (ff == null || ff.size() < 3) { //utente non esiste, creo
             setName(lname);
             setPassword(pass);
             setGroup(Settings.groupUser);
@@ -255,7 +257,11 @@ public class ClientHandler {
             Server.out("Registrato nuovo utente " + getName() + " con password " + getPassword() + "\n");
             send("Registrato come nuovo utente: " + getScreenName(false) + "\n");
             return true;
-        } else if (pass.equals(ff.get(1))) {
+        } else if (get(lname)!=null) { //utente già loggato
+            send("Qualcuno è già loggato con quell'account! Prova con un'altro nome.\nSe pensi che ti sia stato rubato l'account contatta gli amministratori.\n");
+            Server.out(getIP()+" ha tentato di loggarsi con l'account di "+get(lname).getScreenName(true));
+            send(getIP()+" ha tentato di loggarsi con l'account di "+get(lname).getScreenName(true),Settings.groupAdmin);
+        } else if (pass.equals(ff.get(1))) { //password corretta
             setName(lname);
             setPassword(pass);
             send("Password corretta! Connesso come " + getName() + "\n");
