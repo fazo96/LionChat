@@ -216,8 +216,9 @@ public class ClientHandler {
                 guests++;
                 if (showIP) {
                     list += "\n"+ i + " - [ " + ch.getGroup().getName() + " ] "/*(showIP?("[ "+ch.getGroup().getName())+" ] ":"")*/ + ch.getScreenName(true);
+                    continue;
                 }
-            }
+            } else list += "\n"+ i + " - [ " + ch.getGroup().getName() + " ] "/*(showIP?("[ "+ch.getGroup().getName())+" ] ":"")*/ + ch.getScreenName(showIP);
         }
         if(!showIP){
             list+="\nGuests: "+guests;
