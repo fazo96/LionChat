@@ -60,7 +60,7 @@ public class Server {
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    if((System.currentTimeMillis()/1000)-(offset/1000)>500){
+                    if((System.currentTimeMillis()/1000)-(offset)>500){
                         out("Chiamata automatica garbage collector...");
                         System.gc();
                         out("Chiamata eseguita.");
