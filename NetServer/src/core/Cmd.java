@@ -63,7 +63,7 @@ public class Cmd {
                 return;
             }
         }
-        if (c != null && (c.getGroup() == Settings.groupUser || c.getGroup() == Settings.groupAdmin)) {
+        if (c != null && (c.getGroup() !=Settings.groupGuest)) {
             //Comandi esclusivi per un utente loggato, non per il server
             if (cmd[0].equalsIgnoreCase("/admin")) {
                 if (c.getGroup() == Settings.groupAdmin) {
@@ -73,7 +73,7 @@ public class Cmd {
                 }
                 return;
             }
-            if (cmd[0].equalsIgnoreCase("/help")) {
+            if (cmd[0].equalsIgnoreCase("/help")) { //mostra il messaggio di help
                 c.send(Settings.getHelpMsg());
                 return;
             }
@@ -81,7 +81,7 @@ public class Cmd {
                 c.logout();
                 return;
             }
-            if (cmd[0].equalsIgnoreCase("/password")) {
+            if (cmd[0].equalsIgnoreCase("/password")) { //cambia la password
                 if (l != 3) {
                     c.send("Utilizzo: /password vecchiapass nuovapass\n");
                     return;
