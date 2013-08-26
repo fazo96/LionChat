@@ -260,12 +260,14 @@ public class ClientHandler {
             save();
             ClientHandler.send("Registrato nuovo utente " + getName() + " con password " + getPassword() + "\n", Settings.groupAdmin);
             Server.out("Registrato nuovo utente " + getName() + " con password " + getPassword() + "\n");
-            send("Registrato come nuovo utente: " + getScreenName(false) + "\n");
+            send("Registrato come nuovo utente: " + getName() + "\n");
+            save();
             return true;
         } else if (get(lname)!=null) { //utente già loggato
             send("Qualcuno è già loggato con quell'account! Prova con un'altro nome.\nSe pensi che ti sia stato rubato l'account contatta gli amministratori.\n");
             Server.out(getIP()+" ha tentato di loggarsi con l'account di "+get(lname).getScreenName(true));
             send(getIP()+" ha tentato di loggarsi con l'account di "+get(lname).getScreenName(true),Settings.groupAdmin);
+            return false;
         } else if (pass.equals(ff.get(1))) { //password corretta
             setName(lname);
             setPassword(pass);
@@ -278,10 +280,11 @@ public class ClientHandler {
             }
             ClientHandler.send(getScreenName(true) + " si è loggato!\n", Settings.groupAdmin);
             ClientHandler.send(getScreenName(false) + " si è loggato!\n", Settings.groupGuest, Settings.groupUser);
+            save(); return true;
         } else {
             send("Password errata!\n");
+            return false;
         }
-        return true;
     }
 
     public void logout() {
