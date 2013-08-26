@@ -2,15 +2,15 @@
  LionChat Server/Client desktop chat application
  Copyright (C) 2013  Enrico Fasoli
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
  */
 package core;
 
@@ -179,19 +179,29 @@ public class Cmd {
                     } else {
                         c.send("Gruppo non esiste!\n");
                     }
+                    return;
                 } else if (g == c.getGroup()) { //utente fa gia parte del gruppo
+                    if (c == null) {
+                        Server.out(ch.getScreenName(true) + " fa già parte del gruppo " + g.getName());
+                    } else {
+                        c.send(ch.getScreenName(true) + " fa già parte del gruppo " + g.getName() + "\n");
+                    }
+                    return;
                 } else if (g == Settings.groupGuest) { //utente va disconnesso
-                    if(c==null){
-                        Server.out("Logout forzato per "+ch.getScreenName(true));
-                    } ClientHandler.send("Logout forzato per "+ch.getScreenName(false)+"\n",Settings.groupAdmin);
+                    if (c == null) {
+                        Server.out("Logout forzato per " + ch.getScreenName(true));
+                    }
+                    ClientHandler.send("Logout forzato per " + ch.getScreenName(false) + "\n", Settings.groupAdmin);
                     ch.logout();
+                    return;
                 } else { //tutto ok, imposto gruppo
-                    if(c==null){
-                        Server.out(ch.getScreenName(true)+" fa ora parte del gruppo "+g.getName());
-                    }  ClientHandler.send(ch.getScreenName(true)+" fa ora parte del gruppo "+g.getName()+"\n",Settings.groupAdmin);
+                    if (c == null) {
+                        Server.out(ch.getScreenName(true) + " fa ora parte del gruppo " + g.getName());
+                    }
+                    ClientHandler.send(ch.getScreenName(true) + " fa ora parte del gruppo " + g.getName() + "\n", Settings.groupAdmin);
                     ch.setGroup(g);
+                    return;
                 }
-                return;
             }
 
             if (cmd[0].equalsIgnoreCase("/status")) { //STATO DEL SERVER
