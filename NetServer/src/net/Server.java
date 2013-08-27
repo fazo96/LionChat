@@ -119,7 +119,7 @@ public class Server {
                 + "\nMemoria Usata: " + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 100000) + "MB"
                 + " / " + (Runtime.getRuntime().totalMemory() / 100000) + "MB"
                 + "\nMemoria Massima: " + (Runtime.getRuntime().maxMemory() / 100000) + "MB"
-                + "\nThread in esecuzione: " + Thread.activeCount()
+                + "\nThread in esecuzione (Dovrebbero essere 3 + 1 per utente connesso): " + Thread.activeCount()
                 + "\nCPU Cores disponibili: " + Runtime.getRuntime().availableProcessors();
     }
 
