@@ -54,34 +54,34 @@ public class Filez {
     }
 
     public static boolean writeFile(String filepath, String content) { //scrive un file, sostituendo il contenuto con la strnga specificata
-        System.out.println("[LIB] make file");
-        try { System.out.println("[LIB] make file " + filepath + "\n");
+        System.out.println("[LIB] starting write process...");
+        try { System.out.println("[LIB] write file " + filepath);
             File file = new File(filepath);
             if (!file.exists()) {
                 makeFile(filepath);
             }
             FileWriter fw = null;
             try {
-            System.out.println("[LIB] Init filewriter " + filepath + "\n");
+            System.out.println("[LIB] Init filewriter " + filepath);
                 fw = new FileWriter(file);
             } catch (IOException ex) {
                 Logger.getLogger(Filez.class.getName()).log(Level.SEVERE, null, ex);
                 return false;
             }
             try {
-            System.out.println("[LIB] Write content " + filepath + "\n");
+            System.out.println("[LIB] Write content " + filepath );
                 fw.write(content);
             } catch (IOException ex) {
                 Logger.getLogger(Filez.class.getName()).log(Level.SEVERE, null, ex);
                 return false;
             }
             try {
-            System.out.println("[LIB] Close file " + filepath + "\n");
+            System.out.println("[LIB] Close file " + filepath);
                 fw.close();
             } catch (IOException ex) {
                 Logger.getLogger(Filez.class.getName()).log(Level.SEVERE, null, ex);
             }
-            System.out.println("[LIB] Scritto file " + filepath + "\n");
+            System.out.println("[LIB] Finish");
         } catch (Throwable t) {
             Logger.getLogger(Filez.class.getName()).log(Level.SEVERE, null, t);
         }
