@@ -255,6 +255,7 @@ public class ClientHandler {
         ArrayList<String> ff = Utils.toList(Filez.getFileContent("./utenti/" + lname + ".dat"), " ");
         if (ff == null || ff.size() < 3) { //utente non esiste, creo
             setName(lname);
+            receiver.setName(getScreenName(true)); //Rinomino thread con nome e IP dell'utente
             setPassword(pass);
             setGroup(Settings.groupUser);
             save();
@@ -270,6 +271,7 @@ public class ClientHandler {
             return false;
         } else if (pass.equals(ff.get(1))) { //password corretta
             setName(lname);
+            receiver.setName(getScreenName(true)); //Rinomino thread con nome e IP dell'utente
             setPassword(pass);
             send("Password corretta! Connesso come " + getName() + "\n");
             Group ggg = Group.get(ff.get(2));
@@ -296,7 +298,7 @@ public class ClientHandler {
         send(getScreenName(false) + " ha eseguito il logout\n", Settings.groupGuest, Settings.groupUser);
         send(getScreenName(true) + " ha eseguito il logout\n", Settings.groupAdmin);
         name = null;
-
+        receiver.setName(getIP()); //Rinomino il thread con l'IP
     }
 
     public Group getGroup() {

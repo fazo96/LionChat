@@ -68,8 +68,8 @@ public class Server {
                     }
                 }
             }
-        };
-        keepAlive.start(); //disabilitato per inutilità
+        }; keepAlive.setName("KeepAlive Thread");
+        keepAlive.start(); 
         listener = new Thread() {
             @Override
             public void run() { //Funzione che viene eseguita nel thread separato.
