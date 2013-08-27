@@ -149,9 +149,9 @@ public class Cmd {
             if (cmd[0].equalsIgnoreCase("/setGroup")) {
                 if (l != 3 && l != 2) {
                     if (c == null) {
-                        Server.out("Uso: /setGroup nome gruppo");
+                        Server.out("Uso: /setGroup nome gruppo\nOppure: /setGroup nome");
                     } else {
-                        c.send("Uso: /setGroup nome gruppo\n");
+                        c.send("Uso: /setGroup nome gruppo\nOppure /setGroup nome\n");
                     }
                     return;
                 }
@@ -180,7 +180,7 @@ public class Cmd {
                         c.send("Gruppo non esiste!\n");
                     }
                     return;
-                } else if (g == c.getGroup()) { //utente fa gia parte del gruppo
+                } else if (g == ch.getGroup()) { //utente fa gia parte del gruppo
                     if (c == null) {
                         Server.out(ch.getScreenName(true) + " fa già parte del gruppo " + g.getName());
                     } else {
@@ -192,6 +192,7 @@ public class Cmd {
                         Server.out("Logout forzato per " + ch.getScreenName(true));
                     }
                     ClientHandler.send("Logout forzato per " + ch.getScreenName(false) + "\n", Settings.groupAdmin);
+                    ch.save();
                     ch.logout();
                     return;
                 } else { //tutto ok, imposto gruppo
@@ -200,6 +201,7 @@ public class Cmd {
                     }
                     ClientHandler.send(ch.getScreenName(true) + " fa ora parte del gruppo " + g.getName() + "\n", Settings.groupAdmin);
                     ch.setGroup(g);
+                    ch.save();
                     return;
                 }
             }
