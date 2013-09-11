@@ -66,10 +66,10 @@ public class ClientHandler {
         } catch (IOException ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if(getIP()!="127.0.0.1"&&get(getIP())!=null){ //Questo IP e' già connesso! (non vale per localhost che può connettersi piu volte)
-            send("[ERRORE] Il tuo IP è già connesso!\n");
-            Server.out(getIP()+" ha tentato di conenttersi con più di un client alla volta!");
-            send(getIP()+" ha tentato di conenttersi con più di un client alla volta!\n",Settings.groupAdmin);
+        if (!getIP().equals("127.0.0.1") && get(getIP()) != null) { //Questo IP e' già connesso! (non vale per localhost che può connettersi piu volte)
+            send("[ERRORE] Il tuo IP ( "+getIP()+" ) è già connesso!\n");
+            Server.out(getIP() + " ha tentato di conenttersi con più di un client alla volta!");
+            send(getIP() + " ha tentato di conenttersi con più di un client alla volta!\n", Settings.groupAdmin);
             return;
         }
         receiver = new Thread() {
@@ -129,7 +129,7 @@ public class ClientHandler {
 
     public void sendToChannel(String msg, Channel c) {
         for (ClientHandler ch : c.getClients()) {
-            if (!ch.isConnected()||!ch.getGroup().can("channel")) {
+            if (!ch.isConnected() || !ch.getGroup().can("channel")) {
                 c.getClients().remove(ch);
             } else {
                 ch.send(msg);
@@ -141,6 +141,7 @@ public class ClientHandler {
         if (!connected) {
             return;
         }
+        Channel.removeFromAll(this);
         if (name == null) {
             Server.out("Disconnetto " + getIP());
             send(getIP() + " si è disconnesso!\n", Settings.groupAdmin);
@@ -275,10 +276,10 @@ public class ClientHandler {
             send("Registrato come nuovo utente: " + getName() + "\n");
             save();
             return true;
-        } else if (get(lname)!=null) { //utente già loggato
+        } else if (get(lname) != null) { //utente già loggato
             send("Qualcuno è già loggato con quell'account! Prova con un'altro nome.\nSe pensi che ti sia stato rubato l'account contatta gli amministratori.\n");
-            Server.out(getIP()+" ha tentato di loggarsi con l'account di "+get(lname).getScreenName(true));
-            send(getIP()+" ha tentato di loggarsi con l'account di "+get(lname).getScreenName(true),Settings.groupAdmin);
+            Server.out(getIP() + " ha tentato di loggarsi con l'account di " + get(lname).getScreenName(true));
+            send(getIP() + " ha tentato di loggarsi con l'account di " + get(lname).getScreenName(true), Settings.groupAdmin);
             return false;
         } else if (pass.equals(ff.get(1))) { //password corretta
             setName(lname);
@@ -293,7 +294,8 @@ public class ClientHandler {
             }
             ClientHandler.send(getScreenName(true) + " si è loggato!\n", Settings.groupAdmin);
             ClientHandler.send(getScreenName(false) + " si è loggato!\n", Settings.groupGuest, Settings.groupUser);
-            save(); return true;
+            save();
+            return true;
         } else {
             send("Password errata!\n");
             return false;
@@ -301,6 +303,7 @@ public class ClientHandler {
     }
 
     public void logout() {
+        Channel.removeFromAll(this);
         if (group == Settings.groupGuest) {
             return;
         }
