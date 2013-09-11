@@ -25,11 +25,16 @@ public class Channel {
 
     private static ArrayList<Channel> channels = new ArrayList<Channel>(); //lista canali
     private ArrayList<ClientHandler> clients = new ArrayList<ClientHandler>(); //client connessi al canale
-    private String name = "";
+    private String name = "", password = "";
 
     public Channel(String name) {
         this.name = name;
         channels.add(this);
+    }
+
+    public Channel(String name, String password) {
+        this(name);
+        this.password = password;
     }
 
     public void delete() {
@@ -56,5 +61,19 @@ public class Channel {
 
     public ArrayList<ClientHandler> getClients() {
         return clients;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public static void removeFromAll(ClientHandler c) {
+        for (Channel chan : Channel.getChannels()) {
+            chan.getClients().remove(c);
+        }
     }
 }
