@@ -14,6 +14,7 @@
  */
 package net;
 
+import core.Channel;
 import core.Cmd;
 import core.Group;
 import core.Settings;
@@ -124,6 +125,16 @@ public class ClientHandler {
             return false;
         }
         return true;
+    }
+
+    public void sendToChannel(String msg, Channel c) {
+        for (ClientHandler ch : c.getClients()) {
+            if (!ch.isConnected()||!ch.getGroup().can("channel")) {
+                c.getClients().remove(ch);
+            } else {
+                ch.send(msg);
+            }
+        }
     }
 
     public void disconnect() {
