@@ -16,6 +16,7 @@ package core;
 
 import java.util.ArrayList;
 import net.ClientHandler;
+import net.Server;
 
 /**
  *
@@ -37,9 +38,32 @@ public class Channel {
         this.password = password;
     }
 
+    public void add(ClientHandler ch) {
+        ch.send("Sei entrato nel canale " + name + "\n");
+        send(ch.getScreenName(true) + " è entrato nel canale!\n");
+        clients.add(ch);
+    }
+
+    public void remove(ClientHandler ch) {
+        if (clients.contains(ch)) {
+            ch.send("Sei uscito dal canale " + name + "\n");
+            ClientHandler.send(ch.getScreenName(true) + " è uscito dal canale " + name + "\n", Settings.groupAdmin);
+
+        }
+        clients.remove(ch);
+        if(clients.isEmpty())delete();
+    }
+
     public void delete() {
         channels.remove(this);
         clients.clear();
+    }
+
+    public void send(String s) {
+        for (ClientHandler c : clients) {
+            c.send("[ " + name + " ]" + s);
+            Server.out(s);
+        }
     }
 
     public static ArrayList<Channel> getChannels() {
