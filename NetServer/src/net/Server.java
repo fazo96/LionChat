@@ -2,17 +2,16 @@
  LionChat Server/Client desktop chat application
  Copyright (C) 2013  Enrico Fasoli
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
  */
-
 package net;
 
 import core.Cmd;
@@ -41,6 +40,7 @@ public class Server {
     private static Thread listener; //thread che accetta le connessioni dei client
     private static Thread keepAlive; //thread che invia dati a tutti e fa svariati controlli.
     private static Date startDate = null;
+    private static boolean autoGC = false;
     private static Long offset = 0L;
 
     public static void main(String args[]) {
@@ -52,7 +52,7 @@ public class Server {
         Server.out("NetServer avviato sulla porta " + Settings.getPort());
         keepAlive = new Thread() {
             public void run() {
-                offset=System.currentTimeMillis()/1000;
+                offset = System.currentTimeMillis() / 1000;
                 while (true) {
                     ClientHandler.keepAliveAll();
                     try {
@@ -60,16 +60,21 @@ public class Server {
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    if((System.currentTimeMillis()/1000)-(offset)>500){
-                        out("Chiamata automatica garbage collector...");
-                        System.gc();
-                        out("Chiamata eseguita.");
-                        offset=System.currentTimeMillis()/1000;
+                    if (((System.currentTimeMillis() / 1000) - offset) > 500) {
+                        if (autoGC) {
+                            out("Chiamata automatica garbage collector...");
+                            System.gc();
+                            out("Chiamata eseguita.");
+                        } else {
+                            out("AutoGC disattivato: skipping\n");
+                        }
+                        offset = System.currentTimeMillis() / 1000;
                     }
                 }
             }
-        }; keepAlive.setName("KeepAlive Thread");
-        keepAlive.start(); 
+        };
+        keepAlive.setName("KeepAlive Thread");
+        keepAlive.start();
         listener = new Thread() {
             @Override
             public void run() { //Funzione che viene eseguita nel thread separato.
