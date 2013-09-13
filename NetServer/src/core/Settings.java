@@ -39,8 +39,9 @@ public class Settings {
         motd = "MOTDZ";
         load(); //Tentativo di caricare da file. Se fallisce, rimangono i default
         //IMPOSTAZIONE PERMESSI! Inizializzazione gruppi. Per ora non supporta caricamento da file.
+        //ATTENZIONE!!!!!!! QUESTI TRE GRUPPI SONO OBBLIGATORI E IL PROGRAMMA POTREBBE NON COMPILARE SE UNO DI QUESTI VIENE RIMOSSO
         groupGuest=new Group("guest","help chat login chi motd");
-        groupUser=new Group("user","help chat logout chi motd");
+        groupUser=new Group("user","cjoin ccreate help chat logout chi motd");
         groupAdmin=new Group("admin","*"); //il gruppo admin bypassa ogni controllo dei permessi, quindi è inutile impostarli.
         init=true;
     }
