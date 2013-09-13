@@ -106,7 +106,7 @@ public class Connection {
                         o = ois.readObject();
                     } catch (IOException ex) {
                         //Errore di lettura dal socket. Connessione morta probabilmente
-                        GUI.get().append("[ERROR] "+ex+"\nImpossibile leggere dal server. Disconnessione\nPremi invio per tentare la riconnessione\n");
+                        GUI.get().append("[ERRORE] "+ex+"\nImpossibile leggere dal server. Disconnessione\nPremi invio per tentare la riconnessione\n");
                         Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                         connected=false;
                         Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex); break;
@@ -120,7 +120,12 @@ public class Connection {
                     if(o==null) continue; //oggetto nullo: salto
                     if (o instanceof String) { 
                         s=(String)o; //se la stringa inizia con lo / rimuovo la prima parola
-                        if(s.startsWith("/")) s=s.split(" ", 2)[1]; 
+                        if(s.startsWith("/")){ 
+                            String a[]=s.split(" ", 2);
+                            if(a.length!=2&&a.length!=1){ System.out.println("Errore nel processare stringa con comando"); continue; } 
+                            Interpreter.cmd(a[0]); //eseguo comando
+                            if(a.length==2)GUI.get().append(a[1]);
+                        } 
                         //l'oggetto è una stringa, la stampo nella GUI
                         GUI.get().append(s);
                     }else if(o instanceof SyncObject); //se non metto questa istruzione, il programma darà ClassNotFoundException.
