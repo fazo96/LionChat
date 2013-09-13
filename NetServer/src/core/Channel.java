@@ -48,10 +48,11 @@ public class Channel {
         if (clients.contains(ch)) {
             ch.send("Sei uscito dal canale " + name + "\n");
             ClientHandler.send(ch.getScreenName(true) + " è uscito dal canale " + name + "\n", Settings.groupAdmin);
-
         }
         clients.remove(ch);
-        if(clients.isEmpty())delete();
+        if (clients.isEmpty()) {
+            delete();
+        }
     }
 
     public void delete() {
@@ -85,6 +86,13 @@ public class Channel {
 
     public ArrayList<ClientHandler> getClients() {
         return clients;
+    }
+
+    public boolean isPrivate() {
+        if (password == null) {
+            return true;
+        }
+        return false;
     }
 
     public String getPassword() {
