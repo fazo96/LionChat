@@ -2,17 +2,16 @@
  LionChat Server/Client library program
  Copyright (C) 2013  Enrico Fasoli
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
  */
-
 package utilz;
 
 import java.io.UnsupportedEncodingException;
@@ -27,12 +26,13 @@ import java.util.logging.Logger;
  * @author fazo
  */
 public class Utils {
-    public static String getSecureHash(String x){
+
+    public static String getSecureHash(String x) {
         //Questa funzione ritorna l'hash SHA1 di una stringa, già convertito in stringa UTF-8
-        String hash=null;
-        MessageDigest md=null;
+        String hash = null;
+        MessageDigest md = null;
         try {
-            md = MessageDigest.getInstance("SHA-1");
+            md = MessageDigest.getInstance("SHA-512");
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("[LIB] ERRORE IMPOSSIBILE: SHA-1 NON ESISTE!");
@@ -46,10 +46,15 @@ public class Utils {
             System.out.println("[LIB] ERRORE IMPOSSIBILE: UTF-8 NON ESISTE!");
             return null;
         }
-        System.out.println("[LIB] Hash di "+x+": "+hash);
+        if (hash.contains("\n")) {
+            System.out.println("[LIB][WARNING] Ho dovuto rimuovere \\n dall'hash di una stringa.");
+            hash = hash.replace("\n", ""); //rimuovo eventuali \n.
+        }
+        System.out.println("[LIB] Hash di " + x + ": " + hash);
         return hash;
     }
-    public static int nanoToSec(Long n) { 
+
+    public static int nanoToSec(Long n) {
         //fa una semplice divisione: da nanoscondi a secondi, passando da Long a Int
         return (int) (n / 1000000000);
     }
@@ -87,7 +92,7 @@ public class Utils {
         }
     }
 
-    public static String fromList(ArrayList<String> ss, String divisor) { 
+    public static String fromList(ArrayList<String> ss, String divisor) {
         //passa da una lista a una stringa
         if (ss == null) { //lista nulla = stringa nulla
             return null;
@@ -96,7 +101,7 @@ public class Utils {
             divisor = " ";
         }
         String a = ss.get(0);//aggiungo il primo elemento
-        for (int i = 1; i < ss.size(); i++) { 
+        for (int i = 1; i < ss.size(); i++) {
             //aggiungo uno spazio e l'elemento i
             a += divisor + ss.get(i);
         }
