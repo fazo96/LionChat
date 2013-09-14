@@ -96,10 +96,9 @@ public class Cmd {
             c.save();
             return;
         }
-
         //if (c == null || c.getGroup() == Settings.groupUser || c.getGroup() == Settings.groupAdmin) {
         //Comandi per server o per utenti loggati
-        if (c.getGroup().can("who") && cmd[0].equalsIgnoreCase("/chi")) { //Stampa lista utenti
+        if ((c == null || c.getGroup().can("who")) && cmd[0].equalsIgnoreCase("/chi")) { //Stampa lista utenti
             if (ClientHandler.getClients().isEmpty()) {
                 if (c == null) {
                     Server.out("Nessuno connesso");
@@ -121,10 +120,9 @@ public class Cmd {
             }
             return;
         }
-
         //if (c == null || c.getGroup() == Settings.groupAdmin) {
         //questi sono i comandi esclusivi da amministratori
-        if (c.getGroup().can("hash") && cmd[0].equalsIgnoreCase("/hash")) { //hash di una stringa
+        if ((c == null || c.getGroup().can("hash")) && cmd[0].equalsIgnoreCase("/hash")) { //hash di una stringa
             if (cmd.length != 2) {
                 if (c == null) {
                     Server.out("Hash de che?");
@@ -140,7 +138,7 @@ public class Cmd {
             }
             return;
         }
-        if (c.getGroup().can("ahelp") && cmd[0].equalsIgnoreCase("/adminhelp")) {
+        if ((c == null || c.getGroup().can("ahelp")) && cmd[0].equalsIgnoreCase("/adminhelp")) {
             if (c == null) {
                 System.out.print(Settings.getAdminHelpMsg());
             } else {
@@ -148,7 +146,7 @@ public class Cmd {
             }
             return;
         }
-        if (c.getGroup().can("gc") && cmd[0].equalsIgnoreCase("/gc")) {
+        if ((c == null || c.getGroup().can("gc")) && cmd[0].equalsIgnoreCase("/gc")) {
             if (c == null) {
                 Server.out("Chiamata al garbage collector...");
             } else {
@@ -162,7 +160,7 @@ public class Cmd {
             }
             return;
         }
-        if (c.getGroup().can("setgroup") && cmd[0].equalsIgnoreCase("/setGroup")) {
+        if ((c == null || c.getGroup().can("setgroup")) && cmd[0].equalsIgnoreCase("/setGroup")) {
             if (l != 3 && l != 2) {
                 if (c == null) {
                     Server.out("Uso: /setGroup nome gruppo\nOppure: /setGroup nome");
@@ -221,8 +219,7 @@ public class Cmd {
                 return;
             }
         }
-
-        if (c.getGroup().can("status") && cmd[0].equalsIgnoreCase("/status")) { //STATO DEL SERVER
+        if ((c == null || c.getGroup().can("status")) && cmd[0].equalsIgnoreCase("/status")) { //STATO DEL SERVER
             //Date d= Server.getTimePassed();
             if (c == null) {
                 Server.out(Server.getStatus());
@@ -231,7 +228,7 @@ public class Cmd {
             }
             return;
         }
-        if (c.getGroup().can("stop") && cmd[0].equalsIgnoreCase("/stop")) {
+        if ((c == null || c.getGroup().can("stop")) && cmd[0].equalsIgnoreCase("/stop")) {
             if (c == null) {
                 Server.out("SERVER IN ARRESTO PER COMANDO SERVER");
             } else {
@@ -247,8 +244,7 @@ public class Cmd {
             Server.stop();
             return;
         }
-
-        if (c.getGroup().can("kick") && cmd[0].equalsIgnoreCase("/kick")) {
+        if ((c == null || c.getGroup().can("kick")) && cmd[0].equalsIgnoreCase("/kick")) {
             if (l == 1) {
                 if (c != null) {
                     c.send(c.getScreenName(true) + " Disconnette tutti!\n", Settings.groupAdmin);
@@ -285,7 +281,7 @@ public class Cmd {
             }
             return;
         }
-        if (c.getGroup().can("save") && cmd[0].equalsIgnoreCase("/save")) {
+        if ((c == null || c.getGroup().can("save")) && cmd[0].equalsIgnoreCase("/save")) {
             if (c != null) {
                 c.send("Salvo dati server...\n");
             }
@@ -295,8 +291,7 @@ public class Cmd {
             }
             return;
         }
-
-
+        //fine comandi
         if (c == null) {
             Server.out("Comando sconosciuto o comando non utilizzabile dal server.");
         } else {
