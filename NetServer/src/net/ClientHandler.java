@@ -215,9 +215,9 @@ public class ClientHandler {
             Filez.writeFile("./utenti/"
                     + name
                     + ".dat", name
-                    + " " + getPassword()
-                    + " " + group.getName()
-                    + " " + getIP()); //scrivo su file
+                    + "\n" + getPassword()
+                    + "\n" + group.getName()
+                    + "\n" + getIP()); //scrivo su file
         } catch (Exception ex) {
             Server.out("Errore nel salvare il file per l'utente " + getScreenName(true));
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -264,7 +264,7 @@ public class ClientHandler {
             send("[BUG DETECT] Errore nel login\n");
             return false;
         }
-        ArrayList<String> ff = Utils.toList(Filez.getFileContent("./utenti/" + lname + ".dat"), " ");
+        ArrayList<String> ff = Utils.toList(Filez.getFileContent("./utenti/" + lname + ".dat"), "\n");
         if (ff == null || ff.size() < 3) { //utente non esiste, creo
             setName(lname);
             receiver.setName(getScreenName(true)); //Rinomino thread con nome e IP dell'utente
