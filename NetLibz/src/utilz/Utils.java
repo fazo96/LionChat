@@ -15,14 +15,39 @@ GNU General Public License for more details.
 
 package utilz;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author fazo
  */
 public class Utils {
-
+    public static String getSecureHash(String x){
+        //Questa funzione ritorna l'hash SHA1 di una stringa, già convertito in stringa UTF-8
+        String hash=null;
+        MessageDigest md=null;
+        try {
+            md = MessageDigest.getInstance("SHA-1");
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("[LIB] ERRORE IMPOSSIBILE: SHA-1 NON ESISTE!");
+            return null;
+        }
+        md.reset();
+        try {
+            hash = new String(md.digest(x.getBytes("UTF-8")));
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("[LIB] ERRORE IMPOSSIBILE: UTF-8 NON ESISTE!");
+            return null;
+        }
+        return hash;
+    }
     public static int nanoToSec(Long n) { 
         //fa una semplice divisione: da nanoscondi a secondi, passando da Long a Int
         return (int) (n / 1000000000);
