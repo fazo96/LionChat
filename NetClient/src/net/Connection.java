@@ -148,7 +148,7 @@ public class Connection {
         if(!connected)return; //se non sono connesso non faccio nulla
         try {
             //Tento la scrittura di una stringa via socket
-            oos.writeObject(s);
+            oos.writeObject(Interpreter.fixToSend(s));
         } catch (IOException ex) { //Invio fallito, connessione probabilmente morta
             Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
             GUI.get().append("[ERROR] Tentativo di invio al server fallito!\nConnessione persa.\n");
