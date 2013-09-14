@@ -46,6 +46,7 @@ public class Utils {
             System.out.println("[LIB] ERRORE IMPOSSIBILE: UTF-8 NON ESISTE!");
             return null;
         }
+        System.out.println("[LIB] Hash di "+x+": "+hash);
         return hash;
     }
     public static int nanoToSec(Long n) { 

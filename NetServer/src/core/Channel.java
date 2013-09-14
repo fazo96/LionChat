@@ -17,6 +17,8 @@ package core;
 import java.util.ArrayList;
 import net.ClientHandler;
 import net.Server;
+import utilz.Filez;
+import utilz.Utils;
 
 /**
  *
@@ -53,6 +55,13 @@ public class Channel {
         if (clients.isEmpty()) {
             delete();
         }
+    }
+
+    public void save() {
+        if (password == "") {
+            return; //non si può salvare un canale senza pass
+        }
+        Filez.writeFile("./channels/" + name + ".dat", password);
     }
 
     public void delete() {
