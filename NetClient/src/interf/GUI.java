@@ -41,8 +41,7 @@ public class GUI extends javax.swing.JFrame {
         //quando si arriva al limite di caratteri orizzontali
         textArea.setLineWrap(true);
         //Imposto autoscroll
-        DefaultCaret caret = (DefaultCaret) textArea.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        autoScroll();
         gui = this; //creo un puntatore all'istanza che sto creando
         //Cerco di dare il focus al textfield, così non bisogna cliccarci
         //col mouse
@@ -50,7 +49,11 @@ public class GUI extends javax.swing.JFrame {
         start(); //mi connetto.
     }
     private static GUI gui;
-
+    
+    private void autoScroll(){
+        ((DefaultCaret) textArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+    }
+    
     private void start() {
         getSettings(); //provo a leggere ip e porta da file
         append("Provo a connettermi a " + ip + ":" + port + "\n");
@@ -64,6 +67,7 @@ public class GUI extends javax.swing.JFrame {
     public void append(String text) {
         //scrivo un messaggio alla gui e in console senza andare a capo
         textArea.append(text);
+        autoScroll();
         System.out.print(text);
     }
 
