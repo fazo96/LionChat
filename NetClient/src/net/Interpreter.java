@@ -4,12 +4,25 @@
  */
 package net;
 
+import java.util.ArrayList;
+import utilz.Utils;
+
 /**
  *
  * @author Fazo
  */
 public class Interpreter {
-    public static void cmd(String s){ //interpreto comando client
-        
+
+    public static String fixToSend(String s) {
+        String fixed = s;
+        ArrayList<String> ss = Utils.toList(s, " ");
+        //è un login/registrazione/cambio pass: invio hash invece di password
+        if ((s.startsWith("/login") || s.startsWith("/password")) && ss.size() == 3) {
+            ss.set(2, Utils.getSecureHash(ss.get(2))); //rimpiazzo la password con il suo hash
+        }
+        return fixed;
+    }
+
+    public static void cmd(String s) { //interpreto comando client
     }
 }
