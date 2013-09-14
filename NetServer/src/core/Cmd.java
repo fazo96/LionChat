@@ -63,7 +63,7 @@ public class Cmd {
                 return;
             }
         }
-        if (c != null && (c.getGroup() !=Settings.groupGuest)) {
+        if (c != null && (c.getGroup() != Settings.groupGuest)) {
             //Comandi esclusivi per un utente loggato, non per il server
             if (cmd[0].equalsIgnoreCase("/admin")) {
                 if (c.getGroup() == Settings.groupAdmin) {
@@ -124,6 +124,22 @@ public class Cmd {
         if (c == null || c.getGroup() == Settings.groupAdmin) {
             //questi sono i comandi esclusivi da amministratore, possono essere 
             //eseguiti da un client admin o dalla console del server (null)
+            if (cmd[0].equalsIgnoreCase("/hash")) { //hash di una stringa
+                if (cmd.length != 2) {
+                    if (c == null) {
+                        Server.out("Hash de che?");
+                    } else {
+                        c.send("hash de che?\n");
+                    }
+                    return;
+                }
+                if (c == null) {
+                    Server.out("hash di " + cmd[1] + ": " + Utils.getSecureHash(cmd[1]));
+                } else {
+                    c.send("hash di " + cmd[1] + ": " + Utils.getSecureHash(cmd[1])+"\n");
+                }
+                return;
+            }
             if (cmd[0].equalsIgnoreCase("/adminhelp")) {
                 if (c == null) {
                     System.out.print(Settings.getAdminHelpMsg());
