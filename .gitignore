@@ -1,5 +1,5 @@
 *.class
-
+*.txt
 # Package Files #
 *.jar
 *.war
@@ -13,6 +13,8 @@ NetServer/nbproject/private/
 NetLibz/nbproject/private/
 NetClient/build/
 NetServer/build/
+NetClient/dist/
+NetServer/dist/
 NetLibz/build/
 NetClient/src/settings.txt
-/NetLibz/dist/
+NetLibz/dist/
