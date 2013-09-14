@@ -2,15 +2,15 @@
  LionChat Server/Client desktop chat application
  Copyright (C) 2013  Enrico Fasoli
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
  */
 package core;
 
@@ -26,17 +26,16 @@ public class Group {
     private static ArrayList<Group> groups = new ArrayList<Group>(); //lista dei gruppi, per ora poco utile
     private static Group defaultGroup = null; //Il gruppo default per i client appena connessi
     private String name = "group"; //Nome del gruppo
-   // private static ArrayList<String> permissions = new ArrayList<String>(); //lista dei permessi per ogni gruppo
+    // private static ArrayList<String> permissions = new ArrayList<String>(); //lista dei permessi per ogni gruppo
     private String permissions;
 
     //la rimozione dei gruppi non è supportata perchè per ora sarebbe un'inutilità e una
     //perdita di tempo da programmare.
     //La maggior parte di questo codice non è usato, più avanti se sarà utile ok, altrimenti
     //sarà rimosso
-    
     public Group(String name, String permissions) {
         this.name = name;
-        this.permissions=permissions;
+        this.permissions = permissions;
         //this.permissions = Utils.toList(permissions, " ");
         if (groups.isEmpty()) { //il primo gruppo diventa il gruppo default
             setDefaultGroup(this);
@@ -53,10 +52,17 @@ public class Group {
         }
         return null;
     }
-public boolean can(String perm){
-    if(permissions.contains(perm))return true;
-    return false;
-}
+
+    public boolean can(String perm) {
+        if (this == Settings.groupAdmin) {
+            return true;
+        }
+        if (permissions.contains(perm)) {
+            return true;
+        }
+        return false;
+    }
+
     public static ArrayList<Group> getGroups() {
         return groups;
     }
@@ -79,6 +85,6 @@ public boolean can(String perm){
     }
 
     /*public static ArrayList<String> getPermissions() {
-        return permissions;
-    }*/
+     return permissions;
+     }*/
 }
