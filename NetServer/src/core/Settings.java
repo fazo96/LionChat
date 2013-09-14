@@ -41,7 +41,7 @@ public class Settings {
         //IMPOSTAZIONE PERMESSI! Inizializzazione gruppi. Per ora non supporta caricamento da file.
         //ATTENZIONE!!!!!!! QUESTI TRE GRUPPI SONO OBBLIGATORI E IL PROGRAMMA POTREBBE NON COMPILARE SE UNO DI QUESTI VIENE RIMOSSO
         groupGuest=new Group("guest","help chat login who motd");
-        groupUser=new Group("user","cjoin ccreate help chat logout who motd");
+        groupUser=new Group("user","c help chat logout who motd");
         groupAdmin=new Group("admin","*"); //il gruppo admin bypassa ogni controllo dei permessi, quindi è inutile impostarli.
         init=true;
     }

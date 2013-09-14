@@ -120,6 +120,12 @@ public class Cmd {
             }
             return;
         }
+        if(c!=null&&c.getGroup().can("c")&&cmd[0].equals("/c")){ //comandi canale.
+            if(cmd.length==1){
+                c.send("");
+            }
+            
+        }
         //if (c == null || c.getGroup() == Settings.groupAdmin) {
         //questi sono i comandi esclusivi da amministratori
         if ((c == null || c.getGroup().can("hash")) && cmd[0].equalsIgnoreCase("/hash")) { //hash di una stringa
