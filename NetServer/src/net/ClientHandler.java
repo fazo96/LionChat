@@ -38,6 +38,7 @@ import utilz.Utils;
 public class ClientHandler {
 
     private static List<ClientHandler> clients = Collections.synchronizedList(new ArrayList<ClientHandler>());
+    private ArrayList<Channel> joined = new ArrayList<Channel>();
     private Socket s;
     private String name = null, password = null;
     private ClientHandler client = this;
@@ -67,7 +68,7 @@ public class ClientHandler {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         if (!getIP().equals("127.0.0.1") && get(getIP()) != null) { //Questo IP e' già connesso! (non vale per localhost che può connettersi piu volte)
-            send("[ERRORE] Il tuo IP ( "+getIP()+" ) è già connesso!\n");
+            send("[ERRORE] Il tuo IP ( " + getIP() + " ) è già connesso!\n");
             Server.out(getIP() + " ha tentato di conenttersi con più di un client alla volta!");
             send(getIP() + " ha tentato di conenttersi con più di un client alla volta!\n", Settings.groupAdmin);
             return;
@@ -357,6 +358,10 @@ public class ClientHandler {
         for (ClientHandler c : clients) {
             c.save();
         }
+    }
+
+    public ArrayList<Channel> getJoinedChannels() {
+        return joined;
     }
 
     public final String getIP() {
