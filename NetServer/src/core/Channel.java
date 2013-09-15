@@ -29,6 +29,7 @@ public class Channel {
     private static ArrayList<Channel> channels = new ArrayList<Channel>(); //lista canali
     private ArrayList<ClientHandler> clients = new ArrayList<ClientHandler>(); //client connessi al canale
     private String name = "", password = "";
+    private boolean autodelete = true;
 
     public Channel(String name) {
         this.name = name;
@@ -125,5 +126,13 @@ public class Channel {
         for (Channel chan : Channel.getChannels()) {
             chan.remove(c);
         }
+    }
+
+    public boolean isAutodelete() {
+        return autodelete;
+    }
+
+    public void setAutodelete(boolean autodelete) {
+        this.autodelete = autodelete;
     }
 }
