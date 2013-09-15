@@ -41,6 +41,7 @@ public class ClientHandler {
     private ArrayList<Channel> joined = new ArrayList<Channel>();
     private Socket s;
     private String name = null, password = null;
+    private Channel writingChannel = Settings.globalChannel;
     private ClientHandler client = this;
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
@@ -104,7 +105,7 @@ public class ClientHandler {
         group = Settings.groupGuest; //imposto il gruppo guest
         clients.add(this); //Aggiungo questo client alla lista dei client
         send(getIP() + " si è connesso!\n", Settings.groupAdmin);
-        sendToAll("Qualcuno si è connesso!\n");
+        Settings.globalChannel.send("Qualcuno si è connesso!\n");
         Server.out("Inizializzati Input e Output streams per " + getIP() + " con successo e aggiunto alla lista client.\n");
         /*if (getIP().equals("127.0.0.1")) {
          setGroup(Settings.groupAdmin);
@@ -149,7 +150,7 @@ public class ClientHandler {
             send("Utente si è disconnesso!\n", Settings.groupUser, Settings.groupGuest);
         } else {
             Server.out("Disconnetto " + name + " (" + getIP() + ")");
-            sendToAll(name + " si è disconnesso!\n");
+            Settings.globalChannel.send(name + " si è disconnesso!\n");
         }
         connected = false;
         clients.remove(this);
@@ -177,10 +178,6 @@ public class ClientHandler {
             }
         }
         return null;
-    }
-
-    public static void sendToAll(String msg) {
-        send(msg, null);
     }
 
     public static void send(String msg, Group g) {
@@ -384,17 +381,14 @@ public class ClientHandler {
         return s;
     }
 
-    /*public void setAdmin(boolean admin) {
-     if (this.admin == true && admin == false) {
-     send("Il tuo stato da amministratore è stato revocato!\n");
-     sendToAdmins(getScreenName(true) + " non è più admin!\n");
-     } else if (this.admin == false && admin == true) {
-     send("Ora sei un amministratore!\n");
-     sendToAdmins(getScreenName(true) + " è ora un admin!\n");
-     }
-     this.admin = admin;
-     save();
-     }*/
+    public Channel getWritingChannel() {
+        return writingChannel;
+    }
+
+    public void setWritingChannel(Channel writingChannel) {
+        this.writingChannel = writingChannel;
+    }
+
     public boolean isConnected() {
         return connected;
     }
