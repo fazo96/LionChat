@@ -124,7 +124,7 @@ public class Cmd {
         }
         if (c != null && c.getGroup().can("c") && cmd[0].equals("/c")) { //comandi canale.
             if (cmd.length == 1) {
-
+                c.send("Uso:\n/c list");
                 return;
             }
             if (cmd[1].equalsIgnoreCase("list")) {
@@ -133,8 +133,36 @@ public class Cmd {
                     tosend += "\n[ " + ch.getName() + " ]";
                 }
                 c.send(tosend);
+                return;
+            }
+            Channel chan;
+            if ((cmd.length == 3 || cmd.length == 4) && cmd[1].equalsIgnoreCase("join")) {
+                chan = Channel.get(cmd[2]);
+
+            }
+            if (cmd[1].equalsIgnoreCase("leave")) {
+                if (cmd.length == 2) {
+                    if (c.getWritingChannel() == Settings.globalChannel) {
+                        c.send("Non puoi uscire dal canale global");
+                        return;
+                    }
+                    c.getWritingChannel().remove(c);
+                    c.setWritingChannel(Settings.globalChannel);
+                    return;
+                }
             }
 
+            chan = Channel.get(cmd[1]);
+            if (chan == null) {
+                c.send("L'argomento del comando è errato o il canale non esiste.\n");
+                return;
+            }
+            if (chan.getPassword() != null && (cmd.length == 2 || cmd[2].equals(chan.getPassword()))) {
+                c.send("Password del canale errata!\n");
+                return;
+            }
+            c.setWritingChannel(chan);
+            c.send("Ora stai scrivendo sul canale " + chan.getName() + "\n");
         }
         //if (c == null || c.getGroup() == Settings.groupAdmin) {
         //questi sono i comandi esclusivi da amministratori
@@ -266,7 +294,7 @@ public class Cmd {
                     c.send(c.getScreenName(true) + " Disconnette tutti!\n", Settings.groupAdmin);
                     if (c.getGroup() == Settings.groupUser) {
                         Settings.globalChannel.send(c.getScreenName(false) + " Disconnette tutti!\n");
-                    } 
+                    }
                 } else {
                     Server.out("Disconnetto tutti!");
                 }
