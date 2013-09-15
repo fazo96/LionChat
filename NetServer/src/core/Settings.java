@@ -26,6 +26,7 @@ public class Settings {
     private static int port;
     private static String helpMsg, adminHelpMsg, motd;
     public static Group groupGuest, groupUser, groupAdmin;
+    public static Channel globalChannel;
     private static boolean init = false;
 
     public static void init() {
@@ -43,6 +44,9 @@ public class Settings {
         groupGuest=new Group("guest","help chat login who motd");
         groupUser=new Group("user","c help chat logout who motd");
         groupAdmin=new Group("admin","*"); //il gruppo admin bypassa ogni controllo dei permessi, quindi è inutile impostarli.
+        //INIZIALIZZO CANALE GLOBAL
+        globalChannel=new Channel("Global");
+        globalChannel.setAutodelete(false);
         init=true;
     }
 
