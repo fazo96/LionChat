@@ -38,15 +38,17 @@ public class Cmd {
         if (!s.startsWith("/")) { //se il messaggio ricevuto non inizia con "/" allora non è un comando
             if (c == null) {
                 Server.out("[ Server ]: " + s);
-                ClientHandler.sendToAll("[ Server ]: " + s + "\n");
+                Settings.globalChannel.send("[ Server ]: " + s + "\n");
                 return;
             }
             if (!c.getGroup().can("chat")) {
                 c.send("[!] Non hai il permesso di utilizzare la chat.");
+            } else {
+                Server.out("[ " + c.getScreenName(true) + " ]: " + s);
+                c.getWritingChannel().send("[ " + c.getScreenName(false) + " ]: " + s);
+                /*ClientHandler.send("[ " + c.getScreenName(false) + " ]: " + s + "\n", Settings.groupGuest, Settings.groupUser);
+                 ClientHandler.send("[ " + c.getScreenName(true) + " ]: " + s + "\n", Settings.groupAdmin);*/
             }
-            Server.out("[ " + c.getScreenName(true) + " ]: " + s);
-            ClientHandler.send("[ " + c.getScreenName(false) + " ]: " + s + "\n", Settings.groupGuest, Settings.groupUser);
-            ClientHandler.send("[ " + c.getScreenName(true) + " ]: " + s + "\n", Settings.groupAdmin);
             return;
         }
         String cmd[] = s.split(" "); //divido il messaggio ricevuto a ogni spazio.
@@ -66,11 +68,11 @@ public class Cmd {
             c.login(cmd[1], cmd[2]);
             return;
         }
-        if (cmd[0].equalsIgnoreCase("/group")) {
+        if (cmd[0].equalsIgnoreCase("/account")) {
             if (c == null) {
                 Server.out("Stai usando la console del server!\n");
             } else {
-                c.send("Fai parte del gruppo " + c.getGroup().getName() + "\n");
+                c.send("Sei riconosciuto come " + c.getScreenName(true) + "\nFai parte del gruppo " + c.getGroup().getName() + "\nIl tuo IP è " + c.getIP() + "\n");
             }
             return;
         }
@@ -120,11 +122,19 @@ public class Cmd {
             }
             return;
         }
-        if(c!=null&&c.getGroup().can("c")&&cmd[0].equals("/c")){ //comandi canale.
-            if(cmd.length==1){
-                c.send("");
+        if (c != null && c.getGroup().can("c") && cmd[0].equals("/c")) { //comandi canale.
+            if (cmd.length == 1) {
+
+                return;
             }
-            
+            if (cmd[1].equalsIgnoreCase("list")) {
+                String tosend = "Sei nei seguenti canali:";
+                for (Channel ch : c.getJoinedChannels()) {
+                    tosend += "\n[ " + ch.getName() + " ]";
+                }
+                c.send(tosend);
+            }
+
         }
         //if (c == null || c.getGroup() == Settings.groupAdmin) {
         //questi sono i comandi esclusivi da amministratori
@@ -255,10 +265,8 @@ public class Cmd {
                 if (c != null) {
                     c.send(c.getScreenName(true) + " Disconnette tutti!\n", Settings.groupAdmin);
                     if (c.getGroup() == Settings.groupUser) {
-                        c.sendToAll(c.getScreenName(true) + " Disconnette tutti!\n");
-                    } else {
-                        c.sendToAll(c.getScreenName(true) + " Disconnette tutti!\n");
-                    }
+                        Settings.globalChannel.send(c.getScreenName(false) + " Disconnette tutti!\n");
+                    } 
                 } else {
                     Server.out("Disconnetto tutti!");
                 }
