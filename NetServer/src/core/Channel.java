@@ -44,6 +44,7 @@ public class Channel {
         ch.send("Sei entrato nel canale " + name + "\n");
         send(ch.getScreenName(true) + " è entrato nel canale!\n");
         clients.add(ch);
+        ch.getJoinedChannels().add(this);
     }
 
     public void remove(ClientHandler ch) {
@@ -51,10 +52,18 @@ public class Channel {
             ch.send("Sei uscito dal canale " + name + "\n");
             ClientHandler.send(ch.getScreenName(true) + " è uscito dal canale " + name + "\n", Settings.groupAdmin);
         }
+        ch.getJoinedChannels().remove(this);
         clients.remove(ch);
         if (clients.isEmpty()) {
             delete();
         }
+    }
+
+    public void clear() {
+        for (ClientHandler ch : clients) {
+            ch.getJoinedChannels().remove(this);
+        }
+        clients.clear();
     }
 
     public void save() {
@@ -66,7 +75,7 @@ public class Channel {
 
     public void delete() {
         channels.remove(this);
-        clients.clear();
+        clear();
     }
 
     public void send(String s) {
@@ -114,7 +123,7 @@ public class Channel {
 
     public static void removeFromAll(ClientHandler c) {
         for (Channel chan : Channel.getChannels()) {
-            chan.getClients().remove(c);
+            chan.remove(c);
         }
     }
 }
