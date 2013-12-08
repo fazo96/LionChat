@@ -6,11 +6,16 @@ import net.Server;
 import utilz.Utils;
 
 /**
- *
+ * Questa classe si occupa di analizzare ed eseguire le stringe inviate da clients e dal server, non è necessario istanziarla.
  * @author fazo
  */
 public class Cmd {
-
+    
+    /**
+     * Analizza una stringa e invia il messaggio o esegue il comando che la stringa contiene, effettuando prima tutti i controlli necessari.
+     * @param s il comando/messaggio da analizzare ed eseguire.
+     * @param c il client che ha invocato il comando, null se è stato invocato dal server.
+     */
     public static void cmd(String s, ClientHandler c) {
         if (!Settings.isInit()) {
             Settings.init(); //se non è inizializzato, inizializzo adesso
@@ -327,8 +332,10 @@ public class Cmd {
             c.send("Comando sconosciuto o non eseguibile dal gruppo \"" + c.getGroup().getName() + "\" al quale sei assegnato.\n");
         }
     }
-
-    private String getAlias(String cmd) {
-        return cmd;
+    /**
+     * @throws UnsupportedOperationException la classe non dovrebbe essere istanziata.
+     */
+    private Cmd(){
+        throw new UnsupportedOperationException("La classe Cmd non dovrebbe essere istanziata");
     }
 }
