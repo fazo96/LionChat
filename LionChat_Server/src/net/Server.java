@@ -1,4 +1,3 @@
-
 package net;
 
 import core.Cmd;
@@ -14,11 +13,8 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
+ * Questa classe è l'entry point del programma server.
  *
  * @author fazo
  */
@@ -30,6 +26,13 @@ public class Server {
     private static boolean autoGC = false;
     private static Long offset = 0L;
 
+    /**
+     * Metodo main (entry point), inzializza la maggior parte dei thread e delle
+     * variabili.
+     *
+     * @param args argomenti dalla riga di comando. Il programma li ignora
+     * completamente.
+     */
     public static void main(String args[]) {
         Thread.currentThread().setName("Main Thread");
         Server.out("TimeZone: " + Locale.ITALY);
@@ -95,16 +98,29 @@ public class Server {
         }
     }
 
+    /**
+     *
+     * @return la data e l'ora in cui il server è stato avviato.
+     */
     public static Date getStartDate() {
         return startDate;
     }
 
+    /**
+     *
+     * @return il tempo passato da quando il server è stato avviato.
+     */
     public static Date getTimePassed() {
         Long a = startDate.getTime();
         Long b = Calendar.getInstance(Locale.ITALY).getTime().getTime();
         return new Date(b - a);
     }
 
+    /**
+     *
+     * @return informazioni varie sul server e il suo stato, sottoforma di
+     * stringa multi-riga.
+     */
     public static String getStatus() {
         return "Server avviato a: " + Server.getStartDate().toString()
                 //+"\nUptime: " + d.getHours()+":"+d.getHours()+":"+d.getSeconds()//(Utils.nanoToSec(System.nanoTime()) - Server.getStartTime())
@@ -115,6 +131,9 @@ public class Server {
                 + "\nCPU Cores disponibili: " + Runtime.getRuntime().availableProcessors();
     }
 
+    /**
+     * Salva tutti i dati dei client e del server su file.
+     */
     public static void save() {
         System.out.println("Salvataggio dati in corso...");
         ClientHandler.saveAll();
@@ -122,12 +141,21 @@ public class Server {
         System.out.println("Dati salvati.");
     }
 
+    /**
+     * Ferma il server in maniera sicura, salvando prima tutto.
+     */
     public static void stop() {
         save();
         System.out.println("Shutting down...");
         Runtime.getRuntime().exit(0);
     }
 
+    /**
+     * Stampa su console del server la stringa data senza causare problemi di
+     * lettura.
+     *
+     * @param s la stringa da stampare sulla console
+     */
     public static void out(String s) {
         if (s.endsWith("\n")) {
             System.out.print(s);

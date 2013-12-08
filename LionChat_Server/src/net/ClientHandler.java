@@ -19,7 +19,7 @@ import utilz.SyncObject;
 import utilz.Utils;
 
 /**
- *
+ * Questa classe rappresenta un singolo client connesso: l'istanza esiste finchè la connessione c'è.
  * @author fazo
  */
 public class ClientHandler {
@@ -35,7 +35,11 @@ public class ClientHandler {
     private Thread receiver;
     private Group group;
     private boolean connected = false;
-
+/**
+ * Inizializza un nuovo client.\n
+ * Il socket passato come paramentro deve essere connesso.
+ * @param s socket da usare per comunicare con il client: deve essere connesso e funzionante.
+ */
     public ClientHandler(final Socket s) {
         this.s = s;
         /*try {
@@ -99,7 +103,11 @@ public class ClientHandler {
          send("Benvenuto localhost! Poteri admin consegnati.\n");
          }*/
     }
-
+/**
+ * Invia una stringa al client.
+ * @param msg la stringa da inviare.
+ * @return false se non è stato possibile recapitare il messaggio, true se è partito.
+ */
     public boolean send(String msg) {
         if (!connected) {
             return false;
@@ -115,7 +123,11 @@ public class ClientHandler {
         }
         return true;
     }
-
+/**
+ * Invia un messaggio da questo client a un canale dato.
+ * @param msg il messaggio da inviare al canale.
+ * @param c il canale su cui inviare il messaggio.
+ */
     public void sendToChannel(String msg, Channel c) {
         for (ClientHandler ch : c.getClients()) {
             if (!ch.isConnected() || !ch.getGroup().can("channel")) {
@@ -125,7 +137,11 @@ public class ClientHandler {
             }
         }
     }
-
+/**
+ * Chiude tutte le connessioni in maniera sicura e annuncia la disconnessione del client,
+ * l'istanza viene eliminata da ogni lista e diventa inaccessibile e tutti i 
+ * thread relativi al client vengono chiusi.
+ */
     public void disconnect() {
         if (!connected) {
             return;
@@ -143,7 +159,10 @@ public class ClientHandler {
         clients.remove(this);
         receiver.stop();
     }
-
+/**
+ * 
+ * @return la lista dei client connessi.
+ */
     public static List<ClientHandler> getClients() {
         return clients;
     }
@@ -166,7 +185,11 @@ public class ClientHandler {
         }
         return null;
     }
-
+/**
+ * Invia un messaggio da questo client a un gruppo di client.
+ * @param msg il messaggio da inviare
+ * @param g il gruppo al quale inviare il messaggio
+ */
     public static void send(String msg, Group g) {
         for (ClientHandler cl : clients) {
             if (g == null || cl.getGroup() == g) {
@@ -177,20 +200,33 @@ public class ClientHandler {
          Server.out("[SEND][ALL] " + msg);
          } else Server.out("[SEND][" + g.getName() + "] " + msg);*/
     }
-
+/**
+ * Invia un messaggio da questo client a due gruppi di client.
+ * @param msg il messaggio da inviare
+ * @param g il primo gruppo al quale inviare il messaggio
+ * @param g2 il secondo gruppo al quale inviare il messaggio
+ */
     public static void send(String msg, Group g, Group g2) {
         send(msg, g);
         send(msg, g2);
         //Server.out("[SEND][" + g.getName() + "]["+g2.getName()+"] " + msg);
     }
-
+/**
+ * Invia un messaggio da questo client a tre gruppi di client.
+ * @param msg il messaggio da inviare
+ * @param g il primo gruppo al quale inviare il messaggio
+ * @param g2 il secondo gruppo al quale inviare il messaggio
+ * @param g3 il terzo gruppo al quale inviare il messaggio
+ */
     public static void send(String msg, Group g, Group g2, Group g3) {
         send(msg, g);
         send(msg, g2);
         send(msg, g3);
         //Server.out("[SEND][" + g.getName() + "]["+g2.getName()+"]["+g3.getName()+"] " + msg);
     }
-
+/**
+ * Salva su file le informazioni di questo utente.
+ */
     public void save() {
         if (group == Settings.groupGuest) {
             //Server.out("Non puoi salvare un utente sloggato "+getScreenName(true)+ "!");
@@ -208,7 +244,11 @@ public class ClientHandler {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+/**
+ * Ritorna una stringa in formato ordinato e leggibile di clients connessi.
+ * @param showIP se la lista deve mostrare gli IP degli utenti.
+ * @return una lista leggibile e ordinata di clients connessi.
+ */
     public static String getClientList(boolean showIP) {
         String list = "Utenti connessi: " + clients.size();
         int i = 0, guests = 0;
@@ -229,7 +269,9 @@ public class ClientHandler {
         }
         return list + "\n";
     }
-
+/**
+ * Manda un heartbeat al client, dimostrandogli che il server è raggiungibile (se lo riceve...).
+ */
     public void keepAlive() {
         if (oos == null) {
             Server.out("[DEBUG] Tentativo di tenere viva una connessine nulla\n");
@@ -243,7 +285,12 @@ public class ClientHandler {
             disconnect();
         }
     }
-
+/**
+ * Tenta di autenticare l'utente usando le credenziali fornite: se il nome inserito non esiste, viene creato un nuovo account
+ * @param lname il nome da usare per l'autenticazione.
+ * @param pass la password da utilizzare per la registrazione o il login.
+ * @return false se l'utente ha tentato di loggarsi al posto di qualcuno già loggato, oppure se ha errato la password di un account. Ritorna vero negli altri casi.
+ */
     public boolean login(String lname, String pass) {
         if (lname == null || pass == null) {
             send("[BUG DETECT] Errore nel login\n");
@@ -286,7 +333,9 @@ public class ClientHandler {
             return false;
         }
     }
-
+/**
+ * Effettua il logout dell'utente, annullandone l'autenticazione.
+ */
     public void logout() {
         Channel.removeFromAll(this);
         if (group == Settings.groupGuest) {
@@ -299,15 +348,25 @@ public class ClientHandler {
         name = null;
         receiver.setName(getIP()); //Rinomino il thread con l'IP
     }
-
+/**
+ * Ritorna il gruppo a cui appartiene questo utente.
+ * @return il gruppo a cui appartiene questo utente.
+ */
     public Group getGroup() {
         return group;
     }
-
+/**
+ * Imposta il gruppo a cui appartiene questo utente.
+ * @param group il nuovo gruppo dell'utente.
+ */
     public void setGroup(Group group) {
         this.group = group;
     }
-
+/**
+ * Ritorna il nome dell'utente in formato leggibile e ordinato.
+ * @param showIP se la stringa deve mostrare l'indirizzo IP dell'utente.
+ * @return una stringa ordinata e leggibile contente il nome dell'utente.
+ */
     public String getScreenName(boolean showIP) {
         if (showIP) {
             if (name != null) {
@@ -323,67 +382,101 @@ public class ClientHandler {
             }
         }
     }
-
+/**
+ * Invia un heartbeat a tutti i client.
+ */
     public static void keepAliveAll() {
         for (ClientHandler ch : clients) {
             ch.keepAlive();
         }
     }
-
+/**
+ * Chiude la connessione con tutti i client in maniera sicura.
+ */
     public static void disconnectAll() {
         Server.out("Disconnetto tutti...");
         for (ClientHandler c : clients) {
             c.disconnect();
         }
     }
-
+/**
+ * Salva su file le informazioni di tutti i client.
+ */
     public static void saveAll() {
         Server.out("Salvo tutti gli utenti...");
         for (ClientHandler c : clients) {
             c.save();
         }
     }
-
+/**
+ * Ritorna i canali a cui l'utente appartiene.
+ * @return lista dinamica di canali in cui l'utente è presente.
+ */
     public ArrayList<Channel> getJoinedChannels() {
         return joined;
     }
-
+/**
+ * Ritorna l'indirizzo IP dell'utente.
+ * @return l'indirizzo IP dell'utente in formato stringa.
+ */
     public final String getIP() {
         return s.getInetAddress().getHostAddress();
-        //return s.getInetAddress().toString().split("\\")[1];
-        //return s.getInetAddress().toString().substring(1);
     }
-
+/**
+ * Ritorna la password con cui l'utente è autenticato.
+ * @return password con cui l'utente è autenticato, null altrimenti.
+ */
     public String getPassword() {
         Server.out("[DEBUG]Password per " + getScreenName(true) + " e' " + password);
         return password;
     }
-
+/**
+ * Cambia password all'utente.
+ * @param password la nuova password di questo account.
+ */
     public void setPassword(String password) {
         Server.out("[DEBUG] Password per " + getScreenName(true) + " è cambiata da " + this.password + " a " + password);
         this.password = password;
     }
-
+/**
+ * Ritorna l'oggetto socket usato per comunicare con l'utente.
+ * @return il socket.
+ */
     public Socket getSocket() {
         return s;
     }
-
+/**
+ * Ritorna il canale su cui l'utente sta scrivendo.
+ * @return l'istanza del canale.
+ */
     public Channel getWritingChannel() {
         return writingChannel;
     }
-
+/**
+ * Cambia il canale su cui l'utente scrive.
+ * @param writingChannel nuovo valore.
+ */
     public void setWritingChannel(Channel writingChannel) {
         this.writingChannel = writingChannel;
     }
-
+/**
+ * Se l'utente è autenticato.
+ * @return true se l'utente è autenticato.
+ */
     public boolean isConnected() {
         return connected;
     }
-
+/**
+ * Ritorna il nome dell'utente.
+ * @return 'Utente' se l'utente non è autenticato, il suo nickname altrimenti.
+ */
     public String getName() {
         return name;
     }
-
+/**
+ * Cambia nickname all'utente.
+ * @param name il nuovo nome da dare a questo utente.
+ */
     public void setName(String name) {
         this.name = name;
         receiver.setName(getScreenName(true));

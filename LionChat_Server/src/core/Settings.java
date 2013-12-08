@@ -1,10 +1,10 @@
-
 package core;
 
 import net.Server;
 import utilz.Filez;
 
 /**
+ * Questa classe gestisce le impostazioni generali del software.
  *
  * @author Fazo
  */
@@ -16,6 +16,10 @@ public class Settings {
     public static Channel globalChannel;
     private static boolean init = false;
 
+    /**
+     * Carica tutte le variabili: tenta di caricare da file, se non riesce
+     * imposta i valori di default.
+     */
     public static void init() {
         if (init) {
             return; //inutile fare roba un'altra volta se è già stata fatta
@@ -28,22 +32,28 @@ public class Settings {
         load(); //Tentativo di caricare da file. Se fallisce, rimangono i default
         //IMPOSTAZIONE PERMESSI! Inizializzazione gruppi. Per ora non supporta caricamento da file.
         //ATTENZIONE!!!!!!! QUESTI TRE GRUPPI SONO OBBLIGATORI E IL PROGRAMMA POTREBBE NON COMPILARE SE UNO DI QUESTI VIENE RIMOSSO
-        groupGuest=new Group("guest","help chat login who motd");
-        groupUser=new Group("user","c help chat logout who motd");
-        groupAdmin=new Group("admin","*"); //il gruppo admin bypassa ogni controllo dei permessi, quindi è inutile impostarli.
+        groupGuest = new Group("guest", "help chat login who motd");
+        groupUser = new Group("user", "c help chat logout who motd");
+        groupAdmin = new Group("admin", "*"); //il gruppo admin bypassa ogni controllo dei permessi, quindi è inutile impostarli.
         //INIZIALIZZO CANALE GLOBAL
-        globalChannel=new Channel("Global");
+        globalChannel = new Channel("Global");
         globalChannel.setAutodelete(false);
-        init=true;
+        init = true;
     }
 
+    /**
+     * Salva su file tutte le impostazioni.
+     */
     public static void save() { //salvataggio dati.
-        Filez.writeFile("./settings/net.txt",""+port);
+        Filez.writeFile("./settings/net.txt", "" + port);
         Filez.writeFile("./settings/helpMsg.txt", helpMsg);
         Filez.writeFile("./settings/adminHelpMsg.txt", adminHelpMsg);
         Filez.writeFile("./settings/motd.txt", motd);
     }
 
+    /**
+     * Carica da file tutte le impostazioni.
+     */
     public static void load() {
         try {
             Server.out("Caricamnto di net");
@@ -82,25 +92,45 @@ public class Settings {
             motd = c;
         }
     }
-    
-    //Da qui in poi solo getters
-    
+
+    /**
+     *
+     * @return il messaggio visualizzato quando l'utente richiama la pagina di
+     * aiuto.
+     */
     public static String getHelpMsg() {
         return helpMsg;
     }
 
+    /**
+     *
+     * @return il messaggio visualizzato quando l'admin richiama la pagina di
+     * aiuto per amministratori.
+     */
     public static String getAdminHelpMsg() {
         return adminHelpMsg;
     }
 
+    /**
+     *
+     * @return il messaggio del giorno.
+     */
     public static String getMotd() {
         return motd;
     }
 
+    /**
+     *
+     * @return se il programma è correttamente inizializzato.
+     */
     public static boolean isInit() {
         return init;
     }
 
+    /**
+     *
+     * @return la porta di rete su cui opera il server.
+     */
     public static int getPort() {
         return port;
     }
