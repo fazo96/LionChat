@@ -1,15 +1,24 @@
-
 package net;
 
 import java.util.ArrayList;
 import utilz.Utils;
 
 /**
+ * Questa classe interpreta i comandi lato client.
  *
  * @author Fazo
  */
 public class Interpreter {
 
+    /**
+     * "Prepara" una stringa per l'invio al server.\nAd esempio invia l'hash
+     * della password invece della password vera e propria.\nTUTTE le stringe
+     * dovrebbero essere fatte passare per questo metodo prima di essere
+     * inviate!
+     *
+     * @param s la stringa da "preparare"
+     * @return la stringa preparata.
+     */
     public static String fixToSend(String s) {
         ArrayList<String> ss = Utils.toList(s, " ");
         //è un login/registrazione/cambio pass: invio hash invece di password
