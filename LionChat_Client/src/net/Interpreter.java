@@ -11,8 +11,8 @@ import utilz.Utils;
 public class Interpreter {
 
     /**
-     * "Prepara" una stringa per l'invio al server.\nAd esempio invia l'hash
-     * della password invece della password vera e propria.\nTUTTE le stringe
+     * "Prepara" una stringa per l'invio al server, ad esempio invia l'hash
+     * della password invece della password vera e propria, TUTTE le stringe
      * dovrebbero essere fatte passare per questo metodo prima di essere
      * inviate!
      *
