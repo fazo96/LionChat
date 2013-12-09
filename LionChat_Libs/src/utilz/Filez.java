@@ -1,5 +1,3 @@
-
-
 package utilz;
 
 import java.io.BufferedReader;
@@ -12,12 +10,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Questa classe gestisce la lettura e scrittura su file.
  *
  * @author fazo
  */
 public class Filez {
 
-    public static boolean makeFile(String s) { //consente di creare un file. ritorna falso se fallisce
+    /**
+     * Crea un file al percorso dato.
+     *
+     * @param s il percorso del file da creare (nome compreso).
+     * @return false se l'operazione è fallita, true altrimenti.
+     */
+    public static boolean makeFile(String s) {
         File file = new File(s);
         try {
             File parent = file.getParentFile();
@@ -40,30 +45,39 @@ public class Filez {
         return true;
     }
 
-    public static boolean writeFile(String filepath, String content) { //scrive un file, sostituendo il contenuto con la strnga specificata
+    /**
+     * Scrive su un file sostituendone il contenuto con quello dato, Se il file
+     * non esiste lo crea usando makeFile
+     *
+     * @param filepath il percorso del file (nome compreso) su cui scrivere.
+     * @param content il nuovo contenuto del file in formato stringa.
+     * @return false se l'operazione è fallita, true altrimenti.
+     */
+    public static boolean writeFile(String filepath, String content) {
         System.out.println("[LIB] starting write process...");
-        try { System.out.println("[LIB] write file " + filepath);
+        try {
+            System.out.println("[LIB] write file " + filepath);
             File file = new File(filepath);
             if (!file.exists()) {
                 makeFile(filepath);
             }
             FileWriter fw = null;
             try {
-            System.out.println("[LIB] Init filewriter " + filepath);
+                System.out.println("[LIB] Init filewriter " + filepath);
                 fw = new FileWriter(file);
             } catch (IOException ex) {
                 Logger.getLogger(Filez.class.getName()).log(Level.SEVERE, null, ex);
                 return false;
             }
             try {
-            System.out.println("[LIB] Write content " + filepath );
+                System.out.println("[LIB] Write content " + filepath);
                 fw.write(content);
             } catch (IOException ex) {
                 Logger.getLogger(Filez.class.getName()).log(Level.SEVERE, null, ex);
                 return false;
             }
             try {
-            System.out.println("[LIB] Close file " + filepath);
+                System.out.println("[LIB] Close file " + filepath);
                 fw.close();
             } catch (IOException ex) {
                 Logger.getLogger(Filez.class.getName()).log(Level.SEVERE, null, ex);
@@ -75,6 +89,12 @@ public class Filez {
         return true;
     }
 
+    /**
+     * Ritorna il contenuto di un file in formato stringa.
+     *
+     * @param s il percorso (nome compreso) del file da leggere.
+     * @return il contenuto del file letto, null se la lettura è fallita.
+     */
     public static String getFileContent(String s) { //ritorna il contenuto di un file sottoforma di stringa
         System.out.println("[LIB] Inizio lettura...");
         FileReader fr = null;

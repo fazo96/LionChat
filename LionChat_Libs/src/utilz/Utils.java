@@ -1,6 +1,6 @@
-
 package utilz;
 
+import com.sun.org.apache.bcel.internal.classfile.Utility;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -9,11 +9,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Utility varie.
  *
  * @author fazo
  */
 public class Utils {
 
+    /**
+     * Ritorna l'hash SHA-1 della stringa data in formato stringa standard
+     * (UTF-8).
+     *
+     * @param x la stringa da usare per creare l'hash.
+     * @return l'hash della stringa data.
+     */
     public static String getSecureHash(String x) {
         //Questa funzione ritorna l'hash SHA1 di una stringa, già convertito in stringa UTF-8
         String hash = null;
@@ -41,12 +49,31 @@ public class Utils {
         return hash;
     }
 
+    /**
+     * Converte i nanosecondi dati in secondi.
+     *
+     * @param n nanosecondi da convertire in formato Long.
+     * @return la quantità in secondi.
+     */
     public static int nanoToSec(Long n) {
         //fa una semplice divisione: da nanoscondi a secondi, passando da Long a Int
         return (int) (n / 1000000000);
     }
 
+    /**
+     * Ritorna se la stringa è valida: una stringa è considerata valida se non
+     * contiene solo spazi e non è vuota.
+     *
+     * @param s la stringa da controllare
+     * @return true se è valida.
+     */
     public static boolean isValid(String s) {
+        if (s == null) {
+            return false;
+        }
+        if (s.length() == 0) {
+            return false;
+        }
         for (char c : s.toCharArray()) {
             if (c != ' ') {
                 return true;
@@ -55,6 +82,13 @@ public class Utils {
         return false;
     }
 
+    /**
+     * Trasforma una stringa in una lista di stringhe.
+     *
+     * @param s la stringa da trasformare.
+     * @param regex il divisore da usare per dividere la stringa in parti.
+     * @return la lista di stringhe.
+     */
     public static ArrayList<String> toList(String s, String regex) { //passa da una stringa a una lista.
         if (regex == null) { //il divisore di default è uno spazio
             regex = " ";
@@ -70,6 +104,12 @@ public class Utils {
         return content; //restituisco array dinamico
     }
 
+    /**
+     * Aggiunge gli elementi di B in A.
+     *
+     * @param a la lista a cui aggiungere gli elementi.
+     * @param b la lista da cui aggiungere gli elementi.
+     */
     public static void mergeLists(ArrayList<String> a, ArrayList<String> b) {
         //copia il contenuto di B in a
         for (String c : b) { //aggiungo gli elementi di b ad a
@@ -79,6 +119,13 @@ public class Utils {
         }
     }
 
+    /**
+     * Trasforma una lista di stringhe in una stringa unica.
+     *
+     * @param ss la lista da trasformare
+     * @param divisor i caratteri da inserire tra un elemento e l'altro.
+     * @return la stringa ottenuta.
+     */
     public static String fromList(ArrayList<String> ss, String divisor) {
         //passa da una lista a una stringa
         if (ss == null) { //lista nulla = stringa nulla
