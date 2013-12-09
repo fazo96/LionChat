@@ -36,8 +36,8 @@ public class Cmd {
             if (!c.getGroup().can("chat")) {
                 c.send("[!] Non hai il permesso di utilizzare la chat.");
             } else {
-                Server.out("[ " + c.getScreenName(true) + " ]: " + s);
-                c.getWritingChannel().send("[ " + c.getScreenName(false) + " ]: " + s);
+                Server.out("["+c.getWritingChannel().getName()+"][ " + c.getScreenName(true) + " ]: " + s);
+                c.getWritingChannel().send("[ " + c.getScreenName(false) + " ]: " + s+"\n");
                 /*ClientHandler.send("[ " + c.getScreenName(false) + " ]: " + s + "\n", Settings.groupGuest, Settings.groupUser);
                  ClientHandler.send("[ " + c.getScreenName(true) + " ]: " + s + "\n", Settings.groupAdmin);*/
             }

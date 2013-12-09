@@ -46,6 +46,9 @@ public class Channel {
      * @param ch Il client da aggiungere
      */
     public void add(ClientHandler ch) {
+        if (clients.contains(ch)) {
+            Server.out("[!] Tentativo di aggiungere al gruppo un utente già presente!");
+        }
         ch.send("Sei entrato nel canale " + name + "\n");
         send(ch.getScreenName(true) + " è entrato nel canale!\n");
         clients.add(ch);
@@ -108,7 +111,6 @@ public class Channel {
     public void send(String s) {
         for (ClientHandler c : clients) {
             c.send("[ " + name + " ]" + s);
-            Server.out(s);
         }
     }
 

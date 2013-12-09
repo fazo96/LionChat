@@ -29,7 +29,7 @@ public class ClientHandler {
     private ArrayList<Channel> joined = new ArrayList<Channel>();
     private Socket s;
     private String name = null, password = null;
-    private Channel writingChannel = Settings.globalChannel;
+    private Channel writingChannel;
     private ClientHandler client = this;
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
@@ -46,11 +46,6 @@ public class ClientHandler {
      */
     public ClientHandler(final Socket s) {
         this.s = s;
-        /*try {
-         this.s.setKeepAlive(true);
-         } catch (SocketException ex) {
-         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-         }*/
         Server.out("Yay! " + getIP() + " si è connesso!");
         connected = true;
         try {
@@ -82,7 +77,7 @@ public class ClientHandler {
                     try {
                         o = ois.readObject();
                     } catch (IOException ex) {
-                        Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                        //Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                         disconnect();
                         Server.out(getScreenName(true) + " errore nella lettura. Connessione chiusa.");
                     } catch (ClassNotFoundException ex) {
@@ -99,6 +94,8 @@ public class ClientHandler {
         receiver.start(); //Faccio partire il thread che riceve i messaggi del client
         group = Settings.groupGuest; //imposto il gruppo guest
         clients.add(this); //Aggiungo questo client alla lista dei client
+        Settings.globalChannel.add(this);
+        setWritingChannel(Settings.globalChannel);
         send(getIP() + " si è connesso!\n", Settings.groupAdmin);
         Settings.globalChannel.send("Qualcuno si è connesso!\n");
         Server.out("Inizializzati Input e Output streams per " + getIP() + " con successo e aggiunto alla lista client.\n");
@@ -302,7 +299,7 @@ public class ClientHandler {
         try {
             oos.writeObject(new SyncObject());
         } catch (IOException ex) {
-            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
             Server.out("Impossibile mantenere la connessione con " + getScreenName(true) + ". Disconnessione");
             disconnect();
         }
