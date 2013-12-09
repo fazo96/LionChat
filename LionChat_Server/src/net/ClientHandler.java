@@ -38,7 +38,7 @@ public class ClientHandler {
     private boolean connected = false;
 
     /**
-     * Inizializza un nuovo client.\n Il socket passato come paramentro deve
+     * Inizializza un nuovo client, il socket passato come paramentro deve
      * essere connesso.
      *
      * @param s socket da usare per comunicare con il client: deve essere
