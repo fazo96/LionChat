@@ -1,5 +1,3 @@
-
-
 package interf;
 
 import utilz.Filez;
@@ -16,6 +14,8 @@ public class GUI extends javax.swing.JFrame {
 
     private String ip = "after-end.net";
     private int port = 7777;
+    private static GUI gui;
+    private static SettingsUI settingsUI;
 
     /**
      * Creates new form GUI
@@ -35,12 +35,11 @@ public class GUI extends javax.swing.JFrame {
         textField.requestFocusInWindow();
         start(); //mi connetto.
     }
-    private static GUI gui;
-    
-    private void autoScroll(){
+
+    private void autoScroll() {
         ((DefaultCaret) textArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
     }
-    
+
     private void start() {
         getSettings(); //provo a leggere ip e porta da file
         append("Provo a connettermi a " + ip + ":" + port + "\n");
@@ -76,6 +75,10 @@ public class GUI extends javax.swing.JFrame {
         sendButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         textArea = new javax.swing.JTextArea();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -125,13 +128,35 @@ public class GUI extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(sendButton)
                     .addComponent(textField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
+
+        jMenu1.setText("File");
+
+        jMenuItem1.setText("Settings");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
+
+        jMenuItem2.setText("Exit");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem2);
+
+        jMenuBar1.add(jMenu1);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -180,6 +205,15 @@ public class GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_textFieldKeyPressed
 
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        settingsUI.setVisible(true);
+        settingsUI.updateFields();
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -196,14 +230,8 @@ public class GUI extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            System.out.println("[FATAL] Can't load look and feel");
         }
         //</editor-fold>
 
@@ -212,11 +240,17 @@ public class GUI extends javax.swing.JFrame {
             public void run() {
                 gui = new GUI();
                 gui.setVisible(true);
+                settingsUI = new SettingsUI();
+                settingsUI.setVisible(false);
             }
         });
         //gui.start();
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton sendButton;
@@ -226,11 +260,11 @@ public class GUI extends javax.swing.JFrame {
 
     //legge da file ip e porta. Se non riesce, rimangono i default
     private void getSettings() {
-        ArrayList<String> cnt=null;
+        ArrayList<String> cnt = null;
         //leggo il file e creo una lista di stringhe contenute
         append("Inizio lettura file settings.txt\n5 tentativi.\n");
         for (int i = 0; i < 5; i++) {
-            append("Tentativo di lettura numero "+(i+1)+"\n");
+            append("Tentativo di lettura numero " + (i + 1) + "\n");
             cnt = Utils.toList(Filez.getFileContent("settings.txt"), " ");
             if (cnt == null) { //se la lista è nulla, c'è stato un errore di lettura
                 append("File impostazioni non trovato!\nCreazione automatica.\n");
@@ -240,10 +274,9 @@ public class GUI extends javax.swing.JFrame {
             append("Lettura riuscita\n");
             break;
         }
-        if(cnt==null){
+        if (cnt == null) {
             append("[ERRORE] Lettura fallita! Utilizzo impostazioni di default\n");
-        } else
-        if (cnt.size() != 2) { //se gli elementi non sono due, il file non è valido
+        } else if (cnt.size() != 2) { //se gli elementi non sono due, il file non è valido
             append("Errore: file di configurazione con numero parametri errati (" + cnt.size() + ")\n"
                     + "Per crearlo tu, inserisci SOLO l'IP e la PORTA del server separati da uno spazio\n");
             return; //non c'è nulla da fare, ritorno
