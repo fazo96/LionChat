@@ -7,14 +7,15 @@
 # File del server
 *.dat
 
-# Netbeans
-NetClient/nbproject/private/
-NetServer/nbproject/private/
-NetLibz/nbproject/private/
-NetClient/build/
-NetServer/build/
-NetClient/dist/
-NetServer/dist/
-NetLibz/build/
-NetClient/src/settings.txt
-NetLibz/dist/
+# LionChat_beans
+LionChat_Client/nbproject/private/
+LionChat_Server/nbproject/private/
+LionChat_Libs/nbproject/private/
+LionChat_Client/build/
+LionChat_Server/build/
+LionChat_Libs/build/
+LionChat_Client/dist/
+LionChat_Server/dist/
+LionChat_Libs/dist/
+LionChat_Client/src/settings.txt
+LionChat_Server/src/utenti/
