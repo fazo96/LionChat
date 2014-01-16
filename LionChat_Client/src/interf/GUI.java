@@ -16,12 +16,19 @@ public class GUI extends javax.swing.JFrame {
     private int port = 7777;
     private static GUI gui;
     private static SettingsUI settingsUI;
+    private static SaveHistoryUI saveHistoryUI;
 
     /**
      * Creates new form GUI
      */
     public GUI() {
+        //Inizializzo finestre aggiuntive
+        settingsUI = new SettingsUI();
+        settingsUI.setVisible(false);
+        saveHistoryUI = new SaveHistoryUI();
+        saveHistoryUI.setVisible(false);
         initComponents(); //inizializzo i componenti grafici
+        setLocationRelativeTo(null); //Mettiamo la finestra al centro dello schermo
         setTitle("Client"); //imposto titolo finestra
         System.out.println("GUI Avviata"); //output su console
         //Imposto alla textArea di andare a capo automaticamente
@@ -77,8 +84,10 @@ public class GUI extends javax.swing.JFrame {
         textArea = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        saveHistory = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -89,6 +98,11 @@ public class GUI extends javax.swing.JFrame {
         });
 
         textField.setFont(new java.awt.Font("Arial", 0, 10)); // NOI18N
+        textField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                textFieldActionPerformed(evt);
+            }
+        });
         textField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 textFieldKeyPressed(evt);
@@ -138,13 +152,13 @@ public class GUI extends javax.swing.JFrame {
 
         jMenu1.setText("File");
 
-        jMenuItem1.setText("Settings");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        saveHistory.setText("Salva Cronologia");
+        saveHistory.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                saveHistoryActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        jMenu1.add(saveHistory);
 
         jMenuItem2.setText("Exit");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
@@ -155,6 +169,18 @@ public class GUI extends javax.swing.JFrame {
         jMenu1.add(jMenuItem2);
 
         jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Modifica");
+
+        jMenuItem1.setText("Impostazioni");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem1);
+
+        jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
 
@@ -214,6 +240,15 @@ public class GUI extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
+    private void saveHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveHistoryActionPerformed
+        saveHistoryUI.setVisible(true);
+        saveHistoryUI.setLabelText("Troverai il file nella cartella del programma");
+    }//GEN-LAST:event_saveHistoryActionPerformed
+
+    private void textFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_textFieldActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -240,19 +275,19 @@ public class GUI extends javax.swing.JFrame {
             public void run() {
                 gui = new GUI();
                 gui.setVisible(true);
-                settingsUI = new SettingsUI();
-                settingsUI.setVisible(false);
             }
         });
         //gui.start();
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JMenuItem saveHistory;
     private javax.swing.JButton sendButton;
     private javax.swing.JTextArea textArea;
     private javax.swing.JTextField textField;
@@ -283,5 +318,14 @@ public class GUI extends javax.swing.JFrame {
         }
         ip = cnt.get(0);
         port = Integer.parseInt(cnt.get(1));
+    }
+
+    /**
+     * Rirotna tutto il testo presente nell'area di testo
+     *
+     * @return il testo sottoforma di stringa
+     */
+    public String getHistory() {
+        return textArea.getText();
     }
 }

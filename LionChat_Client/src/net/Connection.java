@@ -57,8 +57,7 @@ public class Connection {
                     connected = false;
                 }
                 if (!connected) {
-                    //Se il tentativo di connessione è fallito, è inutile fare
-                    //tutto il resto
+                    GUI.get().append("Premi invio per tentare la riconnessione");
                     return;
                 }
                 try {

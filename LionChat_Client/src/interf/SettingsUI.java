@@ -20,6 +20,8 @@ public class SettingsUI extends javax.swing.JFrame {
      */
     public SettingsUI() {
         initComponents();
+        setLocationRelativeTo(null); //Mettiamo la finestra al centro dello schermo
+        //Non vogliamo che il programma si chiuda quando questa finestrella si chiude!
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
     }
 
