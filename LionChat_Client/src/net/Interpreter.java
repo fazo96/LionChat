@@ -1,5 +1,6 @@
 package net;
 
+import interf.GUI;
 import java.util.ArrayList;
 import utilz.Utils;
 
@@ -28,6 +29,18 @@ public class Interpreter {
         return Utils.fromList(ss, " ");
     }
 
+    /**
+     * Interpreta stringa dal server e mostra all'utente i dati necessari.
+     *
+     * @param s stringa da interpretare
+     */
     public static void cmd(String s) { //interpreto comando client
+        // Se la stringa non è un comando stampo e ritorno
+        if (!s.startsWith("/")) {
+            GUI.get().append(s);
+            return;
+        } else {
+            System.out.println("[ATTENZIONE] Ricevuto comando sconosciuto dal server.");
+        }
     }
 }

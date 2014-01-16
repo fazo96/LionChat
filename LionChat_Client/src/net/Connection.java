@@ -87,9 +87,8 @@ public class Connection {
                 Object o = null;
                 String s = "";
                 while (true) {
-                    //GUI.get().append("[DEBUG] Started receive loop\n");
                     try {
-                        sleep(20); //20 secondi di pausa per non usare 100% cpu
+                        sleep(20); //20 millisecondi di pausa per non usare 100% cpu
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -108,25 +107,13 @@ public class Connection {
                         Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                         continue;
                     }
-                    //GUI.get().append("[DEBUG] Received something\n");
                     if (o == null) {
                         continue; //oggetto nullo: salto
                     }
                     if (o instanceof String) {
                         s = (String) o; //se la stringa inizia con lo / rimuovo la prima parola
-                        if (s.startsWith("/")) {
-                            String a[] = s.split(" ", 2);
-                            if (a.length != 2 && a.length != 1) {
-                                System.out.println("Errore nel processare stringa con comando");
-                                continue;
-                            }
-                            Interpreter.cmd(a[0]); //eseguo comando
-                            if (a.length == 2) {
-                                GUI.get().append(a[1]);
-                            }
-                        }
-                        //l'oggetto è una stringa, la stampo nella GUI
-                        GUI.get().append(s);
+                        Interpreter.cmd(s);  //Interpreto comando/messaggio.
+                        //La funzione cmd esegue i comandi oppure stampa la stringa a seconda dei casi.
                     } else if (o instanceof SyncObject); //se non metto questa istruzione, il programma darà ClassNotFoundException.
                 }
                 //Il ciclo infinito si è rotto. Si è verificata disconnessione
