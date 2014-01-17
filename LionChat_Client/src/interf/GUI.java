@@ -12,7 +12,7 @@ import utilz.Utils;
  */
 public class GUI extends javax.swing.JFrame {
 
-    private String ip = "after-end.net";
+    private String ip = "localhost";
     private int port = 7777;
     private static GUI gui;
     private static SettingsUI settingsUI;
