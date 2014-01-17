@@ -15,9 +15,9 @@ import java.util.ArrayList;
  */
 public class Lang {
 
-    public static final String separator = ":::"; //Separatore universale
+    public static final String sentenceSeparator = ":", comment = "#", title = "---"; //Separatore universale
     private ArrayList<Sentence> sentences;
-    private String id, name;
+    private String id = null, name = null;
 
     /**
      * Inizializza e carica in memoria la lingua con l'id dato.
@@ -26,6 +26,7 @@ public class Lang {
      */
     public Lang(String id) {
         this.id = id;
+        sentences = new ArrayList<Sentence>();
         load();
     }
 
@@ -39,7 +40,30 @@ public class Lang {
     public boolean load() {
         String fileContent = utilz.Filez.getFileContent("./lang/" + id);
         if (fileContent == null) {
+            System.out.println("[LIB] Tried to load lang \""+id+"\" but null file");
             return false;
+        }
+        System.out.println("[LIB] Loading \""+id+"\" ...");
+        for (String s : utilz.Utils.toList(fileContent, "\n")) {
+            if (s == null || s == "") {
+                System.out.println("[LIB][Lang] Skipping an empty line");
+                continue;
+            }
+            s = s.trim(); System.out.println("[LIB] Processing Langfile String: \""+s+"\"");
+            if (s.startsWith(comment)) {
+                System.out.println("[LIB][Lang] Skipping comment line");
+                continue;
+            } else if (s.contains(comment)) {
+                System.out.println("[LIB][Lang] Parsing commented line (removing comment) ...");
+                s = utilz.Utils.toList(s, comment).get(0).trim();
+            }
+            if (s.startsWith("---") && name == null) {
+                System.out.println("[LIB][Lang] Assigning name...");
+                name = s.replace("---", "").trim();
+            } else if (s.contains(sentenceSeparator)) {
+                System.out.println("[LIB][Lang] Reading sentence...");
+                sentences.add(new Sentence(s.trim()));
+            }
         }
         return true;
     }
@@ -64,11 +88,21 @@ public class Lang {
      *
      * @return una stringa con un resoconto di questa lang.
      */
-    public String getLangInfo() {
+    public String getLangInfo(boolean verbose) {
+        String s = "Lang: " + id + " Name: " + name + "\nSentences: " + sentences.size();
         if (!isLoaded()) {
-            return "[!] LANG NOT LOADED!!!";
+            return s+"\n[!] LANG NOT LOADED!!!";
         }
-        return "Lang: " + id + " Name: " + id + "\nSentences: " + sentences.size();
+        if (!verbose) {
+            return s;
+        }
+        if (sentences.size() > 0) {
+            s += "\n";
+            for (Sentence se : sentences) {
+                s += se.getSentenceInfo() + "\n";
+            }
+        }
+        return s;
     }
 
     /**

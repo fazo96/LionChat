@@ -30,12 +30,12 @@ public class Sentence {
      * @param rawRead
      */
     public Sentence(String rawRead) {
-        ArrayList<String> ss = utilz.Utils.toList(rawRead, Lang.separator);
-        if (ss.size() != 2) {
+        String[] array = rawRead.split(Lang.sentenceSeparator, 2);
+        if (array.length != 2) {
             return;
         }
-        name = ss.get(0);
-        content = ss.get(1);
+        name = array[0].trim();
+        content = array[1].trim();
     }
 
     public String getName() {
@@ -60,12 +60,50 @@ public class Sentence {
     public ArrayList<String> getContent() {
         return utilz.Utils.toList(content, separator);
     }
-/**
+
+    /**
      * Funzione che comunica se la frase è caricata correttamente
      *
      * @return true se la frase è utilizzabile
      */
     public boolean isLoaded() {
         return name != null && content != null;
+    }
+
+    /**
+     * Ritorna info sulla Sentence, scritte in inglese, leggibili da essere
+     * umano.
+     *
+     * @return una stringa con un resoconto di questa Sentence.
+     */
+    public String getSentenceInfo() {
+        if (!isLoaded()) {
+            return "[!] SENTENCE NOT LOADED";
+        }
+        return "Sentence Name: " + name + "\n--- Content ---\n" + content.replace(separator, "[ITEM]");
+    }
+
+    public String print(String a, String regex) {
+        if (!isLoaded()) {
+            return "[!] Invalid PRINT for uninitialized sentence";
+        }
+        ArrayList<String> ss = utilz.Utils.toList(a, regex);
+        ArrayList<String> cont = getContent();
+        if (ss.size() != cont.size() - 1) {
+            return "[!] Invalid PRINT for sentence " + name;
+        }
+        String ret = "";
+        for (int i = 0; i < ss.size(); i++) {
+            if (content.startsWith(separator)) {
+                ret += ss.get(i) + cont.get(i);
+            } else {
+                ret += cont.get(i) + ss.get(i);
+            }
+        }
+        return null;
+    }
+
+    public void print(String a) {
+        print(a, " ");
     }
 }

@@ -3,6 +3,7 @@ package interf;
 import utilz.Filez;
 import java.util.ArrayList;
 import javax.swing.text.DefaultCaret;
+import lang.Lang;
 import net.Connection;
 import utilz.Utils;
 
@@ -12,8 +13,9 @@ import utilz.Utils;
  */
 public class GUI extends javax.swing.JFrame {
 
-    private String ip = "localhost";
+    private String ip = "localhost", languageID = "en";
     private int port = 7777;
+    private Lang language = null;
     private static GUI gui;
     private static SettingsUI settingsUI;
     private static SaveHistoryUI saveHistoryUI;
@@ -29,8 +31,8 @@ public class GUI extends javax.swing.JFrame {
         saveHistoryUI.setVisible(false);
         initComponents(); //inizializzo i componenti grafici
         setLocationRelativeTo(null); //Mettiamo la finestra al centro dello schermo
-        setTitle("Client"); //imposto titolo finestra
-        System.out.println("GUI Avviata"); //output su console
+        setTitle("LionChat Client"); //imposto titolo finestra
+        System.out.println("GUI Started"); //output su console
         //Imposto alla textArea di andare a capo automaticamente
         //quando si arriva al limite di caratteri orizzontali
         textArea.setLineWrap(true);
@@ -40,17 +42,14 @@ public class GUI extends javax.swing.JFrame {
         //Cerco di dare il focus al textfield, così non bisogna cliccarci
         //col mouse
         textField.requestFocusInWindow();
-        start(); //mi connetto.
+        //loadLanguage("en"); //Al momento non è utile usare i file di lingue
+        getSettings(); //provo a leggere ip e porta da file
+        append("Provo a connettermi a " + ip + ":" + port + "\n");
+        Connection.connect(ip, port); //connessione effettiva
     }
 
     private void autoScroll() {
         ((DefaultCaret) textArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-    }
-
-    private void start() {
-        getSettings(); //provo a leggere ip e porta da file
-        append("Provo a connettermi a " + ip + ":" + port + "\n");
-        Connection.connect(ip, port); //connessione effettiva
     }
 
     public static GUI get() { //ritorno l'istanza in esecuzione.
@@ -273,11 +272,10 @@ public class GUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                gui = new GUI();
+                gui = new GUI(); //Il costruttore contiene il "bootstrap"
                 gui.setVisible(true);
             }
         });
-        //gui.start();
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenu1;
@@ -297,8 +295,8 @@ public class GUI extends javax.swing.JFrame {
     private void getSettings() {
         ArrayList<String> cnt = null;
         //leggo il file e creo una lista di stringhe contenute
-        append("Inizio lettura file settings.txt\n5 tentativi.\n");
-        for (int i = 0; i < 5; i++) {
+        append("Inizio lettura file settings.txt\n2 tentativi.\n");
+        for (int i = 0; i < 2; i++) {
             append("Tentativo di lettura numero " + (i + 1) + "\n");
             cnt = Utils.toList(Filez.getFileContent("settings.txt"), " ");
             if (cnt == null) { //se la lista è nulla, c'è stato un errore di lettura
@@ -327,5 +325,14 @@ public class GUI extends javax.swing.JFrame {
      */
     public String getHistory() {
         return textArea.getText();
+    }
+
+    private boolean loadLanguage(String lang) {
+        language = new Lang(lang);
+        System.out.println(language.getLangInfo(true));
+        if (!language.isLoaded()) {
+            return false;
+        }
+        return true;
     }
 }
