@@ -26,6 +26,11 @@ public class Interpreter {
         if ((s.startsWith("/login") || s.startsWith("/password")) && ss.size() == 3) {
             ss.set(2, Utils.getSecureHash(ss.get(2))); //rimpiazzo la password con il suo hash
         }
+        if (s.startsWith("/password") && ss.size() == 3) {
+            //rimpiazzo le password con il loro hash
+            ss.set(1, Utils.getSecureHash(ss.get(1)));
+            ss.set(2, Utils.getSecureHash(ss.get(2)));
+        }
         return Utils.fromList(ss, " ");
     }
 
