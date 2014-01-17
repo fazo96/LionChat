@@ -1,5 +1,8 @@
 # LionChat
-Chat client/server basata su java con possibilit� di moderazione. Chat vocale e altre funzioni sono pianificate.
+Chat client/server basata su java con le seguenti features:
+- Gestione di permessi e gruppi a cui un utente puo' appartenere.
+- Gestione di più canali in modo simile a IRC
+- Le password sono al sicuro: il client non salva mai su file le password degli utenti e non le invia mai via rete, ma invia l'hash SHA-512 invece
 
 # Come importare il progetto
 E' molto semplice: è necessario git e l'ultima versione di netbeans. Dopo aver clonato la repo, aprire con netbeans i progetti che contiene (LionChat-Server, LionChat-Client e LionChat-Libs). E' possibile successivamente utilizzare "clean and build" di netbeans per compilare i file .jar pronti per la distribuzione che si trovano in /dist all'interno di ogni progetto. E' sufficiente distribuire il client, mentre il server va usato per permettere agli utenti di connettersi.
