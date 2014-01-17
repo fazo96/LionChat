@@ -110,7 +110,7 @@ public class Filez {
         String z = "", a = "";
         int i = 1;
         while (true) {
-            //System.out.println("[LIB] Leggo riga " + i + "...");
+            System.out.println("[LIB] Leggo riga " + i + "...");
             try {
                 z = br.readLine();
                 if (z != null) {
