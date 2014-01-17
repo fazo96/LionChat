@@ -17,6 +17,7 @@ public class Cmd {
      * @param c il client che ha invocato il comando, null se è stato invocato dal server.
      */
     public static void cmd(String s, ClientHandler c) {
+        s=s.trim(); //rimuovo spazi bianchi all'inizio e alla fine della stringa
         if (!Settings.isInit()) {
             Settings.init(); //se non è inizializzato, inizializzo adesso
         }

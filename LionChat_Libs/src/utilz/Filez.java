@@ -110,12 +110,10 @@ public class Filez {
         String z = "", a = "";
         int i = 1;
         while (true) {
-            System.out.println("[LIB] Leggo riga " + i + "...");
+            //System.out.println("[LIB] Leggo riga " + i + "...");
             try {
                 z = br.readLine();
                 if (z != null) {
-                    //content.add(z);
-                    //for(String sss:z.split(" "))content.add(sss);
                     if (i != 1) {
                         a += "\n";
                     }
@@ -126,21 +124,21 @@ public class Filez {
                     break;
                 } //se viene letta una riga nulla smette di leggere
             } catch (IOException ex) {
-                System.out.println("[LIB] Eccezione! Rompo lettura...");
+                //System.out.println("[LIB] Eccezione! Rompo lettura...");
                 break;
                 //Logger.getLogger(Filez.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         try {
-            System.out.println("[LIB] Chiudo!");
+            //System.out.println("[LIB] Chiudo!");
             fr.close();
         } catch (IOException ex) {
             System.out.println("[LIB] Errore in chiusura!");
             //Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("[LIB] Stampo lettura!");
+        /*System.out.println("[LIB] Stampo lettura!");
         System.out.println(a);
-        System.out.println("[LIB] Fine stampa!");
+        System.out.println("[LIB] Fine stampa!");*/
         return a;
     }
 }

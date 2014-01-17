@@ -97,6 +97,7 @@ public class Utils {
             return null;
         }
         String b[] = s.split(regex); //divido la stirnga con il regex e la metto in un array
+        if(b.length==0)return null;
         ArrayList<String> content = new ArrayList<String>(b.length);
         for (String c : b) { //inserisco gli elementi dell'array nell'array dinamico
             content.add(c);

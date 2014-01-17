@@ -31,7 +31,7 @@ public class Interpreter {
             ss.set(1, Utils.getSecureHash(ss.get(1)));
             ss.set(2, Utils.getSecureHash(ss.get(2)));
         }
-        return Utils.fromList(ss, " ");
+        return Utils.fromList(ss, " ").trim();
     }
 
     /**
@@ -41,6 +41,7 @@ public class Interpreter {
      */
     public static void cmd(String s) { //interpreto comando client
         // Se la stringa non è un comando stampo e ritorno
+        s=s.trim(); //rimuovo spazi bianchi a sinistra e destra dalla stringa
         if (!s.startsWith("/")) {
             GUI.get().append(s);
             return;
