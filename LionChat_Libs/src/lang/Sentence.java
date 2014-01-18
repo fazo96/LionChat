@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public class Sentence {
 
-    public static final String separator = "/*/", newLine = "/-/", noNewLine = "/-"; //Separatori universali
+    public static final String separator = "/A/", newLine = "/N/", noNewLine = "/S/"; //Separatori universali
     private String name = "";
     private String content = "";
 
@@ -114,26 +114,12 @@ public class Sentence {
         if (!getRawContentString().contains(separator)) {
             return getProcessedContentString();
         }
-        ArrayList<String> ss = utilz.Utils.toList(additionalContent, additionalContentSeparator);
-        ArrayList<String> cont = utilz.Utils.toList(content, separator);
-        if (ss.size() != cont.size() - 1) {
-            for (String s : cont) {
-                System.out.println("[!!!] " + s + "\n");
-            }
-            return "[!] Invalid PRINT for sentence " + name + ": A" + ss.size() + " S" + cont.size() + "\nSentence: " + content + "\n";
+        ArrayList<String> ad = utilz.Utils.toList(additionalContent, additionalContentSeparator);
+        String ret = new String(content);
+        for (String s : ad) {
+            ret = ret.replaceFirst(separator, s);
         }
-        String ret = "";
-        for (int i = 0; i < ss.size(); i++) {
-            if (content.startsWith(separator)) {
-                ret += ss.get(i) + cont.get(i);
-            } else {
-                ret += cont.get(i) + ss.get(i);
-            }
-        }
-        if (ret.endsWith(noNewLine)) {
-            return ret;
-        }
-        return ret + "\n";
+        return parse(ret);
     }
 
     /**

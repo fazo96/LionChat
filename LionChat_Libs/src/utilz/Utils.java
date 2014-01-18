@@ -1,6 +1,5 @@
 package utilz;
 
-import com.sun.org.apache.bcel.internal.classfile.Utility;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -16,7 +15,7 @@ import java.util.logging.Logger;
 public class Utils {
 
     /**
-     * Ritorna l'hash SHA-1 della stringa data in formato stringa standard
+     * Ritorna l'hash SHA-512 della stringa data in formato stringa standard
      * (UTF-8).
      *
      * @param x la stringa da usare per creare l'hash.
@@ -30,7 +29,7 @@ public class Utils {
             md = MessageDigest.getInstance("SHA-512");
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("[LIB] ERRORE IMPOSSIBILE: SHA-1 NON ESISTE!");
+            System.out.println("[LIB] IMPOSSIBLE ERROR: SHA-512 NON EXISTANT!");
             return null;
         }
         md.reset();
@@ -38,14 +37,14 @@ public class Utils {
             hash = new String(md.digest(x.getBytes("UTF-8")));
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("[LIB] ERRORE IMPOSSIBILE: UTF-8 NON ESISTE!");
+            System.out.println("[LIB] IMPOSSIBLE ERROR: UTF-8 NON EXISTANT!");
             return null;
         }
         if (hash.contains("\n")) {
-            System.out.println("[LIB][WARNING] Ho dovuto rimuovere \\n dall'hash di una stringa.");
+            System.out.println("[LIB][WARNING] Had to remove \\n from string hash");
             hash = hash.replace("\n", ""); //rimuovo eventuali \n.
         }
-        System.out.println("[LIB] Hash di " + x + ": " + hash);
+        System.out.println("[LIB] Hash of " + x + ": " + hash);
         return hash;
     }
 

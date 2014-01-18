@@ -44,7 +44,7 @@ public class GUI extends javax.swing.JFrame {
         textField.requestFocusInWindow();
         loadLanguage("en"); //Al momento non è utile usare i file di lingue
         getSettings(); //provo a leggere ip e porta da file
-        append("Provo a connettermi a " + ip + ":" + port + "\n");
+        append(language.getSentence("tryConnect").print(ip+" "+port));
         Connection.connect(ip, port); //connessione effettiva
     }
 

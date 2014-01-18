@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import net.ClientHandler;
 import net.Server;
 import utilz.Filez;
-import utilz.Utils;
 
 /**
  * Un canale della chat utilizzabile dagli utenti.
