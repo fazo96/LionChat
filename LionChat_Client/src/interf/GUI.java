@@ -42,7 +42,7 @@ public class GUI extends javax.swing.JFrame {
         //Cerco di dare il focus al textfield, così non bisogna cliccarci
         //col mouse
         textField.requestFocusInWindow();
-        //loadLanguage("en"); //Al momento non è utile usare i file di lingue
+        loadLanguage("en"); //Al momento non è utile usare i file di lingue
         getSettings(); //provo a leggere ip e porta da file
         append("Provo a connettermi a " + ip + ":" + port + "\n");
         Connection.connect(ip, port); //connessione effettiva
@@ -202,21 +202,20 @@ public class GUI extends javax.swing.JFrame {
         if (Connection.isConnected()) {
             if (textField.getText() != "" && Utils.isValid(textField.getText())) {
                 //sono connesso e il testo è valido
-                Connection.send(textField.getText());
+                Connection.send(textField.getText().trim());
             } else {
                 //Sono connesso ma il testo non è valido
-                System.out.println("Stringa non valida!\n");
+                append(language.getSentence("invalidString").print());
             }
         } else {
             //Non sono connesso ma è stato premuto send
-            append("Nuovo tentativo di connessione:\n");
+            append(language.getSentence("tryReconnect").print());
             Connection.connect(ip, port); //provo a riccnnettermi
         }
         textField.setText(""); //dopo tutto, resetto il contenuto del textfield
         //restituisco il focus al textfield, così se l'utente ha premuto send col
         //mouse non deve cliccare anche sul textfield
         textField.requestFocusInWindow();
-
     }//GEN-LAST:event_sendButtonActionPerformed
 
     private void jPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel1KeyPressed
@@ -241,7 +240,7 @@ public class GUI extends javax.swing.JFrame {
 
     private void saveHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveHistoryActionPerformed
         saveHistoryUI.setVisible(true);
-        saveHistoryUI.setLabelText("Troverai il file nella cartella del programma");
+        saveHistoryUI.setLabelText(language.getSentence("youllFindFile").print());
     }//GEN-LAST:event_saveHistoryActionPerformed
 
     private void textFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textFieldActionPerformed
@@ -295,23 +294,23 @@ public class GUI extends javax.swing.JFrame {
     private void getSettings() {
         ArrayList<String> cnt = null;
         //leggo il file e creo una lista di stringhe contenute
-        append("Inizio lettura file settings.txt\n2 tentativi.\n");
+        append(language.getSentence("tryReadSettings").print());
+        //append("Inizio lettura file settings.txt\n2 tentativi.\n");
         for (int i = 0; i < 2; i++) {
-            append("Tentativo di lettura numero " + (i + 1) + "\n");
+            append(language.getSentence("tryNumber").print("" + (i + 1)));
             cnt = Utils.toList(Filez.getFileContent("settings.txt"), " ");
             if (cnt == null) { //se la lista è nulla, c'è stato un errore di lettura
-                append("File impostazioni non trovato!\nCreazione automatica.\n");
+                append(language.getSentence("settingsNotFound").print());
                 Filez.writeFile("settings.txt", ip + " " + port);
                 continue; //non c'è nulla da fare, quindi ritorno
             }
-            append("Lettura riuscita\n");
+            append(language.getSentence("readSuccessfull").print());
             break;
         }
         if (cnt == null) {
-            append("[ERRORE] Lettura fallita! Utilizzo impostazioni di default\n");
+            append(language.getSentence("settingsReadFailed").print());
         } else if (cnt.size() != 2) { //se gli elementi non sono due, il file non è valido
-            append("Errore: file di configurazione con numero parametri errati (" + cnt.size() + ")\n"
-                    + "Per crearlo tu, inserisci SOLO l'IP e la PORTA del server separati da uno spazio\n");
+            append(language.getSentence("settingsWrongParamNumber").print(cnt.size() + ""));
             return; //non c'è nulla da fare, ritorno
         }
         ip = cnt.get(0);
@@ -330,9 +329,6 @@ public class GUI extends javax.swing.JFrame {
     private boolean loadLanguage(String lang) {
         language = new Lang(lang);
         System.out.println(language.getLangInfo(true));
-        if (!language.isLoaded()) {
-            return false;
-        }
         return true;
     }
 }

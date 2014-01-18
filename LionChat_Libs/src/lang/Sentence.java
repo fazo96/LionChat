@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public class Sentence {
 
-    public static final String separator = "/*/"; //Separatore universale
+    public static final String separator = "/*/", newLine = "/-/", noNewLine = "/-"; //Separatori universali
     private String name = "";
     private String content = "";
 
@@ -43,22 +43,37 @@ public class Sentence {
     }
 
     /**
-     * Ritorna il contenuto come stringa
+     * Ritorna il contenuto come stringa non processata
      *
      * @return la stringa del contenuto
      */
-    public String getContentString() {
+    public String getRawContentString() {
         return content;
     }
 
     /**
-     * Ritorna il contenuto diviso in parti in modo da poter inserire facilmente
-     * altre informazioni.
+     * Ritorna il contenuto come stringa processata
      *
-     * @return il contenuto sottoforma di array dinamico di stringhe
+     * @return la stringa del contenuto con modifiche fatte dal parser
      */
-    public ArrayList<String> getContent() {
-        return utilz.Utils.toList(content, separator);
+    public String getProcessedContentString() {
+        return parse(content);
+    }
+
+    /**
+     * Processa la stringa data
+     *
+     * @param s la stringa da processare
+     * @return la stringa processata
+     */
+    private String parse(String s) {
+        if (!isLoaded()) {
+            return error();
+        }
+        if (!s.endsWith(noNewLine)) {
+            return s.replace(newLine, "\n").replace(noNewLine, "") + "\n";
+        }
+        return s.replace(newLine, "\n").replace(noNewLine, "");
     }
 
     /**
@@ -83,14 +98,29 @@ public class Sentence {
         return "Sentence Name: " + name + "\n--- Content ---\n" + content.replace(separator, "[ITEM]");
     }
 
-    public String print(String a, String regex) {
+    /**
+     * Ritorna stringa pronta per la stampa, e permette di inserire contenuto
+     * aggiuntivo nella Sentence se essa è stata scritta per supportarlo
+     *
+     * @param additionalContent le parole aggiuntive da inserire nella frase
+     * @param additionalContentSeparator il separatore che separa le parole
+     * aggiuntive
+     * @return la stringa pronta per la stampa
+     */
+    public String print(String additionalContent, String additionalContentSeparator) {
         if (!isLoaded()) {
-            return "[!] Invalid PRINT for uninitialized sentence";
+            return error();
         }
-        ArrayList<String> ss = utilz.Utils.toList(a, regex);
-        ArrayList<String> cont = getContent();
+        if (!getRawContentString().contains(separator)) {
+            return getProcessedContentString();
+        }
+        ArrayList<String> ss = utilz.Utils.toList(additionalContent, additionalContentSeparator);
+        ArrayList<String> cont = utilz.Utils.toList(content, separator);
         if (ss.size() != cont.size() - 1) {
-            return "[!] Invalid PRINT for sentence " + name;
+            for (String s : cont) {
+                System.out.println("[!!!] " + s + "\n");
+            }
+            return "[!] Invalid PRINT for sentence " + name + ": A" + ss.size() + " S" + cont.size() + "\nSentence: " + content + "\n";
         }
         String ret = "";
         for (int i = 0; i < ss.size(); i++) {
@@ -100,10 +130,47 @@ public class Sentence {
                 ret += cont.get(i) + ss.get(i);
             }
         }
-        return null;
+        if (ret.endsWith(noNewLine)) {
+            return ret;
+        }
+        return ret + "\n";
     }
 
-    public void print(String a) {
-        print(a, " ");
+    /**
+     * Ritorna stringa pronta per la stampa, e permette di inserire contenuto
+     * aggiuntivo nella Sentence se essa è stata scritta per supportarlo. Il
+     * parser utilizza uno spazio come separatore.
+     *
+     * @param additionalContent le parole aggiuntive da inserire nella frase
+     * @return la stringa pronta per la stampa
+     */
+    public String print(String additionalContent) {
+        return print(additionalContent, " ");
+    }
+
+    /**
+     * Ritorna il contenuto pronto per la stampa.
+     *
+     * @return il contenuto pronto per la stampa
+     */
+    public String print() {
+        if (!isLoaded()) {
+            return error();
+        }
+        return getProcessedContentString().replace(separator, "[!e]");
+    }
+
+    /**
+     * Ritorna un messaggio di errore adeguato al problema della sentence
+     *
+     * @return stringa
+     */
+    private String error() {
+        if (name != null) {
+            return "[!] Invalid PRINT for uninitialized sentence " + name;
+        } else if (content == null) {
+            return "[!] Invalid PRINT for uninitialized sentence with no name";
+        }
+        return null;
     }
 }

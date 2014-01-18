@@ -74,13 +74,13 @@ public class Lang {
      * @param name il nome da cercare
      * @return la Sentence corrispondente se esiste, altrimenti null
      */
-    public Sentence get(String name) {
+    public Sentence getSentence(String name) {
         for (Sentence a : sentences) {
             if (a.getName().equals(name)) {
                 return a;
             }
         }
-        return null;
+        return new Sentence("name","ERROR IN LANGUAGE FILE \""+id+"\": CAN'T FIND "+name+" SENTENCE");
     }
 
     /**
