@@ -23,6 +23,12 @@ public class SettingsUI extends javax.swing.JFrame {
         setLocationRelativeTo(null); //Mettiamo la finestra al centro dello schermo
         //Non vogliamo che il programma si chiuda quando questa finestrella si chiude!
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
+        updateLanguage();
+    }
+
+    public void updateLanguage() {
+        setTitle(GUI.getLanguage().getSentence("settingsTitle").print());
+        undoButton.setText(GUI.getLanguage().getSentence("undoButton").print());
     }
 
     /**
@@ -39,9 +45,9 @@ public class SettingsUI extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         portField = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        undoButton = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        resetButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Impostazioni");
@@ -60,10 +66,10 @@ public class SettingsUI extends javax.swing.JFrame {
 
         jLabel2.setText("Port");
 
-        jButton1.setText("Annulla");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        undoButton.setText("Annulla");
+        undoButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                undoButtonActionPerformed(evt);
             }
         });
 
@@ -74,10 +80,10 @@ public class SettingsUI extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setText("Reset");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        resetButton.setText("Reset");
+        resetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                resetButtonActionPerformed(evt);
             }
         });
 
@@ -99,9 +105,9 @@ public class SettingsUI extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
+                        .addComponent(resetButton, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1)))
+                        .addComponent(undoButton)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -117,9 +123,9 @@ public class SettingsUI extends javax.swing.JFrame {
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
+                    .addComponent(undoButton)
                     .addComponent(jButton2)
-                    .addComponent(jButton3)))
+                    .addComponent(resetButton)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -140,12 +146,12 @@ public class SettingsUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_ipFieldActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
         ipField.setText("localhost");
         portField.setText("7777");
         applySettings();
         updateFields();
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_resetButtonActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         applySettings();
@@ -153,9 +159,9 @@ public class SettingsUI extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void undoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_undoButtonActionPerformed
         dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_undoButtonActionPerformed
     /**
      * Scrive le modifiche ai campi IP e Porta sul file settings.
      */
@@ -183,12 +189,12 @@ public class SettingsUI extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField ipField;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField portField;
+    private javax.swing.JButton resetButton;
+    private javax.swing.JButton undoButton;
     // End of variables declaration//GEN-END:variables
 }

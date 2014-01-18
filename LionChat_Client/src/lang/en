@@ -10,6 +10,8 @@
 
 --- English # This sets the "en" language's name to! "English". Only the first name given matters
 
+# Client general UI and Connection Sentences (With tutorial on how language files work!)
+
 tryConnect: Trying to connect to /A/ : /A/
 # This above statement creates a Sentence with given name (tryConnect) and content (after the :)
 # White space before and after the name or content is automatically trimmed
@@ -23,10 +25,28 @@ tryReadSettings: Trying to read settings.txt/N/2 tries.
 # Above you can see /N/. It is like \n, it creates a new line. Sentences are ended automatically with \n if they don't end with the noNewLine charsequence ( /S/ )
 settingsNotFound: Settings file not found!/N/Automatically creating file.
 settingsReadFailed: Could not read file!/N/Using default settings instead
-#settingsWrongParamNumber: Errore: file di configurazione con numero parametri errati /A//N/Per crearlo tu, inserisci SOLO l'IP e la PORTA del server separati da uno spazio o elimina il file e riavvia LionChat/N/
 settingsWrongParamNumber: Error: configuration file has wrong parameter number /A//N/To fix it, write in it ONLY THE IP and the PORT of the server separated by a space or delete the file and restart LionChat/N/
 readSuccessfull: Read successfull!
 invalidString: Invalid string
 tryReconnect: Trying to connect again...
-youllFindFile: You'll find the file in this program's folder
+youllFindFile: You'll find the file in this program's folder/S/
 tryConnect: Trying to connect to /A/ on port /A/...
+exit: Exit/S/
+send: Send/S/
+fileMenu: File/S/
+editMenu: Edit/S/
+
+# Save History window (Client) Sentences
+
+saveHistoryTitle: Save History/S/
+fileNameLabel: File Name (extesion is added automagically)/S/
+fileSavedSuccessfully: File saved successfully!/S/
+fileSaveError: There was an error saving your file/S/
+saveButton: Save/S/
+tryConnect: Trying to connect...
+pressEnterToReconnect: Press enter to reconnect
+
+# Settings window (Client) Sentences
+
+settingsTitle: Settings/S/
+undoButton: Undo/S/

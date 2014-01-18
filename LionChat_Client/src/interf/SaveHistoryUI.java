@@ -16,6 +16,7 @@ public class SaveHistoryUI extends javax.swing.JFrame {
      */
     public SaveHistoryUI() {
         initComponents();
+        updateLanguage();
         setLocationRelativeTo(null); //Mettiamo la finestra al centro dello schermo
         //Non vogliamo che il programma si chiuda quando questa finestrella si chiude!
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
@@ -31,7 +32,7 @@ public class SaveHistoryUI extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        fileNameLabel = new javax.swing.JLabel();
         fileName = new javax.swing.JTextField();
         saveFile = new javax.swing.JButton();
         label = new javax.swing.JLabel();
@@ -43,7 +44,7 @@ public class SaveHistoryUI extends javax.swing.JFrame {
         setPreferredSize(new java.awt.Dimension(400, 150));
         setResizable(false);
 
-        jLabel1.setText("Nome del file (estensione aggiunta in automatico)");
+        fileNameLabel.setText("Nome del file (estensione aggiunta in automatico)");
 
         fileName.setText("log");
         fileName.addActionListener(new java.awt.event.ActionListener() {
@@ -69,7 +70,7 @@ public class SaveHistoryUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
+                        .addComponent(fileNameLabel)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(fileName)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
@@ -82,7 +83,7 @@ public class SaveHistoryUI extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addComponent(fileNameLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fileName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -108,9 +109,9 @@ public class SaveHistoryUI extends javax.swing.JFrame {
 
     private void saveFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveFileActionPerformed
         if (utilz.Filez.writeFile("./" + fileName.getText() + ".txt", GUI.get().getHistory())) {
-            label.setText("File salvato con successo!");
+            label.setText(GUI.getLanguage().getSentence("fileSavedSuccessfully").print());
         } else {
-            label.setText("C'è stato un errore nel salvataggio del file");
+            label.setText(GUI.getLanguage().getSentence("fileSaveError").print());
         }
     }//GEN-LAST:event_saveFileActionPerformed
 
@@ -124,10 +125,15 @@ public class SaveHistoryUI extends javax.swing.JFrame {
     public void setLabelText(String text) {
         label.setText(text);
     }
-
+    public void updateLanguage(){
+        setTitle(GUI.getLanguage().getSentence("saveHistoryTitle").print());
+        fileNameLabel.setText(GUI.getLanguage().getSentence("fileNameLabel").print());
+        label.setText(GUI.getLanguage().getSentence("youllFindFile").print());
+        saveFile.setText(GUI.getLanguage().getSentence("saveButton").print());
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField fileName;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel fileNameLabel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel label;
     private javax.swing.JButton saveFile;

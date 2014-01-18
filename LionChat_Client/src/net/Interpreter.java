@@ -46,7 +46,7 @@ public class Interpreter {
             GUI.get().append(s);
             return;
         } else {
-            System.out.println("[ATTENZIONE] Ricevuto comando sconosciuto dal server.");
+            System.out.println("[!] Server just sent a mysterious command!");
         }
     }
 }

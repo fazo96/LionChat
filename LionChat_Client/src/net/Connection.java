@@ -38,7 +38,7 @@ public class Connection {
         receiver = new Thread() {
             @Override
             public void run() {
-                GUI.get().append("Tentativo di comunicazione...\n");
+                GUI.get().append(GUI.getLanguage().getSentence("tryConnect").print(ip+" "+port));
                 try {
                     socket = new Socket(ip, port);
                     connected = true;
@@ -46,18 +46,18 @@ public class Connection {
                     //E' l'eccezione che viene tirata se la macchina a quell'IP è
                     //spenta o non esiste
                     Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-                    GUI.get().append("[ERRORE] Server non esiste a quell'indirizzo (UnknownHostException)\n");
+                    GUI.get().append("[ERROR] No machine is turned on at the given address (UnknownHostException)\n");
                     connected = false;
                 } catch (IOException ex) {
                     //Un errore di porta, oppure connection refused. Di solito accada
                     //quando la macchina è accesa ma il programma server non è in
                     //esecuzione
                     Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-                    GUI.get().append("[ERRORE] \n" + ex + "\n\n");
+                    GUI.get().append("[ERROR] \n" + ex + "\n\n");
                     connected = false;
                 }
                 if (!connected) {
-                    GUI.get().append("Premi invio per tentare la riconnessione");
+                    GUI.get().append(GUI.getLanguage().getSentence("pressEnterToReconnect").print());
                     return;
                 }
                 try {
@@ -71,7 +71,7 @@ public class Connection {
                     oos = new ObjectOutputStream(socket.getOutputStream());
                 } catch (IOException ex) {
                     Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-                    GUI.get().append("Connessione fallita!\n");
+                    GUI.get().append("Connection failed!\n");
                     connected = false;
                     return;
                 }
@@ -79,11 +79,11 @@ public class Connection {
                     ois = new ObjectInputStream(socket.getInputStream());
                 } catch (IOException ex) {
                     Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-                    GUI.get().append("Connessione fallita!\n");
+                    GUI.get().append("Connection failed\n");
                     connected = false;
                     return;
                 }
-                GUI.get().append("Connesso!\n");
+                GUI.get().append("Connected!\n");
                 Object o = null;
                 String s = "";
                 while (true) {
@@ -96,14 +96,14 @@ public class Connection {
                         o = ois.readObject();
                     } catch (IOException ex) {
                         //Errore di lettura dal socket. Connessione morta probabilmente
-                        GUI.get().append("[ERRORE] " + ex + "\nImpossibile leggere dal server. Disconnessione\nPremi invio per tentare la riconnessione\n");
+                        GUI.get().append("[ERRORE] " + ex + "\nCan't read from server. Disconnection imminent\n"+GUI.getLanguage().getSentence("pressEnterToReconnect").print());
                         Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                         connected = false;
                         Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                         break;
                     } catch (ClassNotFoundException ex) {
                         //E' stato letto un oggetto di classe sconosciuta.
-                        GUI.get().append("[ERRORE] ClassNotFoundException.\nPer favore informa immediatamente gli amministratori.\n");
+                        GUI.get().append("[ERRORE] ClassNotFoundException.\nThis really shouldn't happen! Contact the developer\n");
                         Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                         continue;
                     }
@@ -117,7 +117,7 @@ public class Connection {
                     } else if (o instanceof SyncObject); //se non metto questa istruzione, il programma darà ClassNotFoundException.
                 }
                 //Il ciclo infinito si è rotto. Si è verificata disconnessione
-                GUI.get().append("Disconnesso!\n");
+                GUI.get().append("Disconnected!\n");
             }
         };
         receiver.start();

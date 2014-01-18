@@ -119,7 +119,7 @@ public class Sentence {
         for (String s : ad) {
             ret = ret.replaceFirst(separator, s);
         }
-        return parse(ret);
+        return parse(ret).replace(separator, "[ERR]");
     }
 
     /**
@@ -143,7 +143,7 @@ public class Sentence {
         if (!isLoaded()) {
             return error();
         }
-        return getProcessedContentString().replace(separator, "[!e]");
+        return getProcessedContentString().replace(separator, "[ERR]");
     }
 
     /**

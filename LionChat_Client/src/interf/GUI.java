@@ -15,7 +15,7 @@ public class GUI extends javax.swing.JFrame {
 
     private String ip = "localhost", languageID = "en";
     private int port = 7777;
-    private Lang language = null;
+    private static Lang language = null;
     private static GUI gui;
     private static SettingsUI settingsUI;
     private static SaveHistoryUI saveHistoryUI;
@@ -24,11 +24,6 @@ public class GUI extends javax.swing.JFrame {
      * Creates new form GUI
      */
     public GUI() {
-        //Inizializzo finestre aggiuntive
-        settingsUI = new SettingsUI();
-        settingsUI.setVisible(false);
-        saveHistoryUI = new SaveHistoryUI();
-        saveHistoryUI.setVisible(false);
         initComponents(); //inizializzo i componenti grafici
         setLocationRelativeTo(null); //Mettiamo la finestra al centro dello schermo
         setTitle("LionChat Client"); //imposto titolo finestra
@@ -42,9 +37,14 @@ public class GUI extends javax.swing.JFrame {
         //Cerco di dare il focus al textfield, così non bisogna cliccarci
         //col mouse
         textField.requestFocusInWindow();
-        loadLanguage("en"); //Al momento non è utile usare i file di lingue
+        loadLanguage("en"); //Carico la lingua il prima possibile
+        //Inizializzo finestre aggiuntive
+        settingsUI = new SettingsUI();
+        settingsUI.setVisible(false);
+        saveHistoryUI = new SaveHistoryUI();
+        saveHistoryUI.setVisible(false);
         getSettings(); //provo a leggere ip e porta da file
-        append(language.getSentence("tryConnect").print(ip+" "+port));
+        //append(language.getSentence("tryConnect").print(ip+" "+port));
         Connection.connect(ip, port); //connessione effettiva
     }
 
@@ -82,11 +82,11 @@ public class GUI extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         textArea = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        fileMenu = new javax.swing.JMenu();
         saveHistory = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        exit = new javax.swing.JMenuItem();
+        editMenu = new javax.swing.JMenu();
+        settingsMenu = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -149,7 +149,7 @@ public class GUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jMenu1.setText("File");
+        fileMenu.setText("File");
 
         saveHistory.setText("Salva Cronologia");
         saveHistory.addActionListener(new java.awt.event.ActionListener() {
@@ -157,29 +157,29 @@ public class GUI extends javax.swing.JFrame {
                 saveHistoryActionPerformed(evt);
             }
         });
-        jMenu1.add(saveHistory);
+        fileMenu.add(saveHistory);
 
-        jMenuItem2.setText("Exit");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        exit.setText("Exit");
+        exit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+                exitActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem2);
+        fileMenu.add(exit);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(fileMenu);
 
-        jMenu2.setText("Modifica");
+        editMenu.setText("Modifica");
 
-        jMenuItem1.setText("Impostazioni");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        settingsMenu.setText("Impostazioni");
+        settingsMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                settingsMenuActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem1);
+        editMenu.add(settingsMenu);
 
-        jMenuBar1.add(jMenu2);
+        jMenuBar1.add(editMenu);
 
         setJMenuBar(jMenuBar1);
 
@@ -229,14 +229,14 @@ public class GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_textFieldKeyPressed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void settingsMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsMenuActionPerformed
         settingsUI.setVisible(true);
         settingsUI.updateFields();
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_settingsMenuActionPerformed
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    private void exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitActionPerformed
         System.exit(0);
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    }//GEN-LAST:event_exitActionPerformed
 
     private void saveHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveHistoryActionPerformed
         saveHistoryUI.setVisible(true);
@@ -277,15 +277,15 @@ public class GUI extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu editMenu;
+    private javax.swing.JMenuItem exit;
+    private javax.swing.JMenu fileMenu;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenuItem saveHistory;
     private javax.swing.JButton sendButton;
+    private javax.swing.JMenuItem settingsMenu;
     private javax.swing.JTextArea textArea;
     private javax.swing.JTextField textField;
     // End of variables declaration//GEN-END:variables
@@ -328,7 +328,19 @@ public class GUI extends javax.swing.JFrame {
 
     private boolean loadLanguage(String lang) {
         language = new Lang(lang);
+        if(!language.isLoaded())return false;
         System.out.println(language.getLangInfo(true));
+        //Apply the lang
+        fileMenu.setText(language.getSentence("fileMenu").print());
+        editMenu.setText(language.getSentence("editMenu").print());
+        settingsMenu.setText(language.getSentence("settingsTitle").print());
+        exit.setText(language.getSentence("exit").print());
+        saveHistory.setText(language.getSentence("saveHistoryTitle").print());
+        sendButton.setText(language.getSentence("send").print());
         return true;
     }
+    public static Lang getLanguage() {
+        return language;
+    }
+    
 }
