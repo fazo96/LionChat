@@ -1,16 +1,51 @@
+**Notice**: the project is being entirely translated to english. This shouldn't take more time than one week.
+
 # LionChat
-Chat client/server basata su java con le seguenti features:
-- Gestione di permessi e gruppi a cui un utente puo' appartenere.
-- Gestione di più canali in modo simile a IRC
-- Le password sono al sicuro: il client non salva mai su file le password degli utenti e non le invia mai via rete, ma invia l'hash SHA-512 invece
+Multiplatform server/client socket based text chat written in Java with multi sophisticated features **already implemented**, such as:
+- Realtime text chat
+- Works on Linux, Mac OS X and Windows (Only tested on linux and briefly on windows. Try it! Should work!)
+- Multilanguage support with easy to write language files, with english being the default
+- Secure account system with no password exposure (at least I think so. Have a look at the code!)
+- Extensive command system for dynamic server, account, groups and permission management (almost finished but usable)
+- Administrator users that can run server commands
+- Ability to join channels and password protect them
+- Easily configurable, comfortable GUI for the client
+- Headless server (no GUI required)
 
-# Come importare il progetto
-E' molto semplice: è necessario git e l'ultima versione di netbeans. Dopo aver clonato la repo, aprire con netbeans i progetti che contiene (LionChat-Server, LionChat-Client e LionChat-Libs). E' possibile successivamente utilizzare "clean and build" di netbeans per compilare i file .jar pronti per la distribuzione che si trovano in /dist all'interno di ogni progetto. E' sufficiente distribuire il client, mentre il server va usato per permettere agli utenti di connettersi.
+**Planned:**
+- Italian language file
+- Configurable logging system for the server, allowing automatic log files
+- Config file based extensive, optional configuration system for the Server
+- Very simple but powerful configuration system for the client (it's there now but it's bare bones)
 
-NB: Per funzionare è necessario impostare il progetto "LionChat_Libs" come dipendenza degli altri due.
-Per farlo: tasto destro su uno dei due progetti, proprietà > libraries > rimuovere il progetto e poi riaggiungerlo (add project) per risolvere il problema di dipendenza errata
+How to try it
+==============
+You need the *latest version* of Java installed and *working*.
+I will provide links to precompiled jar files in a while. Try the below paragraph for now.
 
-# Licence
+How to import, edit and compile
+==============
+It's not hard: you need the *latest version* of Git, Netbeans and of course the JDK7 (Either oracle or openJDK).
+- Clone the repo
+- Open the 3 projects (LionChat Client, LionChat Libs, Lionchat Server) using Netbeans by navigating into the repo folder
+- For the client and server projects, open the project's proprieties in Netbeans and **set their src folder as the working directory**. Just write "src" in the working directory text field.
+- For the client and server projects, **set the other project as a dependency** if it's not already set correctly. (Netbeans will tell you)
+- Edit the code or press "Clean and build" to generate redistributable .jar executables using Netbeans.
+
+If you don't know how to do the above or don't understand it, you *clearly* need to learn basic Git and Netbeans functionality before you can tinker with the program. Google may help you.
+
+Faq
+----
+**But I love eclipse! How do you import in eclipse?**
+
+I'm sorry, I don't like eclipse much. Of course you can code with eclipse, but it may be hard to get the project to work and I don't support it.
+
+**But I don't use IDEs or I don't want to! How do I compile from command line?**
+
+I never tried it, but you should be able to do it if you have experiance with manually compiling. Just read the netbeans part and try. I don't support this though. Netbeans is free and open source for Windows, Mac and Linux, try it.
+
+Licence
+==============
 Copyright (C) 2013  Enrico Fasoli
 
 This program is free software; you can redistribute it and/or
