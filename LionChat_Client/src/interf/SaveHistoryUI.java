@@ -1,11 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package interf;
 
 /**
+ * A window used to save the output history to file.
  *
  * @author fazo
  */
@@ -16,7 +12,6 @@ public class SaveHistoryUI extends javax.swing.JFrame {
      */
     public SaveHistoryUI() {
         initComponents();
-        updateLanguage();
         setLocationRelativeTo(null); //Mettiamo la finestra al centro dello schermo
         //Non vogliamo che il programma si chiuda quando questa finestrella si chiude!
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
@@ -119,13 +114,19 @@ public class SaveHistoryUI extends javax.swing.JFrame {
         saveFileActionPerformed(evt);
     }//GEN-LAST:event_fileNameActionPerformed
     /**
-     * Imposta il testo del label di fianco al tasto salva
-     * @param text il nuovo testo da inserire.
+     * Sets the title of the label indicating the state of the save to file
+     * operation.
+     *
+     * @param text the new text to put.
      */
     public void setLabelText(String text) {
         label.setText(text);
     }
-    public void updateLanguage(){
+
+    /**
+     * Applies the current language sentences on the window's text.
+     */
+    public void applyLanguage() {
         setTitle(GUI.getLanguage().getSentence("saveHistoryTitle").print());
         fileNameLabel.setText(GUI.getLanguage().getSentence("fileNameLabel").print());
         label.setText(GUI.getLanguage().getSentence("youllFindFile").print());

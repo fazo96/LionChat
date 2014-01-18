@@ -3,8 +3,11 @@ package lang;
 import java.util.ArrayList;
 
 /**
- * Un record di una frase scritta in una determinata lingua
+ * A Sentence , written in a Language. A Sentence has a version in every
+ * language. LionChat mostly uses Sentences to communicate with users, to ensure
+ * easy language portability.
  *
+ * @see Language
  * @author fazo
  */
 public class Sentence {
@@ -14,10 +17,10 @@ public class Sentence {
     private String content = "";
 
     /**
-     * Crea una frase con nome e contenuto dati
+     * Creates a Sentence with given name and content
      *
-     * @param name il nome della frase (no spazi)
-     * @param content il contenuto della frase
+     * @param name the Sentence name
+     * @param content the Sentence content
      */
     public Sentence(String name, String content) {
         this.name = name;
@@ -25,12 +28,12 @@ public class Sentence {
     }
 
     /**
-     * Inizializza una Sentence facendo il parsing del nome con i content.
+     * Initializes a Sentence by parsing the String given using the (badly coded) parser.
      *
      * @param rawRead
      */
     public Sentence(String rawRead) {
-        String[] array = rawRead.split(Lang.sentenceSeparator, 2);
+        String[] array = rawRead.split(Language.sentenceSeparator, 2);
         if (array.length != 2) {
             return;
         }

@@ -5,20 +5,19 @@ import java.util.ArrayList;
 import utilz.Utils;
 
 /**
- * Questa classe interpreta i comandi lato client.
+ * This class performs (badly coded) parsing.
  *
  * @author Fazo
  */
 public class Interpreter {
 
     /**
-     * "Prepara" una stringa per l'invio al server, ad esempio invia l'hash
-     * della password invece della password vera e propria, TUTTE le stringe
-     * dovrebbero essere fatte passare per questo metodo prima di essere
-     * inviate!
+     * "Prepares" a string to send it to the server, for example by writing
+     * hashes instead of passwords, or by trimming white space in the borders.
+     * Every string must be run through this method before being sent.
      *
-     * @param s la stringa da "preparare"
-     * @return la stringa preparata.
+     * @param s the string to prepare
+     * @return prepared string.
      */
     public static String fixToSend(String s) {
         ArrayList<String> ss = Utils.toList(s, " ");
@@ -35,17 +34,18 @@ public class Interpreter {
     }
 
     /**
-     * Interpreta stringa dal server e mostra all'utente i dati necessari.
+     * Parses string. Intended to be used for strings received by the server. If
+     * it's a command, it executes it, if it's a message, it prints it.
      *
-     * @param s stringa da interpretare
+     * @param s string to parse
      */
-    public static void cmd(String s) { //interpreto comando client
-        // Se la stringa non è un comando stampo e ritorno
-        s=s.trim(); //rimuovo spazi bianchi a sinistra e destra dalla stringa
+    public static void cmd(String s) {
+        s = s.trim();
         if (!s.startsWith("/")) {
             GUI.get().append(s);
             return;
         } else {
+            // There are not yet server commands.
             System.out.println("[!] Server just sent a mysterious command!");
         }
     }

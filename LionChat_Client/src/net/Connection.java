@@ -12,27 +12,27 @@ import java.util.logging.Logger;
 import utilz.SyncObject;
 
 /**
- * Questa classe si occupa di gestire la connessione con il server.
+ * This class handles network connection to the server.
  *
  * @author fazo
  */
 public class Connection {
 
-    private static boolean connected = false; //indica se il client è connesso
-    //è l'oggetto che permette lo scambio dati via rete
+    private static boolean connected = false; // wether or not the client is connected
+    // socket used to send and receive data
     private static Socket socket;
-    //thread che riceve e processa i dati dal server
+    // thread used to receive data
     private static Thread receiver;
-    //oggetto che permette l'invio di istanze al server
+    // object used to send istances to server
     private static ObjectOutputStream oos;
-    //oggetto che permette la ricezione di istanze dal server
+    // object used to receive istances to server
     private static ObjectInputStream ois;
 
     /**
-     * Tenta la connessione con un server e inizializza tutto il necessario.
+     * Tries to connect to the server.
      *
-     * @param ip l'indirizzo IP al quale connettersi
-     * @param port la porta di rete da usare.
+     * @param ip the IP address of the server. Hostnames will be resolved using DNS
+     * @param port network port used.
      */
     public static void connect(final String ip, final int port) {
         receiver = new Thread() {
@@ -43,15 +43,12 @@ public class Connection {
                     socket = new Socket(ip, port);
                     connected = true;
                 } catch (UnknownHostException ex) {
-                    //E' l'eccezione che viene tirata se la macchina a quell'IP è
-                    //spenta o non esiste
+                    // IP doesn't exist
                     Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                     GUI.get().append("[ERROR] No machine is turned on at the given address (UnknownHostException)\n");
                     connected = false;
                 } catch (IOException ex) {
-                    //Un errore di porta, oppure connection refused. Di solito accada
-                    //quando la macchina è accesa ma il programma server non è in
-                    //esecuzione
+                    // Port closed or connection refused
                     Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                     GUI.get().append("[ERROR] \n" + ex + "\n\n");
                     connected = false;
@@ -61,12 +58,12 @@ public class Connection {
                     return;
                 }
                 try {
-                    //Questa istruzione imposta che se non si riceve niente per 10 sec,
-                    //la connessione è data per persa
+                    // Set the timeout to 10 seconds. 10 seconds of silence = connection lost
                     socket.setSoTimeout(10000); //10s di timeout
                 } catch (SocketException ex) {
                     Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                // Initialize istance streams
                 try {
                     oos = new ObjectOutputStream(socket.getOutputStream());
                 } catch (IOException ex) {
@@ -83,48 +80,51 @@ public class Connection {
                     connected = false;
                     return;
                 }
+                // Looks like we're on
                 GUI.get().append("Connected!\n");
                 Object o = null;
                 String s = "";
+                // Infinite loop of receiving data!
                 while (true) {
                     try {
-                        sleep(20); //20 millisecondi di pausa per non usare 100% cpu
+                        sleep(20); // Trying not to waste all the cpu
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    try {//receive loop
+                    try {
                         o = ois.readObject();
                     } catch (IOException ex) {
-                        //Errore di lettura dal socket. Connessione morta probabilmente
+                        // If this happens connection is probably dead
                         GUI.get().append("[ERRORE] " + ex + "\nCan't read from server. Disconnection imminent\n"+GUI.getLanguage().getSentence("pressEnterToReconnect").print());
                         Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                         connected = false;
                         Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                         break;
                     } catch (ClassNotFoundException ex) {
-                        //E' stato letto un oggetto di classe sconosciuta.
+                        // An object from unknown class has been received, that's weird!
                         GUI.get().append("[ERRORE] ClassNotFoundException.\nThis really shouldn't happen! Contact the developer\n");
                         Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                         continue;
                     }
                     if (o == null) {
-                        continue; //oggetto nullo: salto
+                        continue; // We got a null something! There's probably nothing to read
                     }
                     if (o instanceof String) {
-                        s = (String) o; //se la stringa inizia con lo / rimuovo la prima parola
-                        Interpreter.cmd(s);  //Interpreto comando/messaggio.
-                        //La funzione cmd esegue i comandi oppure stampa la stringa a seconda dei casi.
-                    } else if (o instanceof SyncObject); //se non metto questa istruzione, il programma darà ClassNotFoundException.
+                        // We got a string! What a surprise for a chat program
+                        // Run it trough the interpreter, which will know what to do with it
+                        Interpreter.cmd((String)o);
+                    } else if (o instanceof SyncObject);
+                    // We got a SyncObject! Means the connection is alive.
                 }
-                //Il ciclo infinito si è rotto. Si è verificata disconnessione
+                // Well, looks like we're not receiving anymore.
                 GUI.get().append("Disconnected!\n");
             }
         };
-        receiver.start();
+        receiver.start(); // I freaked out for 20 mins because I forgot this...
     }
 
     /**
-     * Chiude la connessione e ferma i thread.
+     * Closes the connection and stops everything
      */
     public static void disconnect() {
         //fermo il thread
@@ -134,28 +134,28 @@ public class Connection {
     }
 
     /**
-     * Invia una stringa al server.
+     * Sends string to server.
      *
-     * @param s la stringa da inviare.
+     * @param s the string to send.
      */
     public static void send(String s) {
         if (!connected) {
-            return; //se non sono connesso non faccio nulla
+            return; // Can't send if not connected :(
         }
         try {
             //Tento la scrittura di una stringa via socket
             oos.writeObject(Interpreter.fixToSend(s));
         } catch (IOException ex) { //Invio fallito, connessione probabilmente morta
             Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-            GUI.get().append("[ERROR] Tentativo di invio al server fallito!\nConnessione persa.\n");
+            GUI.get().append("[ERROR] Could not send data to server!\nConnection declared dead.\n");
             disconnect();
         }
     }
 
     /**
-     * Controlla lo stato della connessione.
+     * Checks if the connection is ok
      *
-     * @return true se è connesso.
+     * @return true if presumed connected.
      */
     public static boolean isConnected() {
         return connected;

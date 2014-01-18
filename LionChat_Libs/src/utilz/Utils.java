@@ -8,18 +8,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Utility varie.
+ * Various utilities.
  *
  * @author fazo
  */
 public class Utils {
 
     /**
-     * Ritorna l'hash SHA-512 della stringa data in formato stringa standard
-     * (UTF-8).
+     * Returns SHA512 hash of the given string.
      *
-     * @param x la stringa da usare per creare l'hash.
-     * @return l'hash della stringa data.
+     * @param x the string to hash.
+     * @return the hash of the given string.
      */
     public static String getSecureHash(String x) {
         //Questa funzione ritorna l'hash SHA1 di una stringa, già convertito in stringa UTF-8
@@ -49,22 +48,21 @@ public class Utils {
     }
 
     /**
-     * Converte i nanosecondi dati in secondi.
+     * Converts nanoseconds given in seconds.
      *
-     * @param n nanosecondi da convertire in formato Long.
-     * @return la quantità in secondi.
+     * @param n nanoseconds to convert to seconds
+     * @return the time given in seconds.
      */
     public static int nanoToSec(Long n) {
-        //fa una semplice divisione: da nanoscondi a secondi, passando da Long a Int
+        // Let's hope I counted the zeroes right
         return (int) (n / 1000000000);
     }
 
     /**
-     * Ritorna se la stringa è valida: una stringa è considerata valida se non
-     * contiene solo spazi e non è vuota.
+     * Checks if the string is ok.
      *
-     * @param s la stringa da controllare
-     * @return true se è valida.
+     * @param s the string to check
+     * @return true if it's ok
      */
     public static boolean isValid(String s) {
         if (s == null) {
@@ -82,37 +80,39 @@ public class Utils {
     }
 
     /**
-     * Trasforma una stringa in una lista di stringhe.
+     * Splits the string into different parts and returns them in a dynamic
+     * array
      *
-     * @param s la stringa da trasformare.
-     * @param regex il divisore da usare per dividere la stringa in parti.
-     * @return la lista di stringhe.
+     * @param s the string to transform
+     * @param regex the character sequence to use as splitter
+     * @return the resulting list of strings
      */
     public static ArrayList<String> toList(String s, String regex) { //passa da una stringa a una lista.
-        if (regex == null) { //il divisore di default è uno spazio
+        if (regex == null) { //default splitter is a blank space
             regex = " ";
         }
-        if (s == null) { //se la stringa è nulla, la lista sarà nulla
+        if (s == null) { // String is null? return null!
             return null;
         }
-        String b[] = s.split(regex); //divido la stirnga con il regex e la metto in un array
-        if(b.length==0)return null;
+        String b[] = s.split(regex); // Split it
+        if (b.length == 0) {
+            return null;
+        }
         ArrayList<String> content = new ArrayList<String>(b.length);
-        for (String c : b) { //inserisco gli elementi dell'array nell'array dinamico
+        for (String c : b) { // Get a dynamic array
             content.add(c);
         }
-        return content; //restituisco array dinamico
+        return content; //return it!
     }
 
     /**
-     * Aggiunge gli elementi di B in A.
+     * Adds every item in B into the string A
      *
-     * @param a la lista a cui aggiungere gli elementi.
-     * @param b la lista da cui aggiungere gli elementi.
+     * @param a the list to add items to
+     * @param b the list from which items are picked
      */
     public static void mergeLists(ArrayList<String> a, ArrayList<String> b) {
-        //copia il contenuto di B in a
-        for (String c : b) { //aggiungo gli elementi di b ad a
+        for (String c : b) {
             if (!a.contains(c)) {
                 a.add(c);
             }
@@ -120,25 +120,25 @@ public class Utils {
     }
 
     /**
-     * Trasforma una lista di stringhe in una stringa unica.
+     * Concatenates the string elements one after another, starting from the
+     * first to the last, putting the divisor given between them. The divisor
+     * can be null.
      *
-     * @param ss la lista da trasformare
-     * @param divisor i caratteri da inserire tra un elemento e l'altro.
-     * @return la stringa ottenuta.
+     * @param ss the list to turn to string
+     * @param divisor character sequence to put between each string part
+     * @return the resulting string
      */
     public static String fromList(ArrayList<String> ss, String divisor) {
-        //passa da una lista a una stringa
-        if (ss == null) { //lista nulla = stringa nulla
+        if (ss == null) {
             return null;
         }
-        if (divisor == null) { //imposto divisore default come uno spazio
+        if (divisor == null) {
             divisor = " ";
         }
-        String a = ss.get(0);//aggiungo il primo elemento
+        String a = ss.get(0);
         for (int i = 1; i < ss.size(); i++) {
-            //aggiungo uno spazio e l'elemento i
             a += divisor + ss.get(i);
         }
-        return a; //ritorno la stringa ricomposta
+        return a;
     }
 }

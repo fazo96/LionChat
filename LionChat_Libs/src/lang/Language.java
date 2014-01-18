@@ -3,48 +3,51 @@ package lang;
 import java.util.ArrayList;
 
 /**
- * Un oggetto che descrive e contiene le informazioni di una lingua disponibile
- * nel programma.
+ * This class represents a language and its Sentences.
  *
  * @author fazo
  */
-public class Lang {
+public class Language {
 
-    public static final String sentenceSeparator = ":", comment = "#", title = "---"; //Separatore universale
+    // Separators for the parser
+    public static final String sentenceSeparator = ":", comment = "#", title = "---";
+    // All the sentences of this language
     private ArrayList<Sentence> sentences;
+    // Language attributes
     private String id = null, name = null;
 
     /**
-     * Inizializza e carica in memoria la lingua con l'id dato.
+     * Initializes and loads from file the language with given ID.
      *
-     * @param id l'identificativo della lingua e nome del file che la contiene.
+     * @param id the ID of the language, which also identifies the file.
      */
-    public Lang(String id) {
+    public Language(String id) {
         this.id = id;
         sentences = new ArrayList<Sentence>();
         load();
     }
 
     /**
-     * Carica da file le informazioni della lingua. Il file deve chiamarsi con
-     * l'id della lingua, senza estensione. Viene tentato il caricamento
-     * automaticamente al momento dell'inizializzazione della lingua
+     * Loads language data from file. The file must be in ./lang/ and must be
+     * called like the language ID. A load is attempted automatically when a new
+     * language is declared.
      *
      * @return se è riuscita l'operazione o no
      */
     public boolean load() {
         String fileContent = utilz.Filez.getFileContent("./lang/" + id);
         if (fileContent == null) {
-            System.out.println("[LIB] Tried to load lang \""+id+"\" but null file");
+            System.out.println("[LIB] Tried to load lang \"" + id + "\" but null file");
             return false;
         }
-        System.out.println("[LIB] Loading \""+id+"\" ...");
+        System.out.println("[LIB] Loading \"" + id + "\" ...");
         for (String s : utilz.Utils.toList(fileContent, "\n")) {
             if (s == null || s == "") {
                 System.out.println("[LIB][Lang] Skipping an empty line");
                 continue;
             }
-            s = s.trim(); System.out.println("[LIB] Processing Langfile String: \""+s+"\"");
+            s = s.trim();
+            System.out.println("[LIB] Processing Langfile String: \"" + s + "\"");
             if (s.startsWith(comment)) {
                 System.out.println("[LIB][Lang] Skipping comment line");
                 continue;
@@ -64,10 +67,14 @@ public class Lang {
     }
 
     /**
-     * Ritorna l'istanza di una Sentence ricercandola tramite il suo nome
+     * Returns a sentence from this Language by searching the list using the
+     * given sentence name. Sentence names are case-sensitive.
      *
-     * @param name il nome da cercare
-     * @return la Sentence corrispondente se esiste, altrimenti null
+     * @param name the sentence to look for
+     * @return the sentence if found, else a new sentence containing an error
+     * message (this is to avoid very annoying exceptions that cause crashes
+     * when looking for nonexistant sentences just because a language file is
+     * badly written. This way an error will be displayed in the GUI instead)
      */
     public Sentence getSentence(String name) {
         for (Sentence a : sentences) {
@@ -75,18 +82,18 @@ public class Lang {
                 return a;
             }
         }
-        return new Sentence("name","ERROR IN LANGUAGE FILE \""+id+"\": CAN'T FIND "+name+" SENTENCE");
+        return new Sentence("name", "ERROR IN LANGUAGE FILE \"" + id + "\": CAN'T FIND " + name + " SENTENCE");
     }
 
     /**
-     * Ritorna info sulla lingua, scritte in inglese, leggibili da essere umano.
+     * Returns a resume of this Language object, written in english, readable to humans.
      *
-     * @return una stringa con un resoconto di questa lang.
+     * @return resume as string.
      */
     public String getLangInfo(boolean verbose) {
         String s = "Lang: " + id + " Name: " + name + "\nSentences: " + sentences.size();
         if (!isLoaded()) {
-            return s+"\n[!] LANG NOT LOADED!!!";
+            return s + "\n[!] LANG NOT LOADED!!!";
         }
         if (!verbose) {
             return s;
@@ -101,9 +108,9 @@ public class Lang {
     }
 
     /**
-     * Funzione che comunica se la lingua è caricata correttamente
+     * Tells wether or not the Language looks loaded in memory without issues.
      *
-     * @return true se la lang è utilizzabile
+     * @return true if the Language looks usable
      */
     public boolean isLoaded() {
         return !sentences.isEmpty() && name != null && id != null;

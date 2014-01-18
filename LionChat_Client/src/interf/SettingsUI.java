@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package interf;
 
 import java.util.ArrayList;
@@ -23,10 +18,12 @@ public class SettingsUI extends javax.swing.JFrame {
         setLocationRelativeTo(null); //Mettiamo la finestra al centro dello schermo
         //Non vogliamo che il programma si chiuda quando questa finestrella si chiude!
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
-        updateLanguage();
     }
 
-    public void updateLanguage() {
+    /**
+     * Applies the current language sentences on the window's text.
+     */
+    public void applyLanguage() {
         setTitle(GUI.getLanguage().getSentence("settingsTitle").print());
         undoButton.setText(GUI.getLanguage().getSentence("undoButton").print());
     }
@@ -163,29 +160,20 @@ public class SettingsUI extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_undoButtonActionPerformed
     /**
-     * Scrive le modifiche ai campi IP e Porta sul file settings.
+     * Writes new settings to file and to ram.
      */
     public void applySettings() {
-        System.out.println("Nuove impostazioni scritte su file");
+        System.out.println("New settings wrote to file.");
         Filez.writeFile("settings.txt", ipField.getText() + " " + portField.getText());
     }
 
     /**
-     * Legge dal file settings.txt le opzioni del programma.
+     * Reads settings again from file and updates them in the current process.
      */
     public void updateFields() {
-        String data = Filez.getFileContent("settings.txt");
-        if (data == null) {
-            System.out.println("[!] Impostazioni non esistenti: creo...");
-            updateFields();
-        }
-        ArrayList<String> strings = Utils.toList(data, " ");
-        if (strings == null || strings.size() != 2) {
-            System.out.println("[!] Impostazioni corrotte: sistemo...");
-            updateFields();
-        }
-        ipField.setText(strings.get(0));
-        portField.setText(strings.get(1));
+        GUI.get().readSettings();
+        ipField.setText(GUI.get().getIP());
+        portField.setText("" + GUI.get().getPort());
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField ipField;

@@ -3,11 +3,12 @@ package interf;
 import utilz.Filez;
 import java.util.ArrayList;
 import javax.swing.text.DefaultCaret;
-import lang.Lang;
+import lang.Language;
 import net.Connection;
 import utilz.Utils;
 
 /**
+ * The main Graphical User Interface of the LionChat Client.
  *
  * @author fazo
  */
@@ -15,37 +16,39 @@ public class GUI extends javax.swing.JFrame {
 
     private String ip = "localhost", languageID = "en";
     private int port = 7777;
-    private static Lang language = null;
+    private static Language language = null;
     private static GUI gui;
     private static SettingsUI settingsUI;
     private static SaveHistoryUI saveHistoryUI;
 
     /**
-     * Creates new form GUI
+     * Initializes components of a new GUI.
      */
     public GUI() {
-        initComponents(); //inizializzo i componenti grafici
-        setLocationRelativeTo(null); //Mettiamo la finestra al centro dello schermo
-        setTitle("LionChat Client"); //imposto titolo finestra
-        System.out.println("GUI Started"); //output su console
-        //Imposto alla textArea di andare a capo automaticamente
-        //quando si arriva al limite di caratteri orizzontali
+        initComponents(); //intialization of graphical components
+    }
+
+    /**
+     * Starts up the GUI and initializes all the stuff. Very important, must be
+     * run once when the program starts
+     */
+    private void start() {
+        setTitle("LionChat Client");
+        System.out.println("GUI Started");
+        //set text area autoscrolling and line wrapping
         textArea.setLineWrap(true);
-        //Imposto autoscroll
         autoScroll();
-        gui = this; //creo un puntatore all'istanza che sto creando
-        //Cerco di dare il focus al textfield, così non bisogna cliccarci
-        //col mouse
+        gui = this; //configure static pointer to this instance
+        //Give focus to the text input field
         textField.requestFocusInWindow();
-        loadLanguage("en"); //Carico la lingua il prima possibile
-        //Inizializzo finestre aggiuntive
+        loadLanguage("en"); //load english language into the program
+        readSettings(); //read settings from file
+        gui.setVisible(true); //make the window visible
+        setLocationRelativeTo(null); //put window at the center of the screen
+        //Prepare other windows
         settingsUI = new SettingsUI();
-        settingsUI.setVisible(false);
         saveHistoryUI = new SaveHistoryUI();
-        saveHistoryUI.setVisible(false);
-        getSettings(); //provo a leggere ip e porta da file
-        //append(language.getSentence("tryConnect").print(ip+" "+port));
-        Connection.connect(ip, port); //connessione effettiva
+        Connection.connect(ip, port); //connect to the server :)
     }
 
     private void autoScroll() {
@@ -248,6 +251,8 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_textFieldActionPerformed
 
     /**
+     * Entry point of the program. Istantiates the GUI and starts it up.
+     *
      * @param args the command line arguments
      */
     public static void main(String args[]) {
@@ -271,8 +276,8 @@ public class GUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                gui = new GUI(); //Il costruttore contiene il "bootstrap"
-                gui.setVisible(true);
+                gui = new GUI();
+                gui.start(); //Start the GUI up!
             }
         });
     }
@@ -290,57 +295,88 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JTextField textField;
     // End of variables declaration//GEN-END:variables
 
-    //legge da file ip e porta. Se non riesce, rimangono i default
-    private void getSettings() {
+    /**
+     * Read settings from the file, autoconfiguring it if it's missing.
+     */
+    public void readSettings() {
         ArrayList<String> cnt = null;
-        //leggo il file e creo una lista di stringhe contenute
+        //read the file and read the content
         append(language.getSentence("tryReadSettings").print());
-        //append("Inizio lettura file settings.txt\n2 tentativi.\n");
         for (int i = 0; i < 2; i++) {
             append(language.getSentence("tryNumber").print("" + (i + 1)));
             cnt = Utils.toList(Filez.getFileContent("settings.txt"), " ");
-            if (cnt == null) { //se la lista è nulla, c'è stato un errore di lettura
+            if (cnt == null) { // If the list is null, it means the read failed
                 append(language.getSentence("settingsNotFound").print());
                 Filez.writeFile("settings.txt", ip + " " + port);
-                continue; //non c'è nulla da fare, quindi ritorno
+                continue; //Nothing to do anymore
             }
             append(language.getSentence("readSuccessfull").print());
             break;
         }
         if (cnt == null) {
             append(language.getSentence("settingsReadFailed").print());
-        } else if (cnt.size() != 2) { //se gli elementi non sono due, il file non è valido
+        } else if (cnt.size() != 2) { //There must be 2 elements for the file to be valid
             append(language.getSentence("settingsWrongParamNumber").print(cnt.size() + ""));
-            return; //non c'è nulla da fare, ritorno
+            return; //nothing to do anymore.
         }
+        // Finally assign the parameters
         ip = cnt.get(0);
-        port = Integer.parseInt(cnt.get(1));
+        try {
+            port = Integer.parseInt(cnt.get(1));
+        } catch (Exception ex) { // Port number is not valid!
+            port = 7777;
+        }
+    }
+
+    public String getIP() {
+        return ip;
+    }
+
+    public int getPort() {
+        return port;
     }
 
     /**
-     * Rirotna tutto il testo presente nell'area di testo
+     * Returns the text inside the output area
      *
-     * @return il testo sottoforma di stringa
+     * @return text as string
      */
     public String getHistory() {
         return textArea.getText();
     }
 
+    /**
+     * Loads up a language file and applies it automatically
+     *
+     * @param lang
+     * @return
+     */
     private boolean loadLanguage(String lang) {
-        language = new Lang(lang);
-        if(!language.isLoaded())return false;
+        language = new Language(lang);
+        if (!language.isLoaded()) {
+            return false;
+        }
         System.out.println(language.getLangInfo(true));
-        //Apply the lang
+        //Apply the language to this GUI
         fileMenu.setText(language.getSentence("fileMenu").print());
         editMenu.setText(language.getSentence("editMenu").print());
         settingsMenu.setText(language.getSentence("settingsTitle").print());
         exit.setText(language.getSentence("exit").print());
         saveHistory.setText(language.getSentence("saveHistoryTitle").print());
         sendButton.setText(language.getSentence("send").print());
+        // Now inform other windows of the language change
+        saveHistoryUI.applyLanguage();
+        settingsUI.applyLanguage();
         return true;
     }
-    public static Lang getLanguage() {
+
+    /**
+     * Return the language the program is speaking in
+     *
+     * @return the language of the program.
+     */
+    public static Language getLanguage() {
         return language;
     }
-    
+
 }
