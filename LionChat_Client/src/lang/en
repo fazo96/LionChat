@@ -25,7 +25,7 @@ tryReadSettings: Trying to read settings.txt/N/2 tries.
 # Above you can see /N/. It is like \n, it creates a new line. Sentences are ended automatically with \n if they don't end with the noNewLine charsequence ( /S/ )
 settingsNotFound: Settings file not found!/N/Automatically creating file.
 settingsReadFailed: Could not read file!/N/Using default settings instead
-settingsWrongParamNumber: Error: configuration file has wrong parameter number /A//N/To fix it, write in it ONLY THE IP and the PORT of the server separated by a space or delete the file and restart LionChat/N/
+settingsWrongParamNumber: Error: configuration file has wrong parameter number /A//N/The configuration file has been rewritten automatically.
 readSuccessfull: Read successfull!
 invalidString: Invalid string
 tryReconnect: Trying to connect again...

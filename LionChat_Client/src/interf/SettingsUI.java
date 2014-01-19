@@ -1,8 +1,6 @@
 package interf;
 
-import java.util.ArrayList;
 import utilz.Filez;
-import utilz.Utils;
 
 /**
  *
@@ -15,9 +13,9 @@ public class SettingsUI extends javax.swing.JFrame {
      */
     public SettingsUI() {
         initComponents();
-        setLocationRelativeTo(null); //Mettiamo la finestra al centro dello schermo
-        //Non vogliamo che il programma si chiuda quando questa finestrella si chiude!
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
+        applyLanguage();
     }
 
     /**
@@ -45,6 +43,8 @@ public class SettingsUI extends javax.swing.JFrame {
         undoButton = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         resetButton = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        languageField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Impostazioni");
@@ -59,7 +59,12 @@ public class SettingsUI extends javax.swing.JFrame {
 
         jLabel1.setText("IP");
 
-        portField.setText("7777");
+        portField.setText("19000");
+        portField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                portFieldActionPerformed(evt);
+            }
+        });
 
         jLabel2.setText("Port");
 
@@ -84,6 +89,10 @@ public class SettingsUI extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setText("Language");
+
+        languageField.setText("en");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -97,12 +106,17 @@ public class SettingsUI extends javax.swing.JFrame {
                             .addComponent(jLabel2))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(portField)
-                            .addComponent(ipField)))
+                            .addComponent(ipField)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(portField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(languageField))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(resetButton, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
+                        .addComponent(resetButton, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(undoButton)))
                 .addContainerGap())
@@ -117,7 +131,9 @@ public class SettingsUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(portField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3)
+                    .addComponent(languageField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(undoButton)
@@ -159,12 +175,16 @@ public class SettingsUI extends javax.swing.JFrame {
     private void undoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_undoButtonActionPerformed
         dispose();
     }//GEN-LAST:event_undoButtonActionPerformed
+
+    private void portFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_portFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_portFieldActionPerformed
     /**
      * Writes new settings to file and to ram.
      */
     public void applySettings() {
         System.out.println("New settings wrote to file.");
-        Filez.writeFile("settings.txt", ipField.getText() + " " + portField.getText());
+        Filez.writeFile("settings.txt", ipField.getText() + " " + portField.getText()+" "+languageField.getText());
     }
 
     /**
@@ -180,7 +200,9 @@ public class SettingsUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JTextField languageField;
     private javax.swing.JTextField portField;
     private javax.swing.JButton resetButton;
     private javax.swing.JButton undoButton;

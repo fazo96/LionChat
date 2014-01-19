@@ -41,7 +41,7 @@ public class GUI extends javax.swing.JFrame {
         gui = this; //configure static pointer to this instance
         //Give focus to the text input field
         textField.requestFocusInWindow();
-        loadLanguage("en"); //load english language into the program
+        loadLanguage("en"); //load default english language into the program
         readSettings(); //read settings from file
         gui.setVisible(true); //make the window visible
         setLocationRelativeTo(null); //put window at the center of the screen
@@ -307,7 +307,7 @@ public class GUI extends javax.swing.JFrame {
             cnt = Utils.toList(Filez.getFileContent("settings.txt"), " ");
             if (cnt == null) { // If the list is null, it means the read failed
                 append(language.getSentence("settingsNotFound").print());
-                Filez.writeFile("settings.txt", ip + " " + port);
+                Filez.writeFile("settings.txt", ip + " " + port + " " + languageID);
                 continue; //Nothing to do anymore
             }
             append(language.getSentence("readSuccessfull").print());
@@ -315,8 +315,10 @@ public class GUI extends javax.swing.JFrame {
         }
         if (cnt == null) {
             append(language.getSentence("settingsReadFailed").print());
-        } else if (cnt.size() != 2) { //There must be 2 elements for the file to be valid
+        } else if (cnt.size() != 3) { //There must be 3 elements for the file to be valid
             append(language.getSentence("settingsWrongParamNumber").print(cnt.size() + ""));
+            // Rewrite the settings
+            Filez.writeFile("settings.txt", ip + " " + port + " " + languageID);
             return; //nothing to do anymore.
         }
         // Finally assign the parameters
@@ -325,6 +327,11 @@ public class GUI extends javax.swing.JFrame {
             port = Integer.parseInt(cnt.get(1));
         } catch (Exception ex) { // Port number is not valid!
             port = 7777;
+        }
+        String oldLang = languageID;
+        languageID = cnt.get(2);
+        if (oldLang != languageID) {
+            loadLanguage(languageID);
         }
     }
 
@@ -349,12 +356,19 @@ public class GUI extends javax.swing.JFrame {
      * Loads up a language file and applies it automatically
      *
      * @param lang
-     * @return
+     * @return if the loading of given language fails, the method outputs an
+     * error message and loads english and returns true. If loading english also
+     * fails, it returns false
      */
     private boolean loadLanguage(String lang) {
         language = new Language(lang);
         if (!language.isLoaded()) {
-            return false;
+            if (lang.equals("en")) {
+                return false;
+            }
+            append("[!] Could not load language \"" + lang + "\", trying english instead\n");
+            // If the language given can't be loaded, just load english instead
+            return loadLanguage("en");
         }
         System.out.println(language.getLangInfo(true));
         //Apply the language to this GUI
@@ -364,9 +378,12 @@ public class GUI extends javax.swing.JFrame {
         exit.setText(language.getSentence("exit").print());
         saveHistory.setText(language.getSentence("saveHistoryTitle").print());
         sendButton.setText(language.getSentence("send").print());
-        // Now inform other windows of the language change
-        saveHistoryUI.applyLanguage();
-        settingsUI.applyLanguage();
+        if (settingsUI != null) {
+            settingsUI.applyLanguage();
+        }
+        if (saveHistoryUI != null) {
+            saveHistoryUI.applyLanguage();
+        }
         return true;
     }
 
@@ -378,5 +395,4 @@ public class GUI extends javax.swing.JFrame {
     public static Language getLanguage() {
         return language;
     }
-
 }

@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class Sentence {
 
-    public static final String separator = "/A/", newLine = "/N/", noNewLine = "/S/"; //Separatori universali
+    public static final String separator = "/A/", newLine = "/N/", noNewLine = "/S/";
     private String name = "";
     private String content = "";
 

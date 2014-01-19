@@ -12,8 +12,8 @@ public class SaveHistoryUI extends javax.swing.JFrame {
      */
     public SaveHistoryUI() {
         initComponents();
-        setLocationRelativeTo(null); //Mettiamo la finestra al centro dello schermo
-        //Non vogliamo che il programma si chiuda quando questa finestrella si chiude!
+        setLocationRelativeTo(null);
+        applyLanguage();
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
     }
 
