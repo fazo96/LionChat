@@ -1,13 +1,22 @@
-*.class
+# Text files
 *.txt
 # Package Files #
+*.class
 *.jar
 *.war
 *.ear
-# File del server
-*.dat
 
-# LionChat_beans
+# LionChat Stuff
+*.dat
+LionChat_Client/src/settings.txt
+LionChat_Server/src/utenti/
+LionChat_Client/src/settings.conf
+LionChat_Server/src/users/
+
+# LionChat's multilanguage stuff
+LionChat_Server/src/lang/
+
+# Netbeans stuff
 LionChat_Client/nbproject/private/
 LionChat_Server/nbproject/private/
 LionChat_Libs/nbproject/private/
