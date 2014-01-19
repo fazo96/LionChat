@@ -21,19 +21,10 @@ Multiplatform server/client socket based text chat written in Java with multi so
 How to use it
 ==============
 You need the *latest version* of Java installed and *working*.
-I will provide links to precompiled jar files in a while. Try the below paragraph for now.
+I will provide links to precompiled jar files in a while. Try the below paragraph for now so you can also edit the code.
 
-**Note**
-
-The client is ideally a program designed to be used by a non technical person. At the current state, you can say it has achieved this pretty well. However, I won't waste time writing an easy interface for the server.
-
-The server requires manual setting up:
-
-Using the standalone jar executable:
-- Copy the lang folder in LionChatClient/src/ in the folder where you have the server's jar executable.
-Using the netbeans project
-- Copy LionChatClient/src/lang in LionChatServer/src/
-Then you're ready to go.
+**Note**: the client is ideally a program designed to be used by a non technical person. At the current state, you can say it has achieved this pretty well. However, I won't waste time writing an easy interface for the server.
+**About language files**: it is important that you have the "en" language file intact, so if you want to experiment, make a backup of the file first. *The client and server language files are separated, but may have sentences in common*.
 
 How to write code for it
 ==============

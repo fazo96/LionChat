@@ -1,0 +1,14 @@
+# Please don't change this file if you don't know what you're doing, the program might stop working.
+# You can always download the latest version of this file from github.com/fazo96/LionChat
+
+# This file contains the istructions so LionChat can speak! In this case, in english
+# This is language file is intended to be used on the LionChat Server.
+# The very simple parser that reads this file can be configured in the source code
+# Multi line comments aren't possible (yet)
+# I made it to create a simple way to translate everything into other languages
+
+# Blank lines are ignored
+
+--- English # This sets the "en" language's name to! "English". Only the first name given matters
+
+# Server sentences
