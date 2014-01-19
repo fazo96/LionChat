@@ -18,14 +18,26 @@ Multiplatform server/client socket based text chat written in Java with multi so
 - Config file based extensive, optional configuration system for the Server
 - Very simple but powerful configuration system for the client (it's there now but it's bare bones)
 
-How to try it
+How to use it
 ==============
 You need the *latest version* of Java installed and *working*.
 I will provide links to precompiled jar files in a while. Try the below paragraph for now.
 
-How to import, edit and compile
+**Note**
+
+The client is ideally a program designed to be used by a non technical person. At the current state, you can say it has achieved this pretty well. However, I won't waste time writing an easy interface for the server.
+
+The server requires manual setting up:
+
+Using the standalone jar executable:
+- Copy the lang folder in LionChatClient/src/ in the folder where you have the server's jar executable.
+Using the netbeans project
+- Copy LionChatClient/src/lang in LionChatServer/src/
+Then you're ready to go.
+
+How to write code for it
 ==============
-It's not hard: you need the *latest version* of Git, Netbeans and of course the JDK7 (Either oracle or openJDK).
+Make sure you read the 'how to use it' paragraph. You need the *latest version* of Git, Netbeans and of course the JDK7 (Either oracle or openJDK).
 - Clone the repo
 - Open the 3 projects (LionChat Client, LionChat Libs, Lionchat Server) using Netbeans by navigating into the repo folder
 - For the client and server projects, open the project's proprieties in Netbeans and **set their src folder as the working directory**. Just write "src" in the working directory text field.
