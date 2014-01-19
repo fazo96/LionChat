@@ -6,7 +6,7 @@ import net.Server;
 import utilz.Filez;
 
 /**
- * Un canale della chat utilizzabile dagli utenti.
+ * This represents a channel.
  *
  * @author Fazo
  */
@@ -18,7 +18,7 @@ public class Channel {
     private boolean autoDelete = true; //Indica se il canale deve essere eliminato quando è vuoto
 
     /**
-     * Crea un nuovo canale pubblico.
+     * Creates a new channel not password protected.
      *
      * @param name il nome del nuovo canale.
      */
@@ -28,11 +28,10 @@ public class Channel {
     }
 
     /**
-     * Crea un nuovo canale con password (privato).
+     * Creates a new password protected channel.
      *
-     * @param name il nome del nuovo canale.
-     * @param password la sua password. Immettere null per creare un canale
-     * pubblico.
+     * @param name new channel's name
+     * @param password new channel's password. Null means no password.
      */
     public Channel(String name, String password) {
         this(name);
@@ -40,9 +39,9 @@ public class Channel {
     }
 
     /**
-     * Aggiunge un client al canale e ne notifica i partecipanti.
+     * Joins the given client to the channel.
      *
-     * @param ch Il client da aggiungere
+     * @param ch the client to add.
      */
     public void add(ClientHandler ch) {
         if (clients.contains(ch)) {
@@ -55,9 +54,10 @@ public class Channel {
     }
 
     /**
-     * Rimuove un client dal canale e ne notifica i partecipanti.
+     * Removes a client from the channel, if he has joined it. Deletes channel
+     * if empty.
      *
-     * @param ch Il client da rimuovere dal canale.
+     * @param ch the client to remove.
      */
     public void remove(ClientHandler ch) {
         if (clients.contains(ch)) {
@@ -72,7 +72,7 @@ public class Channel {
     }
 
     /**
-     * Rimuove tutti i client dal canale.
+     * Kicks everyone out of the channel.
      */
     public void clear() {
         for (ClientHandler ch : clients) {
@@ -82,20 +82,20 @@ public class Channel {
     }
 
     /**
-     * Salva il canale.
+     * Saves the channel to file.
      *
-     * @throws UnsupportedOperationException se il canale non ha password
+     * @throws UnsupportedOperationException if the channel has no password.
      */
     public void save() {
         if (password == "") {
-            throw new UnsupportedOperationException("Non si può salvare un canale senza password!");
+            throw new UnsupportedOperationException("Can't save channel with no password: what's to save?");
             //return; //non si può salvare un canale senza pass
         }
         Filez.writeFile("./channels/" + name + ".dat", password);
     }
 
     /**
-     * Cancella il canale e ne rimuove i clients connessi.
+     * Deletes channel and removes connected clients.
      */
     public void delete() {
         channels.remove(this);
@@ -103,7 +103,7 @@ public class Channel {
     }
 
     /**
-     * invia un messaggio ai partecipanti del canale.
+     * Sends a message to the clients that joined this channel.
      *
      * @param s il messaggio da inviare.
      */
@@ -114,17 +114,21 @@ public class Channel {
     }
 
     /**
+     * Returns the channel list
      *
-     * @return la lista dei canali.
+     * @return the channel list
      */
     public static ArrayList<Channel> getChannels() {
         return channels;
     }
 
     /**
+     * Retuns the first channel with given name. Returns null if there's no
+     * channel
      *
-     * @param s il nome del canale di cui si richiede l'istanza.
-     * @return l'istanza che corrisponde al nome inserito, null altrimenti.
+     * @param s the name of the required channel
+     * @return the istance of the channel with given name, or null if it doesn't
+     * exist.
      */
     public static Channel get(String s) {
         for (Channel g : channels) {
@@ -137,7 +141,7 @@ public class Channel {
 
     /**
      *
-     * @return il nome del canale
+     * @return the channel's name
      */
     public String getName() {
         return name;
@@ -145,16 +149,16 @@ public class Channel {
 
     /**
      *
-     * @return la lista di client connessi al canale .
+     * @return the list of connected clients to the channel.
      */
     public ArrayList<ClientHandler> getClients() {
         return clients;
     }
 
     /**
-     * Indica se il canale è pubblico o privato.
+     * Wether the channel ha a password set or not.
      *
-     * @return se il canale ha una password impostata oppure no.
+     * @return wether the channel ha a password set or not.
      */
     public boolean isPrivate() {
         if (password == null) {
@@ -164,28 +168,27 @@ public class Channel {
     }
 
     /**
-     * Ritorna la password del canale.
+     * Returns the channel's password
      *
-     * @return la password impostata, null se non è stata inserita e il canale è
-     * pubblico.
+     * @return the set password, or null if there's no password.
      */
     public String getPassword() {
         return password;
     }
 
     /**
-     * Imposta/cambia la password del canale.
+     * Set a new channel password
      *
-     * @param password la nuova password.
+     * @param password the new password
      */
     public void setPassword(String password) {
         this.password = password;
     }
 
     /**
-     * Rimuove il client dato da ogni canale.
+     * Removes a client from all channels.
      *
-     * @param c il client da rimuovere
+     * @param c the client to remove
      */
     public static void removeFromAll(ClientHandler c) {
         for (Channel chan : Channel.getChannels()) {
@@ -194,20 +197,21 @@ public class Channel {
     }
 
     /**
-     * Indica se il canale viene cancellato quando è vuoto.
+     * Wether the channel has to be deleted when empty.
      *
-     * @return true se la condizione è vera.
+     * @return true if the channel has to be deleted from memory when empty.
      */
     public boolean isAutodelete() {
         return autoDelete;
     }
 
     /**
-     * Imposta la cancellazione automatica del canale quando è vuoto.
+     * Sets wether the channel has to autodestroy from memory when no clients are
+     * connected to it.
      *
-     * @param autodelete il nuovo valore della condizione.
+     * @param hasToAutodelete self-explanatory
      */
-    public void setAutodelete(boolean autodelete) {
-        this.autoDelete = autodelete;
+    public void setAutodelete(boolean hasToAutodelete) {
+        this.autoDelete = hasToAutodelete;
     }
 }

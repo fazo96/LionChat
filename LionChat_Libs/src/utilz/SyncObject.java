@@ -3,11 +3,9 @@ package utilz;
 import java.io.Serializable;
 
 /**
- * Questo è un oggetto vuoto serializzabile, viene utilizzato per mantenere viva
- * la connessione con i client spedendo continuamente pacchetti per dire al
- * client "sono il server, ci sono e stiamo comunicando" in questo modo, quando
- * non arrivano più per un certo tempo, il client è certo che la connessione è
- * stata persa.
+ * This is an empty class. Its istances are sent through the network from server
+ * to client to notify the client that the connection is functional and valid.
+ * It will probably be more complex and useful in the future.
  *
  * @author fazo
  */

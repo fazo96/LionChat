@@ -8,20 +8,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Various utilities.
+ * This class offers various utilities shared by the LionChat client and server
+ * applications. It has been created to avoid code duplication
  *
  * @author fazo
  */
 public class Utils {
 
     /**
-     * Returns SHA512 hash of the given string.
+     * Returns SHA512 hash of the given string (without trimming the string).
+     * IMPORTANT: newline characters are removed from the hash!
      *
      * @param x the string to hash.
      * @return the hash of the given string.
      */
     public static String getSecureHash(String x) {
-        //Questa funzione ritorna l'hash SHA1 di una stringa, già convertito in stringa UTF-8
+        // I chose not to trim the string before hashing.
         String hash = null;
         MessageDigest md = null;
         try {
@@ -100,7 +102,7 @@ public class Utils {
         }
         ArrayList<String> content = new ArrayList<String>(b.length);
         for (String c : b) { // Get a dynamic array
-            content.add(c);
+            content.add(c.trim());
         }
         return content; //return it!
     }
@@ -114,7 +116,7 @@ public class Utils {
     public static void mergeLists(ArrayList<String> a, ArrayList<String> b) {
         for (String c : b) {
             if (!a.contains(c)) {
-                a.add(c);
+                a.add(c.trim());
             }
         }
     }
@@ -139,6 +141,6 @@ public class Utils {
         for (int i = 1; i < ss.size(); i++) {
             a += divisor + ss.get(i);
         }
-        return a;
+        return a.trim();
     }
 }

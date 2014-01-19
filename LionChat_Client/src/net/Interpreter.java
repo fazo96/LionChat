@@ -21,16 +21,15 @@ public class Interpreter {
      */
     public static String fixToSend(String s) {
         ArrayList<String> ss = Utils.toList(s, " ");
-        //è un login/registrazione/cambio pass: invio hash invece di password
+        // don't send password, send hash instead to protect privacy
         if ((s.startsWith("/login") || s.startsWith("/password")) && ss.size() == 3) {
-            ss.set(2, Utils.getSecureHash(ss.get(2))); //rimpiazzo la password con il suo hash
+            ss.set(2, Utils.getSecureHash(ss.get(2)));
         }
         if (s.startsWith("/password") && ss.size() == 3) {
-            //rimpiazzo le password con il loro hash
             ss.set(1, Utils.getSecureHash(ss.get(1)));
             ss.set(2, Utils.getSecureHash(ss.get(2)));
         }
-        return Utils.fromList(ss, " ").trim();
+        return Utils.fromList(ss, " ");
     }
 
     /**
