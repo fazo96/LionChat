@@ -1,48 +1,50 @@
 package core;
 
+import lang.Language;
 import net.Server;
 import utilz.Filez;
 
 /**
- * Questa classe gestisce le impostazioni generali del software.
+ * Handles server settings and common variables.
  *
  * @author Fazo
  */
 public class Settings {
 
     private static int port;
-    private static String helpMsg, adminHelpMsg, motd;
+    private static String helpMsg, adminHelpMsg, motd, languageID;
+    public static Language language;
     public static Group groupGuest, groupUser, groupAdmin;
     public static Channel globalChannel;
     private static boolean init = false;
 
     /**
-     * Carica tutte le variabili: tenta di caricare da file, se non riesce
-     * imposta i valori di default.
+     * Initializes everything. Uses settings from file if they're there, or defaults instead.
      */
     public static void init() {
         if (init) {
-            return; //inutile fare roba un'altra volta se è già stata fatta
+            return; // don't init if already init!
         }
-        //Caricamento variabili default
+        // Load default values
         port = 7777;
-        helpMsg = "HELPZ";
-        adminHelpMsg = "ADMINHELPZ";
-        motd = "MOTDZ";
-        load(); //Tentativo di caricare da file. Se fallisce, rimangono i default
-        //IMPOSTAZIONE PERMESSI! Inizializzazione gruppi. Per ora non supporta caricamento da file.
-        //ATTENZIONE!!!!!!! QUESTI TRE GRUPPI SONO OBBLIGATORI E IL PROGRAMMA POTREBBE NON COMPILARE SE UNO DI QUESTI VIENE RIMOSSO
+        helpMsg = "HELP";
+        adminHelpMsg = "ADMINHELP";
+        motd = "MOTD";
+        languageID="en";
+        load(); // Try to load from file.
+        // Set default groups
+        // Please don't remove these assignments.
         groupGuest = new Group("guest", "help chat login who motd");
         groupUser = new Group("user", "c help chat logout who motd");
-        groupAdmin = new Group("admin", "*"); //il gruppo admin bypassa ogni controllo dei permessi, quindi è inutile impostarli.
-        //INIZIALIZZO CANALE GLOBAL
+        groupAdmin = new Group("admin", "*"); // Admin group bypasses every limitation.
+        // Defining the global channel
         globalChannel = new Channel("Global");
         globalChannel.setAutodelete(false);
         init = true;
     }
 
     /**
-     * Salva su file tutte le impostazioni.
+     * Save every setting.
      */
     public static void save() { //salvataggio dati.
         Filez.writeFile("./settings/net.txt", "" + port);
@@ -52,17 +54,17 @@ public class Settings {
     }
 
     /**
-     * Carica da file tutte le impostazioni.
+     * Load settings from file.
      */
     public static void load() {
         try {
-            Server.out("Caricamnto di net");
+            Server.out("Loading network settings");
             port = Integer.parseInt(Filez.getFileContent("./settings/net.txt"));
             if (port <= 0 || port > 65535) {
                 port = 7777;
             }
         } catch (Exception ex) { //Se qualcosa va male vado sul sicuro e ricreo/riscrivo il file.
-            Server.out("Fallito. Creazione file");
+            Server.out("Failed. Creating file...");
             Filez.writeFile("./settings/net.txt", "" + port);
             port = 7777;
         }
@@ -71,7 +73,7 @@ public class Settings {
         Server.out("Caricamnto di helpMsg");
         a = Filez.getFileContent("./settings/helpMsg.txt");
         if (a == null) {
-            Server.out("Fallito: creazione file.");
+            Server.out("Failed. Creating file...");
             Filez.writeFile("./settings/helpMsg.txt", helpMsg);
         } else {
             helpMsg = a;
@@ -79,7 +81,7 @@ public class Settings {
         Server.out("Caricamnto di adminHelpMsg");
         b = Filez.getFileContent("./settings/adminHelpMsg.txt");
         if (b == null) {
-            Server.out("Fallito: creazione file.");
+            Server.out("Failed. Creating file...");
             Filez.writeFile("./settings/adminHelpMsg.txt", adminHelpMsg);
         } else {
             adminHelpMsg = b;
@@ -91,12 +93,12 @@ public class Settings {
         } else {
             motd = c;
         }
+        language = new Language(languageID);
     }
 
     /**
      *
-     * @return il messaggio visualizzato quando l'utente richiama la pagina di
-     * aiuto.
+     * @return the "help" message
      */
     public static String getHelpMsg() {
         return helpMsg;
@@ -104,8 +106,7 @@ public class Settings {
 
     /**
      *
-     * @return il messaggio visualizzato quando l'admin richiama la pagina di
-     * aiuto per amministratori.
+     * @return the "adminHelp" message
      */
     public static String getAdminHelpMsg() {
         return adminHelpMsg;
@@ -113,7 +114,7 @@ public class Settings {
 
     /**
      *
-     * @return il messaggio del giorno.
+     * @return the message of the day.
      */
     public static String getMotd() {
         return motd;
@@ -121,7 +122,7 @@ public class Settings {
 
     /**
      *
-     * @return se il programma è correttamente inizializzato.
+     * @return wether the settings are all set.
      */
     public static boolean isInit() {
         return init;
@@ -129,7 +130,7 @@ public class Settings {
 
     /**
      *
-     * @return la porta di rete su cui opera il server.
+     * @return the port on which the server is operating.
      */
     public static int getPort() {
         return port;

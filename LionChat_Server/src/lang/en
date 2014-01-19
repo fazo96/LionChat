@@ -12,3 +12,24 @@
 --- English # This sets the "en" language's name to! "English". Only the first name given matters
 
 # Server sentences
+loginUsage: Usage: /login name password
+accountInfo: You're known as /A//N/You are part of the group /A//N/Your IP is /A/
+passwordUsage: Usage: /password oldpassword newpassword
+wrongPassword: Wrong password
+passwordChangedSuccessfully: Password changed successfully
+nobodyOnline: Nobody online
+cListUsage: Usage: /c list
+yourChannels: You are in the following channels:/S/
+channelError: The channel doesn't exist or that is not a correct channel command.
+writingOn: You are now writing on channel /A/
+wrongChannelPassword: Wrong channel password!
+hashUsage: Usage: /hash string/N/Returns the hash of the given string.
+userNotFound: User not found
+setGroupUsage: Usage: /setGroup name newGroup
+userGroupChanged: New group set successfully.
+groupNotFound: The group doesn't exist!
+alreadyIsInGroup: /A/ is already in that group
+forcedLogOut: /A/ will be logged out.
+disconnectsEverybody: /A/ disconnects everybody!
+kickUsage: Usage: /kick name
+unknownCommand: Command not found or you don't have the permission to use it.

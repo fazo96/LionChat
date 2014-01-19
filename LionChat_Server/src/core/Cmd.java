@@ -17,7 +17,8 @@ public class Cmd {
      * from the server console.
      *
      * @param s the string to analyze.
-     * @param c the client that sent that. Null if it came from the server console.
+     * @param c the client that sent that. Null if it came from the server
+     * console.
      */
     public static void cmd(String s, ClientHandler c) {
         s = s.trim(); // trim string before analyzing it
@@ -55,64 +56,62 @@ public class Cmd {
         }
 
         // COMMANDS
-        
         // LOGIN
         if (c != null && c.getGroup().can("login") && cmd[0].equalsIgnoreCase("/login")) {
             if (l != 3) { //errore nei parametri.
-                c.send("Utilizzo: /login nome password\n");
+                c.send(Settings.language.getSentence("loginUsage").print());
                 return;
             }
             c.login(cmd[1], cmd[2]);
             return;
         }
-        
+
         // ACCOUNT
         if (cmd[0].equalsIgnoreCase("/account")) {
             if (c == null) {
-                Server.out("Stai usando la console del server!\n");
+                Server.out("You're operating from console! You don't have nor need an account\n");
             } else {
-                c.send("Sei riconosciuto come " + c.getScreenName(true) + "\nFai parte del gruppo " + c.getGroup().getName() + "\nIl tuo IP è " + c.getIP() + "\n");
+                c.send(Settings.language.getSentence("accountInfo").print(c.getScreenName(true) + " " + c.getGroup().getName() + " " + c.getIP()));
             }
             return;
         }
-        
+
         // HELP
         if (c != null && c.getGroup().can("help") && cmd[0].equalsIgnoreCase("/help")) { //mostra il messaggio di help
             c.send(Settings.getHelpMsg());
             return;
         }
-        
+
         // LOGOUT
         if (c != null && c.getGroup().can("logout") && cmd[0].equalsIgnoreCase("/logout")) {
             c.logout();
             return;
         }
-        
+
         // PASSWORD CHANGE
         if (c != null && c.getGroup().can("logout") && cmd[0].equalsIgnoreCase("/password")) {
             if (l != 3) {
-                c.send("Utilizzo: /password vecchiapass nuovapass\n");
+                c.send(Settings.language.getSentence("passwordUsage").print());
                 return;
             }
             if (!cmd[1].equals(c.getPassword())) {
-                c.send("Password errata.\n");
+                c.send(Settings.language.getSentence("wrongPassword").print());
                 return;
             }
             c.setPassword(cmd[2]);
-            c.send("Password cambiata con successo.\n");
+            c.send(Settings.language.getSentence("passwordChangedSuccessfully").print());
             c.save();
             return;
         }
         //if (c == null || c.getGroup() == Settings.groupUser || c.getGroup() == Settings.groupAdmin) {
-        //Comandi per server o per utenti loggati
-        
+
         // WHO IS ONLINE
         if ((c == null || c.getGroup().can("who")) && cmd[0].equalsIgnoreCase("/chi")) { //Stampa lista utenti
             if (ClientHandler.getClients().isEmpty()) {
                 if (c == null) {
-                    Server.out("Nessuno connesso");
+                    Server.out("");
                 } else {
-                    c.send("Nessuno connesso\n");
+                    c.send(Settings.language.getSentence("nobodyOnline").print());
                 }
                 return;
             }
@@ -129,29 +128,30 @@ public class Cmd {
             }
             return;
         }
-        
+
         // CHANNEL COMMANDS
-        if (c != null && c.getGroup().can("c") && cmd[0].equals("/c")) { //comandi canale.
+        if (c != null && c.getGroup().can("c") && cmd[0].equals("/c")) {
             if (cmd.length == 1) {
-                c.send("Uso:\n/c list");
+                c.send(Settings.language.getSentence("cListUsage").print());
                 return;
             }
-            
+
             // CHANNEL LIST
             if (cmd[1].equalsIgnoreCase("list")) {
-                String tosend = "Sei nei seguenti canali:";
+                String tosend = Settings.language.getSentence("yourChannels").print();
                 for (Channel ch : c.getJoinedChannels()) {
                     tosend += "\n[ " + ch.getName() + " ]";
                 }
                 c.send(tosend);
                 return;
             }
+
+            // JOIN CHANNEL (Not usable yet)
             Channel chan;
             if ((cmd.length == 3 || cmd.length == 4) && cmd[1].equalsIgnoreCase("join")) {
-                chan = Channel.get(cmd[2]);
-
+                //chan = Channel.get(cmd[2]);
             }
-            
+
             // LEAVE CHANNEL
             if (cmd[1].equalsIgnoreCase("leave")) {
                 if (cmd.length == 2) {
@@ -164,40 +164,39 @@ public class Cmd {
                     return;
                 }
             }
-
             chan = Channel.get(cmd[1]);
             if (chan == null) {
-                c.send("L'argomento del comando è errato o il canale non esiste.\n");
+                c.send(Settings.language.getSentence("channelError").print());
                 return;
             }
             if (chan.getPassword() != null && (cmd.length == 2 || cmd[2].equals(chan.getPassword()))) {
-                c.send("Password del canale errata!\n");
+                c.send(Settings.language.getSentence("wrongChannelPassword").print());
                 return;
             }
             c.setWritingChannel(chan);
-            c.send("Ora stai scrivendo sul canale " + chan.getName() + "\n");
+            c.send(Settings.language.getSentence("writingOn").print(chan.getName()));
         }
         //if (c == null || c.getGroup() == Settings.groupAdmin) {
         //questi sono i comandi esclusivi da amministratori
-        
+
         // HASH A STRING
         if ((c == null || c.getGroup().can("hash")) && cmd[0].equalsIgnoreCase("/hash")) { //hash di una stringa
             if (cmd.length != 2) {
                 if (c == null) {
-                    Server.out("Hash de che?");
+                    Server.out(Settings.language.getSentence("hashUsage").print());
                 } else {
-                    c.send("hash de che?\n");
+                    c.send(Settings.language.getSentence("hashUsage").print());
                 }
                 return;
             }
             if (c == null) {
-                Server.out("hash di " + cmd[1] + ": " + Utils.getSecureHash(cmd[1]));
+                Server.out("hash of " + cmd[1] + ": " + Utils.getSecureHash(cmd[1]));
             } else {
-                c.send("hash di " + cmd[1] + ": " + Utils.getSecureHash(cmd[1]) + "\n");
+                c.send("hash of " + cmd[1] + ": " + Utils.getSecureHash(cmd[1]) + "\n");
             }
             return;
         }
-        
+
         // ADMIN HELP
         if ((c == null || c.getGroup().can("ahelp")) && cmd[0].equalsIgnoreCase("/adminhelp")) {
             if (c == null) {
@@ -207,30 +206,30 @@ public class Cmd {
             }
             return;
         }
-        
+
         // MANUAL GARBAGE COLLECTOR CALL
         if ((c == null || c.getGroup().can("gc")) && cmd[0].equalsIgnoreCase("/gc")) {
             if (c == null) {
-                Server.out("Chiamata al garbage collector...");
+                Server.out("Calling garbage collector...");
             } else {
-                c.send("Chiamata al garbage collector...\n");
+                c.send("Calling garbage collector...\n");
             }
             Runtime.getRuntime().gc();
             if (c == null) {
-                Server.out("Chiamata completata.");
+                Server.out("Done.");
             } else {
-                c.send("Chiamata completata.\n");
+                c.send("Done.\n");
             }
             return;
         }
-        
+
         // SETS A USER'S GROUP
         if ((c == null || c.getGroup().can("setgroup")) && cmd[0].equalsIgnoreCase("/setGroup")) {
-            if (l != 3 && l != 2) {
+            if (l != 3) {
                 if (c == null) {
-                    Server.out("Uso: /setGroup nome gruppo\nOppure: /setGroup nome");
+                    Server.out("Uso: /setGroup nome gruppo");
                 } else {
-                    c.send("Uso: /setGroup nome gruppo\nOppure /setGroup nome\n");
+                    c.send("Uso: /setGroup nome gruppo\n");
                 }
                 return;
             }
@@ -243,30 +242,22 @@ public class Cmd {
                 }
                 return;
             }
-            if (l == 2) {
-                if (c == null) {
-                    Server.out("L'utente fa parte del gruppo " + ch.getGroup().getName());
-                } else {
-                    c.send("L'utente fa parte del gruppo " + ch.getGroup().getName() + "\n");
-                }
-                return;
-            }
             Group g = Group.get(cmd[2]);
-            if (g == null) { //gruppo non esiste
+            if (g == null) {
                 if (c == null) {
                     Server.out("Gruppo non esiste!");
                 } else {
                     c.send("Gruppo non esiste!\n");
                 }
                 return;
-            } else if (g == ch.getGroup()) { //utente fa gia parte del gruppo
+            } else if (g == ch.getGroup()) {
                 if (c == null) {
                     Server.out(ch.getScreenName(true) + " fa già parte del gruppo " + g.getName());
                 } else {
                     c.send(ch.getScreenName(true) + " fa già parte del gruppo " + g.getName() + "\n");
                 }
                 return;
-            } else if (g == Settings.groupGuest) { //utente va disconnesso
+            } else if (g == Settings.groupGuest) { // user must be logged out.
                 if (c == null) {
                     Server.out("Logout forzato per " + ch.getScreenName(true));
                 }
@@ -274,7 +265,7 @@ public class Cmd {
                 ch.save();
                 ch.logout();
                 return;
-            } else { //tutto ok, imposto gruppo
+            } else { //everything fine.
                 if (c == null) {
                     Server.out(ch.getScreenName(true) + " fa ora parte del gruppo " + g.getName());
                 }
@@ -284,7 +275,7 @@ public class Cmd {
                 return;
             }
         }
-        
+
         // SERVER STATUS
         if ((c == null || c.getGroup().can("status")) && cmd[0].equalsIgnoreCase("/status")) {
             //Date d= Server.getTimePassed();
@@ -295,25 +286,22 @@ public class Cmd {
             }
             return;
         }
-        
+
         // STOP THE SERVER
         if ((c == null || c.getGroup().can("stop")) && cmd[0].equalsIgnoreCase("/stop")) {
             if (c == null) {
-                Server.out("SERVER IN ARRESTO PER COMANDO SERVER");
+                Server.out("Server shutting down by console command");
             } else {
-                c.send("SERVER IN ARRESTO PER COMANDO TUO\n");
+                c.send("Server shutting down by your command\n");
                 if (c.getGroup() == Settings.groupUser) {
-                    Server.out("SERVER IN ARRESTO PER COMANDO DELL'UTENTE" + c.getScreenName(true));
-                    ClientHandler.send("SERVER IN ARRESTO PER COMANDO DELL'UTENTE " + c.getScreenName(true) + "\n", Settings.groupAdmin);
-                } else {
-                    Server.out("SERVER IN ARRESTO PER COMANDO DELL'UTENTE" + c.getScreenName(true));
-                    ClientHandler.send("SERVER IN ARRESTO PER COMANDO DELL'UTENTE " + c.getScreenName(true) + "\n", Settings.groupAdmin);
+                    ClientHandler.send("Server shutting down by user: " + c.getScreenName(true) + "\n", Settings.groupAdmin);
                 }
             }
+            ClientHandler.send("Server shutting down by console command", Settings.groupAdmin);
             Server.stop();
             return;
         }
-        
+
         // KICK A CLIENT OUT OF THE SERVER
         if ((c == null || c.getGroup().can("kick")) && cmd[0].equalsIgnoreCase("/kick")) {
             if (l == 1) {
@@ -370,6 +358,7 @@ public class Cmd {
 
     /**
      * Don't use this.
+     *
      * @throws UnsupportedOperationException can't istance this class
      */
     private Cmd() {
