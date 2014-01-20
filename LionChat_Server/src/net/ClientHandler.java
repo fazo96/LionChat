@@ -121,7 +121,7 @@ public class ClientHandler {
             oos.writeObject(msg);
         } catch (IOException ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
-            Server.out(s.getInetAddress() + " errore nell'invio. Connessione chiusa.");
+            Server.out(getIP() + " error while sending. Connection closed.");
             disconnect();
             return false;
         }

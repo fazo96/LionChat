@@ -39,7 +39,7 @@ public class Interpreter {
      * @param s string to parse
      */
     public static void cmd(String s) {
-        s = s.trim();
+        //s = s.trim();
         if (!s.startsWith("/")) {
             GUI.get().append(s);
             return;

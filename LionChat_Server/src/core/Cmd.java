@@ -56,6 +56,7 @@ public class Cmd {
         }
 
         // COMMANDS
+        
         // LOGIN
         if (c != null && c.getGroup().can("login") && cmd[0].equalsIgnoreCase("/login")) {
             if (l != 3) { //errore nei parametri.
