@@ -41,7 +41,7 @@ public class Language {
             return false;
         }
         System.out.println("[LIB][Lang] Loading \"" + id + "\" ...");
-        int i=0,se=0;
+        int i = 0, se = 0;
         for (String s : utilz.Utils.toList(fileContent, "\n")) {
             i++;
             if (s == null || s == "") {
@@ -58,14 +58,17 @@ public class Language {
                 s = utilz.Utils.toList(s, comment).get(0).trim();
             }
             if (s.startsWith("---") && name == null) {
-                System.out.println("[LIB][Lang line:"+i+"] Assigning language name \""+(name=s.replace("---", "").trim())+"\"...");
+                System.out.println("[LIB][Lang line:" + i + "] Assigning language name \"" + (name = s.replace("---", "").trim()) + "\"...");
             } else if (s.contains(sentenceSeparator)) {
                 //System.out.println("[LIB][Lang line:"+i+"] Adding Sentence ...");
-                sentences.add(new Sentence(s.trim())); se++;
+                sentences.add(new Sentence(s.trim()));
+                se++;
             }
         }
-        if(name==null)name=id;
-        System.out.println("[LIB][Lang] Successfully loaded Language \""+id+"\": "+i+" lines, "+se+" sentences added, \""+name+"\" picked as name.");
+        if (name == null) {
+            name = id;
+        }
+        System.out.println("[LIB][Lang] Successfully loaded Language \"" + id + "\": " + i + " lines, " + se + " sentences added, \"" + name + "\" picked as name.");
         return true;
     }
 
@@ -89,7 +92,8 @@ public class Language {
     }
 
     /**
-     * Returns a resume of this Language object, written in english, readable to humans.
+     * Returns a resume of this Language object, written in english, readable to
+     * humans.
      *
      * @return resume as string.
      */

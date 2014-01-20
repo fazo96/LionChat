@@ -156,7 +156,7 @@ public class Cmd {
             if (cmd[1].equalsIgnoreCase("leave")) {
                 if (cmd.length == 2) {
                     if (c.getWritingChannel() == Settings.globalChannel) {
-                        c.send("Non puoi uscire dal canale global");
+                        c.send(Settings.language.getSentence("cantExitGlobal").print());
                         return;
                     }
                     c.getWritingChannel().remove(c);
@@ -227,49 +227,49 @@ public class Cmd {
         if ((c == null || c.getGroup().can("setgroup")) && cmd[0].equalsIgnoreCase("/setGroup")) {
             if (l != 3) {
                 if (c == null) {
-                    Server.out("Uso: /setGroup nome gruppo");
+                    Server.out(Settings.language.getSentence("setGroupUsage").print());
                 } else {
-                    c.send("Uso: /setGroup nome gruppo\n");
+                    c.send(Settings.language.getSentence("setGroupUsage").print());
                 }
                 return;
             }
             ClientHandler ch;
             if ((ch = ClientHandler.get(cmd[1])) == null) {
                 if (c == null) {
-                    Server.out("Utente non esiste!");
+                    Server.out(Settings.language.getSentence("userNotFound").print());
                 } else {
-                    c.send("Utente non esiste!\n");
+                    c.send(Settings.language.getSentence("userNotFound").print());
                 }
                 return;
             }
             Group g = Group.get(cmd[2]);
             if (g == null) {
                 if (c == null) {
-                    Server.out("Gruppo non esiste!");
+                    Server.out(Settings.language.getSentence("groupNotFound").print());
                 } else {
-                    c.send("Gruppo non esiste!\n");
+                    c.send(Settings.language.getSentence("groupNotFound").print());
                 }
                 return;
             } else if (g == ch.getGroup()) {
                 if (c == null) {
-                    Server.out(ch.getScreenName(true) + " fa già parte del gruppo " + g.getName());
+                    Server.out(Settings.language.getSentence("alreadyIsInGroup").print(c.getScreenName(false)+" "+g.getName()));
                 } else {
                     c.send(ch.getScreenName(true) + " fa già parte del gruppo " + g.getName() + "\n");
                 }
                 return;
             } else if (g == Settings.groupGuest) { // user must be logged out.
                 if (c == null) {
-                    Server.out("Logout forzato per " + ch.getScreenName(true));
+                    Server.out("Forcing logout for " + ch.getScreenName(true));
                 }
-                ClientHandler.send("Logout forzato per " + ch.getScreenName(false) + "\n", Settings.groupAdmin);
+                ClientHandler.send("Forcing logout for " + ch.getScreenName(false) + "\n", Settings.groupAdmin);
                 ch.save();
                 ch.logout();
                 return;
             } else { //everything fine.
                 if (c == null) {
-                    Server.out(ch.getScreenName(true) + " fa ora parte del gruppo " + g.getName());
+                    Server.out(ch.getScreenName(true) + " is now part of group " + g.getName());
                 }
-                ClientHandler.send(ch.getScreenName(true) + " fa ora parte del gruppo " + g.getName() + "\n", Settings.groupAdmin);
+                ClientHandler.send(ch.getScreenName(true) + " is now part of group " + g.getName() + "\n", Settings.groupAdmin);
                 ch.setGroup(g);
                 ch.save();
                 return;
@@ -306,12 +306,12 @@ public class Cmd {
         if ((c == null || c.getGroup().can("kick")) && cmd[0].equalsIgnoreCase("/kick")) {
             if (l == 1) {
                 if (c != null) {
-                    c.send(c.getScreenName(true) + " Disconnette tutti!\n", Settings.groupAdmin);
+                    c.send(Settings.language.getSentence("disconnectsEverybody").print(c.getScreenName(true)), Settings.groupAdmin);
                     if (c.getGroup() == Settings.groupUser) {
-                        Settings.globalChannel.send(c.getScreenName(false) + " Disconnette tutti!\n");
+                        Settings.globalChannel.send(Settings.language.getSentence("disconnectsEverybody").print(c.getScreenName(false)));
                     }
                 } else {
-                    Server.out("Disconnetto tutti!");
+                    Server.out("Disconnecting everybody!");
                 }
                 ClientHandler.disconnectAll();
                 return;
@@ -320,39 +320,39 @@ public class Cmd {
                 if ((ch = ClientHandler.get(cmd[1])) != null) {
                     if (c != null) {
                         //c.send("Disconnetto tutti!\n");
-                        c.send(c.getScreenName(true) + " disconnette " + ch.getScreenName(true) + "\n", Settings.groupAdmin);
+                        c.send(c.getScreenName(true) + " disconnects " + ch.getScreenName(true) + "\n", Settings.groupAdmin);
                     } else {
-                        Server.out("Disconnessione di " + ch.getScreenName(true));
+                        Server.out("Disconnecting " + ch.getScreenName(true));
                     }
                     ch.disconnect();
                     return;
                 } else if (c == null) {
-                    Server.out("Utente non esiste.");
+                    Server.out(Settings.language.getSentence("userNotFound").print());
                 } else {
-                    c.send("Utente non esiste\n");
+                    c.send(Settings.language.getSentence("userNotFound").print());
                 }
             } else if (c == null) {
-                Server.out("Uso: /kick\nOppure /kick Utente");
+                Server.out(Settings.language.getSentence("kickUsage").print());
             } else {
-                c.send("Uso: /kick\nOppure /kick Utente\n");
+                c.send(Settings.language.getSentence("kickUsage").print());
             }
             return;
         }
         if ((c == null || c.getGroup().can("save")) && cmd[0].equalsIgnoreCase("/save")) {
             if (c != null) {
-                c.send("Salvo dati server...\n");
+                c.send("Saving server data...\n");
             }
             Server.save();
             if (c != null) {
-                c.send("Dati server salvati!\n");
+                c.send("Server data saved!\n");
             }
             return;
         }
         // End of commands.
         if (c == null) {
-            Server.out("Comando sconosciuto o comando non utilizzabile dal server.");
+            Server.out("Unknown server command or command not usable by server console");
         } else {
-            c.send("Comando sconosciuto o non eseguibile dal gruppo \"" + c.getGroup().getName() + "\" al quale sei assegnato.\n");
+            c.send(Settings.language.getSentence("unknownCommand").print());
         }
     }
 

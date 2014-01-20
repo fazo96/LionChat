@@ -45,10 +45,10 @@ public class Channel {
      */
     public void add(ClientHandler ch) {
         if (clients.contains(ch)) {
-            Server.out("[!] Tentativo di aggiungere al gruppo un utente già presente!");
+            Server.out(Settings.language.getSentence("addUserError").print());
         }
-        ch.send("Sei entrato nel canale " + name + "\n");
-        send(ch.getScreenName(true) + " è entrato nel canale!\n");
+        ch.send(Settings.language.getSentence("youEntered").print(name));
+        send(Settings.language.getSentence("guyEntered").print(ch.getScreenName(false)));
         clients.add(ch);
         ch.getJoinedChannels().add(this);
     }
@@ -61,14 +61,14 @@ public class Channel {
      */
     public void remove(ClientHandler ch) {
         if (clients.contains(ch)) {
-            ch.send("Sei uscito dal canale " + name + "\n");
-            ClientHandler.send(ch.getScreenName(true) + " è uscito dal canale " + name + "\n", Settings.groupAdmin);
+            ch.send(Settings.language.getSentence("youExited").print(name));
+            ClientHandler.send(Settings.language.getSentence("guyExitedAdmin").print(ch.getScreenName(true),name), Settings.groupAdmin);
         }
         ch.getJoinedChannels().remove(this);
         clients.remove(ch);
         if (clients.isEmpty()) {
             delete();
-        }
+        } else send(Settings.language.getSentence("guyExited").print(ch.getScreenName(false)));
     }
 
     /**

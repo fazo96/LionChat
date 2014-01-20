@@ -112,7 +112,7 @@ public class GUI extends javax.swing.JFrame {
         });
 
         sendButton.setFont(new java.awt.Font("Arial", 0, 10)); // NOI18N
-        sendButton.setText("Invia");
+        sendButton.setText("send");
         sendButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 sendButtonActionPerformed(evt);
@@ -154,7 +154,7 @@ public class GUI extends javax.swing.JFrame {
 
         fileMenu.setText("File");
 
-        saveHistory.setText("Salva Cronologia");
+        saveHistory.setText("save_log");
         saveHistory.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveHistoryActionPerformed(evt);
@@ -162,7 +162,7 @@ public class GUI extends javax.swing.JFrame {
         });
         fileMenu.add(saveHistory);
 
-        exit.setText("Exit");
+        exit.setText("exit");
         exit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exitActionPerformed(evt);
@@ -172,9 +172,9 @@ public class GUI extends javax.swing.JFrame {
 
         jMenuBar1.add(fileMenu);
 
-        editMenu.setText("Modifica");
+        editMenu.setText("edit");
 
-        settingsMenu.setText("Impostazioni");
+        settingsMenu.setText("settings");
         settingsMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 settingsMenuActionPerformed(evt);

@@ -12,6 +12,9 @@
 --- English # This sets the "en" language's name to! "English". Only the first name given matters
 
 # Server sentences
+
+# Commands
+
 loginUsage: Usage: /login name password
 accountInfo: You're known as /A//N/You are part of the group /A//N/Your IP is /A/
 passwordUsage: Usage: /password oldpassword newpassword
@@ -20,6 +23,7 @@ passwordChangedSuccessfully: Password changed successfully
 nobodyOnline: Nobody online
 cListUsage: Usage: /c list
 yourChannels: You are in the following channels:/S/
+cantExitGlobal: You can't exit the global channel!
 channelError: The channel doesn't exist or that is not a correct channel command.
 writingOn: You are now writing on channel /A/
 wrongChannelPassword: Wrong channel password!
@@ -33,3 +37,12 @@ forcedLogOut: /A/ will be logged out.
 disconnectsEverybody: /A/ disconnects everybody!
 kickUsage: Usage: /kick name
 unknownCommand: Command not found or you don't have the permission to use it.
+
+# Channel
+youExited: You exited from channel /A/
+addUserError: Tried to add a user to channel /A/ that was already in there
+youEntered: You entered the channel /A/
+guyEntered: /A/ entered the channel
+guyExited: /A/ exited the channel
+guyExitedAdmin: /A/ exited from channel /A/
+
