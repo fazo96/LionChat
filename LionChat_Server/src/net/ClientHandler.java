@@ -18,8 +18,7 @@ import utilz.SyncObject;
 import utilz.Utils;
 
 /**
- * Questa classe rappresenta un singolo client connesso: l'istanza esiste finchè
- * la connessione c'è.
+ * This object represents a connected client (logged in or not)
  *
  * @author fazo
  */
@@ -38,11 +37,10 @@ public class ClientHandler {
     private boolean connected = false;
 
     /**
-     * Inizializza un nuovo client, il socket passato come paramentro deve
-     * essere connesso.
+     * Initializes a new client.
      *
-     * @param s socket da usare per comunicare con il client: deve essere
-     * connesso e funzionante.
+     * @param s a CONNECTED socket to use for communication. connesso e
+     * funzionante.
      */
     public ClientHandler(final Socket s) {
         this.s = s;
@@ -106,11 +104,10 @@ public class ClientHandler {
     }
 
     /**
-     * Invia una stringa al client.
+     * Sends a string to the client
      *
-     * @param msg la stringa da inviare.
-     * @return false se non è stato possibile recapitare il messaggio, true se è
-     * partito.
+     * @param msg the string to send.
+     * @return true if the message has been sent
      */
     public boolean send(String msg) {
         if (!connected) {
@@ -129,10 +126,10 @@ public class ClientHandler {
     }
 
     /**
-     * Invia un messaggio da questo client a un canale dato.
+     * Sends a message from this client to given channel
      *
-     * @param msg il messaggio da inviare al canale.
-     * @param c il canale su cui inviare il messaggio.
+     * @param msg the message to send
+     * @param c the channel on which the message will be sent
      */
     public void sendToChannel(String msg, Channel c) {
         for (ClientHandler ch : c.getClients()) {
@@ -145,9 +142,7 @@ public class ClientHandler {
     }
 
     /**
-     * Chiude tutte le connessioni in maniera sicura e annuncia la
-     * disconnessione del client, l'istanza viene eliminata da ogni lista e
-     * diventa inaccessibile e tutti i thread relativi al client vengono chiusi.
+     * Closes every connection and deletes this istance.
      */
     public void disconnect() {
         if (!connected) {
@@ -156,11 +151,11 @@ public class ClientHandler {
         Channel.removeFromAll(this);
         if (name == null) {
             Server.out("Disconnetto " + getIP());
-            send(getIP() + " si è disconnesso!\n", Settings.groupAdmin);
+            send(Settings.language.getSentence("guyDisconnected").print(getScreenName(true)), Settings.groupAdmin);
             send("Utente si è disconnesso!\n", Settings.groupUser, Settings.groupGuest);
         } else {
-            Server.out("Disconnetto " + name + " (" + getIP() + ")");
-            Settings.globalChannel.send(name + " si è disconnesso!\n");
+            Server.out("Disconnecting " + getScreenName(true));
+            Settings.globalChannel.send(Settings.language.getSentence("guyDisconnected").print(getScreenName(false)));
         }
         connected = false;
         clients.remove(this);
@@ -169,21 +164,29 @@ public class ClientHandler {
 
     /**
      *
-     * @return la lista dei client connessi.
+     * @return the list of connected clients
      */
     public static List<ClientHandler> getClients() {
         return clients;
     }
 
-    public static ClientHandler get(String n) {
+    /**
+     * Returns the client corresponding to given username or IP, or null if it
+     * doesn't exist.
+     *
+     * @param name the name or IP of the client to search
+     * @return the client corresponding to name/IP given, or null if it doesn't
+     * exist
+     */
+    public static ClientHandler get(String name) {
         for (ClientHandler ch : clients) {
             if (ch.isConnected()) {
                 //Controllo se il nome combacia alla stringa data
-                if (ch.getName() != null && ch.getName().equals(n)) {
+                if (ch.getName() != null && ch.getName().equals(name)) {
                     return ch;
                 }
                 //Controllo se l'IP combacia alla stringa data
-                if (ch.getIP().equals(n)) {
+                if (ch.getIP().equals(name)) {
                     return ch;
                 }
 
@@ -195,10 +198,10 @@ public class ClientHandler {
     }
 
     /**
-     * Invia un messaggio da questo client a un gruppo di client.
+     * Sends a message from this client to a group.
      *
-     * @param msg il messaggio da inviare
-     * @param g il gruppo al quale inviare il messaggio
+     * @param msg the message to send
+     * @param g the group that will receive the message
      */
     public static void send(String msg, Group g) {
         for (ClientHandler cl : clients) {
@@ -212,11 +215,11 @@ public class ClientHandler {
     }
 
     /**
-     * Invia un messaggio da questo client a due gruppi di client.
+     * Sends a message from this client to multiple groups
      *
-     * @param msg il messaggio da inviare
-     * @param g il primo gruppo al quale inviare il messaggio
-     * @param g2 il secondo gruppo al quale inviare il messaggio
+     * @param msg message to send
+     * @param g first group that will receive the message
+     * @param g2 second group that will receive the message
      */
     public static void send(String msg, Group g, Group g2) {
         send(msg, g);
@@ -225,12 +228,12 @@ public class ClientHandler {
     }
 
     /**
-     * Invia un messaggio da questo client a tre gruppi di client.
+     * Sends a message from this client to multiple groups
      *
-     * @param msg il messaggio da inviare
-     * @param g il primo gruppo al quale inviare il messaggio
-     * @param g2 il secondo gruppo al quale inviare il messaggio
-     * @param g3 il terzo gruppo al quale inviare il messaggio
+     * @param msg message to send
+     * @param g first group that will receive the message
+     * @param g2 second group that will receive the message
+     * @param g3 third group that will receive the message
      */
     public static void send(String msg, Group g, Group g2, Group g3) {
         send(msg, g);
@@ -240,7 +243,7 @@ public class ClientHandler {
     }
 
     /**
-     * Salva su file le informazioni di questo utente.
+     * Saves user info to file.
      */
     public void save() {
         if (group == Settings.groupGuest) {
@@ -261,10 +264,10 @@ public class ClientHandler {
     }
 
     /**
-     * Ritorna una stringa in formato ordinato e leggibile di clients connessi.
+     * Returns a list of clients as string, readable by humans
      *
-     * @param showIP se la lista deve mostrare gli IP degli utenti.
-     * @return una lista leggibile e ordinata di clients connessi.
+     * @param showIP wether the list must show ip addresses
+     * @return a string with a readable client list
      */
     public static String getClientList(boolean showIP) {
         String list = "Utenti connessi: " + clients.size();
@@ -288,8 +291,7 @@ public class ClientHandler {
     }
 
     /**
-     * Manda un heartbeat al client, dimostrandogli che il server è
-     * raggiungibile (se lo riceve...).
+     * Sends hearthbeat to client, notifying him that the server is alive.
      */
     public void keepAlive() {
         if (oos == null) {
@@ -306,14 +308,13 @@ public class ClientHandler {
     }
 
     /**
-     * Tenta di autenticare l'utente usando le credenziali fornite: se il nome
-     * inserito non esiste, viene creato un nuovo account
+     * Tries authentication with given name and password. If the password is
+     * wrong, the auth fails. If the user doesn't exist it is created.
      *
-     * @param lname il nome da usare per l'autenticazione.
-     * @param pass la password da utilizzare per la registrazione o il login.
-     * @return false se l'utente ha tentato di loggarsi al posto di qualcuno già
-     * loggato, oppure se ha errato la password di un account. Ritorna vero
-     * negli altri casi.
+     * @param lname username
+     * @param pass password
+     * @return false if user is already logged in or the password is wrong. True
+     * in all other cases
      */
     public boolean login(String lname, String pass) {
         if (lname == null || pass == null) {
@@ -359,7 +360,7 @@ public class ClientHandler {
     }
 
     /**
-     * Effettua il logout dell'utente, annullandone l'autenticazione.
+     * Logouts the user.
      */
     public void logout() {
         Channel.removeFromAll(this);
@@ -375,28 +376,29 @@ public class ClientHandler {
     }
 
     /**
-     * Ritorna il gruppo a cui appartiene questo utente.
+     * Retuns the group that the user is part of.
      *
-     * @return il gruppo a cui appartiene questo utente.
+     * @return the group istance
      */
     public Group getGroup() {
         return group;
     }
 
     /**
-     * Imposta il gruppo a cui appartiene questo utente.
+     * Sets the user's group
      *
-     * @param group il nuovo gruppo dell'utente.
+     * @param group the new group
      */
     public void setGroup(Group group) {
         this.group = group;
     }
 
     /**
-     * Ritorna il nome dell'utente in formato leggibile e ordinato.
+     * Returns a readable string containing the username and/or the ip address
+     * of the user.
      *
-     * @param showIP se la stringa deve mostrare l'indirizzo IP dell'utente.
-     * @return una stringa ordinata e leggibile contente il nome dell'utente.
+     * @param showIP wether the string must contain the ip address.
+     * @return string
      */
     public String getScreenName(boolean showIP) {
         if (showIP) {
@@ -409,13 +411,13 @@ public class ClientHandler {
             if (name != null) {
                 return name;
             } else {
-                return "Utente";
+                return "User";
             }
         }
     }
 
     /**
-     * Invia un heartbeat a tutti i client.
+     * Sends an heartbeat to everybody.
      */
     public static void keepAliveAll() {
         for (ClientHandler ch : clients) {
@@ -424,7 +426,7 @@ public class ClientHandler {
     }
 
     /**
-     * Chiude la connessione con tutti i client in maniera sicura.
+     * Calls disconnect() on everybody.
      */
     public static void disconnectAll() {
         Server.out("Disconnetto tutti...");
@@ -434,7 +436,7 @@ public class ClientHandler {
     }
 
     /**
-     * Salva su file le informazioni di tutti i client.
+     * Calls save() on everybody.
      */
     public static void saveAll() {
         Server.out("Salvo tutti gli utenti...");

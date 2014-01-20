@@ -46,3 +46,6 @@ guyEntered: /A/ entered the channel
 guyExited: /A/ exited the channel
 guyExitedAdmin: /A/ exited from channel /A/
 
+# Client Handler class
+disconnectingGuy: Disconnecting /A/
+guyDisconnected: /A/ has disconnected fromt he server!
