@@ -12,11 +12,16 @@ Multiplatform server/client socket based text chat written in Java with multi so
 - Easily configurable, comfortable GUI for the client
 - Headless server (no GUI required)
 
+**Working on:**
+- Finalizing multi language system
+
 **Planned:**
-- Italian language file
-- Configurable logging system for the server, allowing automatic log files
-- Config file based extensive, optional configuration system for the Server
-- Very simple but powerful configuration system for the client (it's there now but it's bare bones)
+- Italian translation
+- Anti spam tweaks
+- Organized and configurable server logging and settings
+- Server bandwidth management
+- HTML formatted text
+- Voice chat (to be enabled in specific channels)
 
 How to use it
 ==============
