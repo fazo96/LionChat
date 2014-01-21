@@ -17,11 +17,12 @@ Multiplatform server/client socket based text chat written in Java with multi so
 
 **Planned:**
 - Italian translation
+- Command system rewrite
 - Anti spam tweaks
 - Organized and configurable server logging and settings
 - Server bandwidth management
 - HTML formatted text
-- Voice chat (to be enabled in specific channels)
+- Voice chat (maybe)
 
 How to use it
 ==============
