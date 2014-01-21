@@ -46,7 +46,7 @@ public class Settings {
     /**
      * Save every setting.
      */
-    public static void save() { //salvataggio dati.
+    public static void save() {
         Filez.writeFile("./settings/net.txt", "" + port);
         Filez.writeFile("./settings/helpMsg.txt", helpMsg);
         Filez.writeFile("./settings/adminHelpMsg.txt", adminHelpMsg);

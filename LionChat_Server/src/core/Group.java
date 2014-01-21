@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import net.Server;
 
 /**
- * I gruppi servono a definire i permessi di ogni utente (cosa può o non può
- * fare o vedere), il sistema di permessi è ancora acerbo e sperimentale, ma è
- * usabile.
+ * Groups define the permissions that a user has.
  *
  * @author Fazo
  */
@@ -19,30 +17,29 @@ public class Group {
     private String permissions;
 
     /**
-     * Crea un nuovo gruppo con il nome dato e la stringa di permessi dati, NB:
-     * Il sistema di permessi è ancora acerbo e sperimentale
+     * Creates new group with given permissions.
      *
-     * @param name il nome del gruppo.
-     * @param permissions un elenco di permessi separato da spazi.
+     * @param name the group's name
+     * @param permissions a string containing the list of permissions separated
+     * by spaces
      */
     public Group(String name, String permissions) {
         this.name = name;
         this.permissions = permissions;
-        //this.permissions = Utils.toList(permissions, " ");
-        if (groups.isEmpty()) { //il primo gruppo diventa il gruppo default
+        if (groups.isEmpty()) { // the first group is the defualt group
             setDefaultGroup(this);
         }
-        groups.add(this); //aggiungo il gruppo alla lista.
-        Server.out("Inizializzato gruppo " + name);
+        groups.add(this); // add the group to the list
+        Server.out("Intitializing group:" + name);
     }
 
     /**
-     * Ritorna l'istanza di un gruppo partendo dal nome.
+     * Returns the istance of the given group name, or null if it doesn't exist.
      *
-     * @param s il nome del gruppo di cui si necessita l'istanza.
-     * @return l'istanza il cui nome corrisponde a quello del parametro
+     * @param s the name of the group to look for.
+     * @return the istance corresponding to the name given.
      */
-    public static Group get(String s) { //ritorna l'istanza partendo dal nome
+    public static Group get(String s) {
         for (Group g : groups) {
             if (g.getName().equalsIgnoreCase(s)) {
                 return g;
@@ -52,10 +49,10 @@ public class Group {
     }
 
     /**
-     * Controlla se il gruppo possiede il permesso indicato
+     * Checks if this group's members have the given permission
      *
-     * @param perm il permesso da controllare (senza spazi!)
-     * @return se il gruppo possiede il permesso indicato.
+     * @param perm the permission to check (no spaces!)
+     * @return wether the group has the given permission.
      */
     public boolean can(String perm) {
         if (this == Settings.groupAdmin) {
@@ -68,46 +65,45 @@ public class Group {
     }
 
     /**
-     * Ritorna la lista dei gruppi esistenti.
+     * Returns the list of existing groups
      *
-     * @return la lista dei gruppi esistenti.
+     * @return the list of existing groups
      */
     public static ArrayList<Group> getGroups() {
         return groups;
     }
 
     /**
-     * Ritorna il gruppo che viene assegnato a ogni utente appena connesso.
+     * Returns the group that is assigned to every connected user.
      *
-     * @return il gruppo che viene assegnato a ogni utente appena connesso.
+     * @return the default group
      */
     public static Group getDefaultGroup() {
         return defaultGroup;
     }
 
     /**
-     * Imposta il nuovo gruppo di default, al quale ogni utente connesso viene
-     * assegnato.
+     * Sets the new default group.
      *
-     * @param defaultGroup il nuovo gruppo di default.
+     * @param defaultGroup new default group.
      */
     public static void setDefaultGroup(Group defaultGroup) {
         Group.defaultGroup = defaultGroup;
-        Server.out(defaultGroup.getName() + " è ora il gruppo predefinito.");
+        Server.out(defaultGroup.getName() + " is now the default group.");
     }
 
     /**
      *
-     * @return il nome del gruppo
+     * @return group's name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Imposta il nuovo nome del gruppo
+     * Sets a new name.
      *
-     * @param name il nuovo nome
+     * @param name new name
      */
     public void setName(String name) {
         this.name = name;

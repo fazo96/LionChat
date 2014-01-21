@@ -49,3 +49,11 @@ guyExitedAdmin: /A/ exited from channel /A/
 # Client Handler class
 disconnectingGuy: Disconnecting /A/
 guyDisconnected: /A/ has disconnected fromt he server!
+ipAlreadyConnected: your IP ( /A/ ) is already connected!
+somebodyConnected: Somebody has connected!
+somebodyDisconnected: Some guest has disconnected!
+wrongPassword: Wrong password!
+registeredAs: You registered as /A/. You are now logged in.
+alreadyLoggedIn: Oops! You are already logged in!
+loggedInAs: You are now logged in as /A/.
+guyLoggedOut: /A/ has logged out!

@@ -320,7 +320,6 @@ public class Cmd {
                 ClientHandler ch;
                 if ((ch = ClientHandler.get(cmd[1])) != null) {
                     if (c != null) {
-                        //c.send("Disconnetto tutti!\n");
                         c.send(c.getScreenName(true) + " disconnects " + ch.getScreenName(true) + "\n", Settings.groupAdmin);
                     } else {
                         Server.out("Disconnecting " + ch.getScreenName(true));

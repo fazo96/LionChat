@@ -44,7 +44,7 @@ public class ClientHandler {
      */
     public ClientHandler(final Socket s) {
         this.s = s;
-        Server.out("Yay! " + getIP() + " si è connesso!");
+        Server.out(getIP() + " has connected!");
         connected = true;
         try {
             ois = new ObjectInputStream(s.getInputStream()); //creo un oggetto in grado di ricevere le istanze delle classi inviate dal client
@@ -57,9 +57,9 @@ public class ClientHandler {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         if (!getIP().equals("127.0.0.1") && get(getIP()) != null) { //Questo IP e' già connesso! (non vale per localhost che può connettersi piu volte)
-            send("[ERRORE] Il tuo IP ( " + getIP() + " ) è già connesso!\n");
-            Server.out(getIP() + " ha tentato di conenttersi con più di un client alla volta!");
-            send(getIP() + " ha tentato di conenttersi con più di un client alla volta!\n", Settings.groupAdmin);
+            send(Settings.language.getSentence("ipAlreadyConnected").print(getIP()));
+            Server.out(getIP() + " tried multiple connections!");
+            send(getIP() + " tried multiple connections!\n", Settings.groupAdmin);
             return;
         }
         receiver = new Thread() {
@@ -67,7 +67,7 @@ public class ClientHandler {
             public void run() {
                 Object o = null;
                 while (true) {
-                    try { //25 ms di pausa
+                    try { //25 ms pause
                         sleep(25);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -77,7 +77,7 @@ public class ClientHandler {
                     } catch (IOException ex) {
                         //Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                         disconnect();
-                        Server.out(getScreenName(true) + " errore nella lettura. Connessione chiusa.");
+                        Server.out(getScreenName(true) + " error reading input. Connection closed");
                     } catch (ClassNotFoundException ex) {
                         Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -88,19 +88,14 @@ public class ClientHandler {
                 }
             }
         };
-        receiver.setName(getIP()); //rinomino il thread con l'ip del client assegnato
-        receiver.start(); //Faccio partire il thread che riceve i messaggi del client
-        group = Settings.groupGuest; //imposto il gruppo guest
-        clients.add(this); //Aggiungo questo client alla lista dei client
-        Settings.globalChannel.add(this);
-        setWritingChannel(Settings.globalChannel);
-        send(getIP() + " si è connesso!\n", Settings.groupAdmin);
-        Settings.globalChannel.send("Qualcuno si è connesso!\n");
-        Server.out("Inizializzati Input e Output streams per " + getIP() + " con successo e aggiunto alla lista client.\n");
-        /*if (getIP().equals("127.0.0.1")) {
-         setGroup(Settings.groupAdmin);
-         send("Benvenuto localhost! Poteri admin consegnati.\n");
-         }*/
+        receiver.setName(getIP()); //rename thread to client IP
+        receiver.start(); //start receiver thread
+        group = Settings.groupGuest; // set the group to guest
+        clients.add(this); // add client to the list
+        send(getIP() + " has connected!\n", Settings.groupAdmin); // advertise connection
+        Settings.globalChannel.send(Settings.language.getSentence("somebodyConnected").print()); // advertise new connection
+        Settings.globalChannel.add(this); // add client to global channel
+        setWritingChannel(Settings.globalChannel); // set the client to write to global chanel
     }
 
     /**
@@ -150,9 +145,9 @@ public class ClientHandler {
         }
         Channel.removeFromAll(this);
         if (name == null) {
-            Server.out("Disconnetto " + getIP());
+            Server.out("Disconnecting " + getIP());
             send(Settings.language.getSentence("guyDisconnected").print(getScreenName(true)), Settings.groupAdmin);
-            send("Utente si è disconnesso!\n", Settings.groupUser, Settings.groupGuest);
+            send(Settings.language.getSentence("somebodyDisconnected").print(), Settings.groupUser, Settings.groupGuest);
         } else {
             Server.out("Disconnecting " + getScreenName(true));
             Settings.globalChannel.send(Settings.language.getSentence("guyDisconnected").print(getScreenName(false)));
@@ -247,18 +242,17 @@ public class ClientHandler {
      */
     public void save() {
         if (group == Settings.groupGuest) {
-            //Server.out("Non puoi salvare un utente sloggato "+getScreenName(true)+ "!");
             return;
         }
         try {
-            Filez.writeFile("./utenti/"
+            Filez.writeFile("./users/"
                     + name
                     + ".dat", name
                     + "\n" + getPassword()
                     + "\n" + group.getName()
-                    + "\n" + getIP()); //scrivo su file
+                    + "\n" + getIP());
         } catch (Exception ex) {
-            Server.out("Errore nel salvare il file per l'utente " + getScreenName(true));
+            Server.out("Could not save user file for " + getScreenName(true));
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -270,7 +264,7 @@ public class ClientHandler {
      * @return a string with a readable client list
      */
     public static String getClientList(boolean showIP) {
-        String list = "Utenti connessi: " + clients.size();
+        String list = "Connected users: " + clients.size();
         int i = 0, guests = 0;
         for (ClientHandler ch : clients) {
             i++;
@@ -294,15 +288,16 @@ public class ClientHandler {
      * Sends hearthbeat to client, notifying him that the server is alive.
      */
     public void keepAlive() {
-        if (oos == null) {
-            Server.out("[DEBUG] Tentativo di tenere viva una connessine nulla\n");
+        if (oos == null || connected == false) {
+            Server.out("[DEBUG] Can't keep alive dead connection\n");
+            disconnect();
             return;
         }
         try {
             oos.writeObject(new SyncObject());
         } catch (IOException ex) {
             //Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
-            Server.out("Impossibile mantenere la connessione con " + getScreenName(true) + ". Disconnessione");
+            Server.out("Could not keep " + getScreenName(true) + " alive. Disconnecting");
             disconnect();
         }
     }
@@ -318,29 +313,29 @@ public class ClientHandler {
      */
     public boolean login(String lname, String pass) {
         if (lname == null || pass == null) {
-            send("[BUG DETECT] Errore nel login\n");
+            send("[BUG DETECT] Weird bug on login! This should never happen\n");
             return false;
         }
         ArrayList<String> ff = Utils.toList(Filez.getFileContent("./utenti/" + lname + ".dat"), "\n");
-        if (ff == null || ff.size() < 3) { //utente non esiste, creo
+        if (ff == null || ff.size() < 3) { // User doesn't exist, creating him
             setName(lname);
-            receiver.setName(getScreenName(true)); //Rinomino thread con nome e IP dell'utente
+            receiver.setName(getScreenName(true)); // Rename thread
             setPassword(pass);
             setGroup(Settings.groupUser);
             save();
-            ClientHandler.send("Registrato nuovo utente " + getName() + " con password " + getPassword() + "\n", Settings.groupAdmin);
-            Server.out("Registrato nuovo utente " + getName() + " con password " + getPassword() + "\n");
-            send("Registrato come nuovo utente: " + getName() + "\n");
+            ClientHandler.send("New user registered: " + getName() + " with password " + getPassword() + "\n", Settings.groupAdmin);
+            Server.out("New user registered: " + getName() + " with password " + getPassword() + "\n");
+            send(Settings.language.getSentence("registeredAs").print(getName()));
             save();
             return true;
-        } else if (get(lname) != null) { //utente già loggato
-            send("Qualcuno è già loggato con quell'account! Prova con un'altro nome.\nSe pensi che ti sia stato rubato l'account contatta gli amministratori.\n");
-            Server.out(getIP() + " ha tentato di loggarsi con l'account di " + get(lname).getScreenName(true));
-            send(getIP() + " ha tentato di loggarsi con l'account di " + get(lname).getScreenName(true), Settings.groupAdmin);
+        } else if (get(lname) != null) { // User is already logged in
+            send(Settings.language.getSentence("alreadyLoggedIn").print());
+            Server.out(getIP() + " tried logging in as " + get(lname).getScreenName(true));
+            send(getIP() + " tried logging in as " + get(lname).getScreenName(true), Settings.groupAdmin);
             return false;
-        } else if (pass.equals(ff.get(1))) { //password corretta
+        } else if (pass.equals(ff.get(1))) { //user wasn't logged in and password is correct
             setName(lname);
-            receiver.setName(getScreenName(true)); //Rinomino thread con nome e IP dell'utente
+            receiver.setName(getScreenName(true)); // Rename thread
             setPassword(pass);
             send("Password corretta! Connesso come " + getName() + "\n");
             Group ggg = Group.get(ff.get(2));
@@ -369,10 +364,10 @@ public class ClientHandler {
         }
         password = null;
         group = Settings.groupGuest;
-        send(getScreenName(false) + " ha eseguito il logout\n", Settings.groupGuest, Settings.groupUser);
-        send(getScreenName(true) + " ha eseguito il logout\n", Settings.groupAdmin);
+        send(Settings.language.getSentence("guyLoggedOut").print(getScreenName(false)), Settings.groupGuest, Settings.groupUser);
+        send(Settings.language.getSentence("guyLoggedOut").print(getScreenName(true)), Settings.groupAdmin);
         name = null;
-        receiver.setName(getIP()); //Rinomino il thread con l'IP
+        receiver.setName(getIP()); // Rename thread with IP address
     }
 
     /**
@@ -429,7 +424,7 @@ public class ClientHandler {
      * Calls disconnect() on everybody.
      */
     public static void disconnectAll() {
-        Server.out("Disconnetto tutti...");
+        Server.out("Disconnecting everyone...");
         for (ClientHandler c : clients) {
             c.disconnect();
         }
@@ -439,100 +434,99 @@ public class ClientHandler {
      * Calls save() on everybody.
      */
     public static void saveAll() {
-        Server.out("Salvo tutti gli utenti...");
+        Server.out("Saving everyone...");
         for (ClientHandler c : clients) {
             c.save();
         }
     }
 
     /**
-     * Ritorna i canali a cui l'utente appartiene.
+     * Returns the list of channels that the user has joined
      *
-     * @return lista dinamica di canali in cui l'utente è presente.
+     * @return the list of channels that the user has joined
      */
     public ArrayList<Channel> getJoinedChannels() {
         return joined;
     }
 
     /**
-     * Ritorna l'indirizzo IP dell'utente.
+     * Returns the user's IP address
      *
-     * @return l'indirizzo IP dell'utente in formato stringa.
+     * @return IP address as string
      */
     public final String getIP() {
         return s.getInetAddress().getHostAddress();
     }
 
     /**
-     * Ritorna la password con cui l'utente è autenticato.
+     * Returns the user's password
      *
-     * @return password con cui l'utente è autenticato, null altrimenti.
+     * @return the user's password
      */
     public String getPassword() {
-        Server.out("[DEBUG]Password per " + getScreenName(true) + " e' " + password);
+        Server.out("[DEBUG] Password for " + getScreenName(true) + " is " + password);
         return password;
     }
 
     /**
-     * Cambia password all'utente.
+     * Sets a new password for the user
      *
-     * @param password la nuova password di questo account.
+     * @param password the new password for the user
      */
     public void setPassword(String password) {
-        Server.out("[DEBUG] Password per " + getScreenName(true) + " è cambiata da " + this.password + " a " + password);
+        Server.out("[DEBUG] Password for " + getScreenName(true) + " went from " + this.password + " to " + password);
         this.password = password;
     }
 
     /**
-     * Ritorna l'oggetto socket usato per comunicare con l'utente.
+     * Returns the socket that connects the user to the server
      *
-     * @return il socket.
+     * @return the socket
      */
     public Socket getSocket() {
         return s;
     }
 
     /**
-     * Ritorna il canale su cui l'utente sta scrivendo.
+     * Returns the channel on which the user was writing
      *
-     * @return l'istanza del canale.
+     * @return the channel istance
      */
     public Channel getWritingChannel() {
         return writingChannel;
     }
 
     /**
-     * Cambia il canale su cui l'utente scrive.
+     * Changes the channel on which the user is writing
      *
-     * @param writingChannel nuovo valore.
+     * @param writingChannel new writing channel
      */
     public void setWritingChannel(Channel writingChannel) {
         this.writingChannel = writingChannel;
     }
 
     /**
-     * Se l'utente è autenticato.
+     * Returns true if the user is authenticated
      *
-     * @return true se l'utente è autenticato.
+     * @return true if the user is authenticated
      */
     public boolean isConnected() {
         return connected;
     }
 
     /**
-     * Ritorna il nome dell'utente.
+     * Returns the username
      *
-     * @return 'Utente' se l'utente non è autenticato, il suo nickname
-     * altrimenti.
+     * @return 'User' if the user is not authenthicated, else is nickname
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Cambia nickname all'utente.
+     * Changes the user's nickname. WARNING: the results could be disrupting
      *
-     * @param name il nuovo nome da dare a questo utente.
+     * @param name the new username
      */
     public void setName(String name) {
         this.name = name;
