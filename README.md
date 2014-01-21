@@ -1,7 +1,5 @@
-**Notice**: the project is being entirely translated to english. This shouldn't take more time than one week.
-
 # LionChat
-Multiplatform server/client socket based text chat written in Java with multi sophisticated features **already implemented**, such as:
+Multiplatform server/client socket based text chat written in Java with sophisticated features **already implemented**, such as:
 - Realtime text chat
 - Works on Linux, Mac OS X and Windows (Only tested on linux and briefly on windows. Try it! Should work!)
 - Multilanguage support with easy to write language files, with english being the default
@@ -17,9 +15,10 @@ Multiplatform server/client socket based text chat written in Java with multi so
 
 **Planned:**
 - Italian translation
-- Separation of GUI and logic on the client (and CLI client as consequence)
-- Command system rewrite
+- Client code organization revamp, also CLI client
+- Server command system rewrite
 - Anti spam tweaks
+- Securing the program (need help with this!)
 - Organized and configurable server logging and settings
 - Server bandwidth management
 - HTML formatted text
