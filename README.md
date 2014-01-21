@@ -17,6 +17,7 @@ Multiplatform server/client socket based text chat written in Java with multi so
 
 **Planned:**
 - Italian translation
+- Separation of GUI and logic on the client (and CLI client as consequence)
 - Command system rewrite
 - Anti spam tweaks
 - Organized and configurable server logging and settings
