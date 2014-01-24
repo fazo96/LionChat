@@ -15,19 +15,20 @@ Multiplatform server/client socket based text chat written in Java with sophisti
 
 **Planned:**
 - Italian translation
-- Client code organization revamp, also CLI client
-- Server command system rewrite
+- Fix the CLI client, improve output formatting
 - Anti spam tweaks
+- Settings files rewrite
 - Securing the program (need help with this!)
-- Organized and configurable server logging and settings
+- Server output logging management
 - Server bandwidth management
 - HTML formatted text
+- Server command system rewrite (maybe)
 - Voice chat (maybe)
 
 How to use it
 ==============
 You need the *latest version* of Java installed and *working*.
-I will provide links to precompiled jar files in a while. Try the below paragraph for now so you can also edit the code.
+I will provide links to precompiled jar files in a while. Try the below paragraph for now so you can also edit the code. Or you can provide builds yourself!
 
 **Note**: the client is ideally a program designed to be used by a non technical person. At the current state, you can say it has achieved this pretty well. However, I won't waste time writing an easy interface for the server.
 **About language files**: it is important that you have the "en" language file intact, so if you want to experiment, make a backup of the file first. *The client and server language files are separated, but may have sentences in common*.
