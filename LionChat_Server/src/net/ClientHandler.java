@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -112,7 +113,7 @@ public class ClientHandler {
             //Server.out("Sending: "+msg+" to "+s.getInetAddress());
             oos.writeObject(msg);
         } catch (IOException ex) {
-            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
             Server.out(getIP() + " error while sending. Connection closed.");
             disconnect();
             return false;
@@ -143,7 +144,7 @@ public class ClientHandler {
         if (!connected) {
             return;
         }
-        Channel.removeFromAll(this);
+        Channel.removeFromAll(this, true);
         if (name == null) {
             Server.out("Disconnecting " + getIP());
             send(Settings.language.getSentence("guyDisconnected").print(getScreenName(true)), Settings.groupAdmin);
@@ -316,7 +317,7 @@ public class ClientHandler {
             send("[BUG DETECT] Weird bug on login! This should never happen\n");
             return false;
         }
-        ArrayList<String> ff = Utils.toList(Filez.getFileContent("./utenti/" + lname + ".dat"), "\n");
+        ArrayList<String> ff = Utils.toList(Filez.getFileContent("./users/" + lname + ".dat"), "\n");
         if (ff == null || ff.size() < 3) { // User doesn't exist, creating him
             setName(lname);
             receiver.setName(getScreenName(true)); // Rename thread
@@ -337,19 +338,19 @@ public class ClientHandler {
             setName(lname);
             receiver.setName(getScreenName(true)); // Rename thread
             setPassword(pass);
-            send("Password corretta! Connesso come " + getName() + "\n");
+            send("Password correct! Logged in as " + getName() + "\n");
             Group ggg = Group.get(ff.get(2));
             if (ggg == null) {
                 setGroup(Settings.groupUser);
             } else {
                 setGroup(ggg);
             }
-            ClientHandler.send(getScreenName(true) + " si è loggato!\n", Settings.groupAdmin);
-            ClientHandler.send(getScreenName(false) + " si è loggato!\n", Settings.groupGuest, Settings.groupUser);
+            ClientHandler.send(getScreenName(true) + " has logged in!\n", Settings.groupAdmin);
+            ClientHandler.send(getScreenName(false) + " has logged in!\n", Settings.groupGuest, Settings.groupUser);
             save();
             return true;
         } else {
-            send("Password errata!\n");
+            send("Wrong password\n");
             return false;
         }
     }
@@ -358,7 +359,7 @@ public class ClientHandler {
      * Logouts the user.
      */
     public void logout() {
-        Channel.removeFromAll(this);
+        Channel.removeFromAll(this, false);
         if (group == Settings.groupGuest) {
             return;
         }

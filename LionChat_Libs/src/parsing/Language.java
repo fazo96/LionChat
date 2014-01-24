@@ -1,4 +1,4 @@
-package lang;
+package parsing;
 
 import java.util.ArrayList;
 
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Language {
 
     // Separators for the parser
-    public static final String sentenceSeparator = ":", comment = "#", title = "---";
+    public static final String sentenceSeparator = ":",proprietySeparator = "=", comment = "#", title = "---";
     // All the sentences of this language
     private ArrayList<Sentence> sentences;
     // Language attributes

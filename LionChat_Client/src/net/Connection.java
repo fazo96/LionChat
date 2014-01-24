@@ -58,8 +58,8 @@ public class Connection {
                     return;
                 }
                 try {
-                    // Set the timeout to 10 seconds. 10 seconds of silence = connection lost
-                    socket.setSoTimeout(10000); //10s di timeout
+                    // Set the timeout to 20 seconds. 20 seconds of silence = connection lost
+                    socket.setSoTimeout(20000);
                 } catch (SocketException ex) {
                     Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                 }

@@ -1,6 +1,6 @@
 package core;
 
-import lang.Language;
+import parsing.Language;
 import net.Server;
 import utilz.Filez;
 
@@ -63,13 +63,12 @@ public class Settings {
             if (port <= 0 || port > 65535) {
                 port = 7777;
             }
-        } catch (Exception ex) { //Se qualcosa va male vado sul sicuro e ricreo/riscrivo il file.
+        } catch (Exception ex) {
             Server.out("Failed. Creating file...");
             Filez.writeFile("./settings/net.txt", "" + port);
             port = 7777;
         }
         String a, b, c;
-        //Inizio il tentativo di caricare da file.
         Server.out("Caricamnto di helpMsg");
         a = Filez.getFileContent("./settings/helpMsg.txt");
         if (a == null) {

@@ -1,5 +1,3 @@
-**Note:** current version is *not* usable due to bugs. As soon as I fix most of them, I will start maintaining a stable branch.
-
 # LionChat
 Multiplatform server/client socket based text chat written in Java with sophisticated features **already implemented**, such as:
 - Realtime text chat

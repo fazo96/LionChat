@@ -44,7 +44,7 @@ public class Server {
                 while (true) {
                     ClientHandler.keepAliveAll();
                     try {
-                        sleep(300);
+                        sleep(1000);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -62,7 +62,7 @@ public class Server {
             }
         };
         keepAlive.setName("KeepAlive Thread");
-        keepAlive.start();
+        //keepAlive.start();
         listener = new Thread() {
             @Override
             public void run() { // this runs in the listener thread

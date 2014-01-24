@@ -1,1 +1,10 @@
-olololololol
+Hello, this is LionChat's default help message
+Commands:
+/who - lists the currently online users
+/login - lets you register or login to the server
+/c - lets you operate with channels
+/group - shows you in what group you are
+Also, if you are logged in:
+/logout - lets you log out
+/password - lets you change password
+If you are an administrator, try /adminhelp

@@ -12,10 +12,10 @@ import utilz.Filez;
  */
 public class Channel {
 
-    private static ArrayList<Channel> channels = new ArrayList<Channel>(); //lista canali
-    private ArrayList<ClientHandler> clients = new ArrayList<ClientHandler>(); //client connessi al canale
-    private String name = "", password = ""; //Nome e password del canale
-    private boolean autoDelete = true; //Indica se il canale deve essere eliminato quando è vuoto
+    private static ArrayList<Channel> channels = new ArrayList<Channel>();
+    private ArrayList<ClientHandler> clients = new ArrayList<ClientHandler>();
+    private String name = "", password = "";
+    private boolean autoDeleteWhenEmpty = true;
 
     /**
      * Creates a new channel not password protected.
@@ -62,13 +62,15 @@ public class Channel {
     public void remove(ClientHandler ch) {
         if (clients.contains(ch)) {
             ch.send(Settings.language.getSentence("youExited").print(name));
-            ClientHandler.send(Settings.language.getSentence("guyExitedAdmin").print(ch.getScreenName(true),name), Settings.groupAdmin);
+            ClientHandler.send(Settings.language.getSentence("guyExitedAdmin").print(ch.getScreenName(true), name), Settings.groupAdmin);
         }
         ch.getJoinedChannels().remove(this);
         clients.remove(ch);
         if (clients.isEmpty()) {
             delete();
-        } else send(Settings.language.getSentence("guyExited").print(ch.getScreenName(false)));
+        } else {
+            send(Settings.language.getSentence("guyExited").print(ch.getScreenName(false)));
+        }
     }
 
     /**
@@ -189,9 +191,14 @@ public class Channel {
      * Removes a client from all channels.
      *
      * @param c the client to remove
+     * @param includeDefaultChannel wether to remove the client from the default
+     * channel or not.
      */
-    public static void removeFromAll(ClientHandler c) {
+    public static void removeFromAll(ClientHandler c, boolean includeDefaultChannel) {
         for (Channel chan : Channel.getChannels()) {
+            if (!includeDefaultChannel && chan == Settings.globalChannel) {
+                continue;
+            }
             chan.remove(c);
         }
     }
@@ -202,16 +209,16 @@ public class Channel {
      * @return true if the channel has to be deleted from memory when empty.
      */
     public boolean isAutodelete() {
-        return autoDelete;
+        return autoDeleteWhenEmpty;
     }
 
     /**
-     * Sets wether the channel has to autodestroy from memory when no clients are
-     * connected to it.
+     * Sets wether the channel has to autodestroy from memory when no clients
+     * are connected to it.
      *
      * @param hasToAutodelete self-explanatory
      */
     public void setAutodelete(boolean hasToAutodelete) {
-        this.autoDelete = hasToAutodelete;
+        this.autoDeleteWhenEmpty = hasToAutodelete;
     }
 }

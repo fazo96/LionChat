@@ -1,1 +1,1 @@
-tralal
+Hello, this is LionChat's default Admin Help Message.

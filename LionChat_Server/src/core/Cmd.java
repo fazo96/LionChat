@@ -56,10 +56,9 @@ public class Cmd {
         }
 
         // COMMANDS
-        
         // LOGIN
         if (c != null && c.getGroup().can("login") && cmd[0].equalsIgnoreCase("/login")) {
-            if (l != 3) { //errore nei parametri.
+            if (l != 3) { //Wrong number of parameters
                 c.send(Settings.language.getSentence("loginUsage").print());
                 return;
             }
@@ -107,7 +106,7 @@ public class Cmd {
         //if (c == null || c.getGroup() == Settings.groupUser || c.getGroup() == Settings.groupAdmin) {
 
         // WHO IS ONLINE
-        if ((c == null || c.getGroup().can("who")) && cmd[0].equalsIgnoreCase("/chi")) { //Stampa lista utenti
+        if ((c == null || c.getGroup().can("who")) && cmd[0].equalsIgnoreCase("/who")) { // Prints users list
             if (ClientHandler.getClients().isEmpty()) {
                 if (c == null) {
                     Server.out("");
@@ -130,6 +129,10 @@ public class Cmd {
             return;
         }
 
+        // GROUP
+        if (c != null && cmd[0].equalsIgnoreCase("/group")) {
+            c.send(Settings.language.getSentence("group").print());
+        }
         // CHANNEL COMMANDS
         if (c != null && c.getGroup().can("c") && cmd[0].equals("/c")) {
             if (cmd.length == 1) {
@@ -147,10 +150,17 @@ public class Cmd {
                 return;
             }
 
-            // JOIN CHANNEL (Not usable yet)
+            // JOIN CHANNEL
             Channel chan;
-            if ((cmd.length == 3 || cmd.length == 4) && cmd[1].equalsIgnoreCase("join")) {
-                //chan = Channel.get(cmd[2]);
+            if ((cmd.length == 3) && cmd[1].equalsIgnoreCase("join")) {
+                chan = Channel.get(cmd[2]);
+                if (chan != null && !chan.isPrivate()) {
+                    chan.add(c);
+                    c.send(Settings.language.getSentence("yourChannels").print());
+                    return;
+                }
+                c.send(Settings.language.getSentence("channelError").print());
+                return;
             }
 
             // LEAVE CHANNEL
@@ -165,6 +175,8 @@ public class Cmd {
                     return;
                 }
             }
+            
+            // SET WRITING CHANNEL
             chan = Channel.get(cmd[1]);
             if (chan == null) {
                 c.send(Settings.language.getSentence("channelError").print());
@@ -253,9 +265,9 @@ public class Cmd {
                 return;
             } else if (g == ch.getGroup()) {
                 if (c == null) {
-                    Server.out(Settings.language.getSentence("alreadyIsInGroup").print(c.getScreenName(false)+" "+g.getName()));
+                    Server.out(Settings.language.getSentence("alreadyIsInGroup").print(c.getScreenName(false) + " " + g.getName()));
                 } else {
-                    c.send(ch.getScreenName(true) + " fa già parte del gruppo " + g.getName() + "\n");
+                    c.send(Settings.language.getSentence("alreadyIsInGroup").print(c.getScreenName(false) + " " + g.getName()));
                 }
                 return;
             } else if (g == Settings.groupGuest) { // user must be logged out.

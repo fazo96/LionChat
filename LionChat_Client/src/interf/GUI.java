@@ -3,7 +3,7 @@ package interf;
 import utilz.Filez;
 import java.util.ArrayList;
 import javax.swing.text.DefaultCaret;
-import lang.Language;
+import parsing.Language;
 import net.Connection;
 import utilz.Utils;
 
@@ -201,23 +201,21 @@ public class GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
-        //Questa funzione viene chiamata quando viene premuto il tasto Invia
+        // This is the "send button" function
         if (Connection.isConnected()) {
             if (textField.getText() != "" && Utils.isValid(textField.getText())) {
-                //sono connesso e il testo è valido
+                // Valid text
                 Connection.send(textField.getText().trim());
             } else {
-                //Sono connesso ma il testo non è valido
-                append(language.getSentence("invalidString").print());
+                // Text is not valid
+                //append(language.getSentence("invalidString").print());
             }
         } else {
-            //Non sono connesso ma è stato premuto send
+            // Send has been pressed while not connected
             append(language.getSentence("tryReconnect").print());
-            Connection.connect(ip, port); //provo a riccnnettermi
+            Connection.connect(ip, port); //try to reconnect
         }
-        textField.setText(""); //dopo tutto, resetto il contenuto del textfield
-        //restituisco il focus al textfield, così se l'utente ha premuto send col
-        //mouse non deve cliccare anche sul textfield
+        textField.setText(""); //Empty the field and request focus on it
         textField.requestFocusInWindow();
     }//GEN-LAST:event_sendButtonActionPerformed
 
