@@ -22,9 +22,8 @@ wrongPassword: Wrong password
 passwordChangedSuccessfully: Password changed successfully
 nobodyOnline: Nobody online
 group: You are in the group "/A/".
-cListUsage: Usage: /c list
+cUsage: Usage: /c list - lists the channel you joined/N/       /c <channel> - sets the channel you are writing on/N/       /c leave - leaves the channel you are writing on
 yourChannels: You are in the following channels:/S/
-youJoinedChannel: You joined the channel /A/
 cantExitGlobal: You can't exit the global channel!
 channelError: The channel doesn't exist or that is not a correct channel command.
 writingOn: You are now writing on channel /A/

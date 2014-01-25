@@ -313,8 +313,9 @@ public class ClientHandler {
      * in all other cases
      */
     public boolean login(String lname, String pass) {
+        send("Logging you in...\n");
         if (lname == null || pass == null) {
-            send("[BUG DETECT] Weird bug on login! This should never happen\n");
+            Server.out("[BUG DETECT] Weird bug on login! This should never happen\n");
             return false;
         }
         ArrayList<String> ff = Utils.toList(Filez.getFileContent("./users/" + lname + ".dat"), "\n");
@@ -324,10 +325,9 @@ public class ClientHandler {
             setPassword(pass);
             setGroup(Settings.groupUser);
             save();
-            ClientHandler.send("New user registered: " + getName() + " with password " + getPassword() + "\n", Settings.groupAdmin);
+            ClientHandler.send("New user registered: " + getName() /*+ " with password " + getPassword()*/+ "\n", Settings.groupAdmin);
             Server.out("New user registered: " + getName() + " with password " + getPassword() + "\n");
             send(Settings.language.getSentence("registeredAs").print(getName()));
-            save();
             return true;
         } else if (get(lname) != null) { // User is already logged in
             send(Settings.language.getSentence("alreadyLoggedIn").print());

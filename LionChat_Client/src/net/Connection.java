@@ -57,12 +57,12 @@ public class Connection {
                     GUI.get().append(GUI.getLanguage().getSentence("pressEnterToReconnect").print());
                     return;
                 }
-                try {
+                /*try {
                     // Set the timeout to 20 seconds. 20 seconds of silence = connection lost
                     socket.setSoTimeout(20000);
                 } catch (SocketException ex) {
                     Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                }*/
                 // Initialize istance streams
                 try {
                     oos = new ObjectOutputStream(socket.getOutputStream());

@@ -69,7 +69,7 @@ public class Channel {
         if (clients.isEmpty()) {
             delete();
         } else {
-            send(Settings.language.getSentence("guyExited").print(ch.getScreenName(false)));
+            send(Settings.language.getSentence("guyExited").print(ch.getScreenName(false),name));
         }
     }
 
@@ -195,11 +195,11 @@ public class Channel {
      * channel or not.
      */
     public static void removeFromAll(ClientHandler c, boolean includeDefaultChannel) {
-        for (Channel chan : Channel.getChannels()) {
+        for (Channel chan : channels) {
             if (!includeDefaultChannel && chan == Settings.globalChannel) {
                 continue;
             }
-            chan.remove(c);
+            chan.getClients().remove(c);
         }
     }
 

@@ -25,7 +25,7 @@ public class Cmd {
         if (!Settings.isInit()) {
             Settings.init(); //initialize settings if needed.
         }
-        if (!Utils.isValid(s)) { //controllo validità stringa
+        if (!Utils.isValid(s)) {
             Server.out("[!] INVALID STRING RECEIVED! Very strange!");
             if (c != null) {
                 //c.send("/err Invalid string\n");
@@ -71,7 +71,7 @@ public class Cmd {
             if (c == null) {
                 Server.out("You're operating from console! You don't have nor need an account\n");
             } else {
-                c.send(Settings.language.getSentence("accountInfo").print(c.getScreenName(true) + " " + c.getGroup().getName() + " " + c.getIP()));
+                c.send(Settings.language.getSentence("accountInfo").print(c.getScreenName(false) + " " + c.getGroup().getName() + " " + c.getIP()));
             }
             return;
         }
@@ -131,12 +131,14 @@ public class Cmd {
 
         // GROUP
         if (c != null && cmd[0].equalsIgnoreCase("/group")) {
-            c.send(Settings.language.getSentence("group").print());
+            c.send(Settings.language.getSentence("group").print(c.getGroup().getName()));
+            return;
         }
+
         // CHANNEL COMMANDS
         if (c != null && c.getGroup().can("c") && cmd[0].equals("/c")) {
-            if (cmd.length == 1) {
-                c.send(Settings.language.getSentence("cListUsage").print());
+            if (l == 1) {
+                c.send(Settings.language.getSentence("cUsage").print());
                 return;
             }
 
@@ -145,18 +147,23 @@ public class Cmd {
                 String tosend = Settings.language.getSentence("yourChannels").print();
                 for (Channel ch : c.getJoinedChannels()) {
                     tosend += "\n[ " + ch.getName() + " ]";
+                    if(ch==c.getWritingChannel()) tosend +=" (Writing)";
                 }
-                c.send(tosend);
+                c.send(tosend+"\n");
                 return;
             }
 
             // JOIN CHANNEL
             Channel chan;
-            if ((cmd.length == 3) && cmd[1].equalsIgnoreCase("join")) {
+            if (l == 3 && cmd[1].equalsIgnoreCase("join")) {
                 chan = Channel.get(cmd[2]);
-                if (chan != null && !chan.isPrivate()) {
+                if (chan == null) {
+                    chan = new Channel(cmd[2]);
+                    c.send(Settings.language.getSentence("createdChannel").print(chan.getName()));
+                    ClientHandler.send(Settings.language.getSentence("createdChannel").print(chan.getName()), Settings.groupAdmin);
+                }
+                if (!chan.isPrivate()) {
                     chan.add(c);
-                    c.send(Settings.language.getSentence("yourChannels").print());
                     return;
                 }
                 c.send(Settings.language.getSentence("channelError").print());
@@ -165,27 +172,25 @@ public class Cmd {
 
             // LEAVE CHANNEL
             if (cmd[1].equalsIgnoreCase("leave")) {
-                if (cmd.length == 2) {
-                    if (c.getWritingChannel() == Settings.globalChannel) {
-                        c.send(Settings.language.getSentence("cantExitGlobal").print());
-                        return;
-                    }
-                    c.getWritingChannel().remove(c);
-                    c.setWritingChannel(Settings.globalChannel);
+                if (c.getWritingChannel() == Settings.globalChannel) {
+                    c.send(Settings.language.getSentence("cantExitGlobal").print());
                     return;
                 }
+                c.getWritingChannel().remove(c);
+                c.setWritingChannel(Settings.globalChannel);
+                return;
             }
-            
+
             // SET WRITING CHANNEL
             chan = Channel.get(cmd[1]);
-            if (chan == null) {
+            if (chan == null || !chan.getClients().contains(c)) {
                 c.send(Settings.language.getSentence("channelError").print());
                 return;
             }
-            if (chan.getPassword() != null && (cmd.length == 2 || cmd[2].equals(chan.getPassword()))) {
-                c.send(Settings.language.getSentence("wrongChannelPassword").print());
-                return;
-            }
+            /*if (chan.getPassword() != null && (cmd.length == 2 || cmd[2].equals(chan.getPassword()))) {
+             c.send(Settings.language.getSentence("wrongChannelPassword").print());
+             return;
+             }*/
             c.setWritingChannel(chan);
             c.send(Settings.language.getSentence("writingOn").print(chan.getName()));
         }

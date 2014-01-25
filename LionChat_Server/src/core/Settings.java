@@ -69,7 +69,7 @@ public class Settings {
             port = 7777;
         }
         String a, b, c;
-        Server.out("Caricamnto di helpMsg");
+        Server.out("Loading helpMsg");
         a = Filez.getFileContent("./settings/helpMsg.txt");
         if (a == null) {
             Server.out("Failed. Creating file...");
@@ -77,7 +77,7 @@ public class Settings {
         } else {
             helpMsg = a;
         }
-        Server.out("Caricamnto di adminHelpMsg");
+        Server.out("Loading adminHelpMsg");
         b = Filez.getFileContent("./settings/adminHelpMsg.txt");
         if (b == null) {
             Server.out("Failed. Creating file...");
@@ -85,7 +85,7 @@ public class Settings {
         } else {
             adminHelpMsg = b;
         }
-        Server.out("Caricamnto di adminHelpMsg");
+        Server.out("Loading adminHelpMsg");
         c = Filez.getFileContent("./settings/motd.txt");
         if (c == null) {
             Filez.writeFile("./settings/motd.txt", motd);
@@ -100,7 +100,7 @@ public class Settings {
      * @return the "help" message
      */
     public static String getHelpMsg() {
-        return helpMsg;
+        return "\n"+helpMsg+"\n";
     }
 
     /**
@@ -108,7 +108,7 @@ public class Settings {
      * @return the "adminHelp" message
      */
     public static String getAdminHelpMsg() {
-        return adminHelpMsg;
+        return "\n"+adminHelpMsg+"\n";
     }
 
     /**
@@ -116,7 +116,7 @@ public class Settings {
      * @return the message of the day.
      */
     public static String getMotd() {
-        return motd;
+        return "\n"+motd+"\n";
     }
 
     /**
