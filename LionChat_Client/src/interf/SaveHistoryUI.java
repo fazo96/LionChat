@@ -127,7 +127,7 @@ public class SaveHistoryUI extends javax.swing.JFrame {
      * Applies the current language sentences on the window's text.
      */
     public void applyLanguage() {
-        setTitle(GUI.getLanguage().getSentence("saveHistoryTitle").print());
+        //setTitle(GUI.getLanguage().getSentence("saveHistoryTitle").print());
         fileNameLabel.setText(GUI.getLanguage().getSentence("fileNameLabel").print());
         label.setText(GUI.getLanguage().getSentence("youllFindFile").print());
         saveFile.setText(GUI.getLanguage().getSentence("saveButton").print());

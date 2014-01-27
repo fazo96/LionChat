@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -82,7 +81,6 @@ public class ClientHandler {
                     } catch (ClassNotFoundException ex) {
                         Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    //Server.out("Ricevuto messaggio");
                     if (o != null && o instanceof String && !((String) o).equals("")) {
                         Cmd.cmd((String) o, client);
                     }
@@ -332,7 +330,7 @@ public class ClientHandler {
         } else if (get(lname) != null) { // User is already logged in
             send(Settings.language.getSentence("alreadyLoggedIn").print());
             Server.out(getIP() + " tried logging in as " + get(lname).getScreenName(true));
-            send(getIP() + " tried logging in as " + get(lname).getScreenName(true), Settings.groupAdmin);
+            send(getIP() + " tried logging in as " + get(lname).getScreenName(true)+"\n", Settings.groupAdmin);
             return false;
         } else if (pass.equals(ff.get(1))) { //user wasn't logged in and password is correct
             setName(lname);

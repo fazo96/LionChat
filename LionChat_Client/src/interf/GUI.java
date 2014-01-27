@@ -42,6 +42,7 @@ public class GUI extends javax.swing.JFrame {
         //Give focus to the text input field
         textField.requestFocusInWindow();
         loadLanguage("en"); //load default english language into the program
+        append("WOW!\n");
         readSettings(); //read settings from file
         gui.setVisible(true); //make the window visible
         setLocationRelativeTo(null); //put window at the center of the screen
@@ -233,6 +234,7 @@ public class GUI extends javax.swing.JFrame {
     private void settingsMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsMenuActionPerformed
         settingsUI.setVisible(true);
         settingsUI.updateFields();
+        settingsUI.applyLanguage();
     }//GEN-LAST:event_settingsMenuActionPerformed
 
     private void exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitActionPerformed
@@ -242,6 +244,7 @@ public class GUI extends javax.swing.JFrame {
     private void saveHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveHistoryActionPerformed
         saveHistoryUI.setVisible(true);
         saveHistoryUI.setLabelText(language.getSentence("youllFindFile").print());
+        saveHistoryUI.applyLanguage();
     }//GEN-LAST:event_saveHistoryActionPerformed
 
     private void textFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textFieldActionPerformed
@@ -359,6 +362,7 @@ public class GUI extends javax.swing.JFrame {
      * fails, it returns false
      */
     private boolean loadLanguage(String lang) {
+        append("Loading language \""+lang+"\"\n");
         language = new Language(lang);
         if (!language.isLoaded()) {
             if (lang.equals("en")) {
@@ -376,12 +380,12 @@ public class GUI extends javax.swing.JFrame {
         exit.setText(language.getSentence("exit").print());
         saveHistory.setText(language.getSentence("saveHistoryTitle").print());
         sendButton.setText(language.getSentence("send").print());
-        if (settingsUI != null) {
+        /*if (settingsUI != null) {
             settingsUI.applyLanguage();
         }
         if (saveHistoryUI != null) {
             saveHistoryUI.applyLanguage();
-        }
+        }*/
         return true;
     }
 

@@ -147,27 +147,51 @@ public class Cmd {
                 String tosend = Settings.language.getSentence("yourChannels").print();
                 for (Channel ch : c.getJoinedChannels()) {
                     tosend += "\n[ " + ch.getName() + " ]";
-                    if(ch==c.getWritingChannel()) tosend +=" (Writing)";
+                    if (ch == c.getWritingChannel()) {
+                        tosend += " (Writing)";
+                    }
                 }
-                c.send(tosend+"\n");
+                c.send(tosend + "\n");
                 return;
             }
 
             // JOIN CHANNEL
             Channel chan;
-            if (l == 3 && cmd[1].equalsIgnoreCase("join")) {
+            if (l >= 3 && cmd[1].equalsIgnoreCase("join")) {
                 chan = Channel.get(cmd[2]);
-                if (chan == null) {
+                if (chan == null) { // Channel doesn't exist: creating it
                     chan = new Channel(cmd[2]);
-                    c.send(Settings.language.getSentence("createdChannel").print(chan.getName()));
-                    ClientHandler.send(Settings.language.getSentence("createdChannel").print(chan.getName()), Settings.groupAdmin);
+                    if (l == 4) {
+                        chan.setPassword(cmd[3]);
+                        Server.out("Password for chanel \"" + chan.getName() + "\": " + cmd[3]);
+                    }
+                    chan.add(c);
+                    if (chan.isPrivate()) { // Channel created is private
+                        if (c.getGroup() != Settings.groupAdmin) {
+                            c.send(Settings.language.getSentence("createdChannelWithPassword").print("\"" + chan.getName()) + "\"");
+                        }
+                        ClientHandler.send(Settings.language.getSentence("createdChannelWithPassword").print("\"" + chan.getName() + "\""), Settings.groupAdmin);
+                    } else { // Channel created is public
+                        if (c.getGroup() != Settings.groupAdmin) {
+                            c.send(Settings.language.getSentence("createdChannel").print("\"" + chan.getName()) + "\"");
+                        }
+                        ClientHandler.send(Settings.language.getSentence("createdChannel").print("\"" + chan.getName() + "\""), Settings.groupAdmin);
+                    }
+                    return;
                 }
+                // The channel exists
                 if (!chan.isPrivate()) {
                     chan.add(c);
                     return;
+                } else {
+                    if (l >= 4 && chan.getPassword().equals(cmd[3])) {
+                        chan.add(c);
+                        c.send(Settings.language.getSentence("passwordCorrect").print());
+                    } else {
+                        c.send(Settings.language.getSentence("wrongChannelPassword").print());
+                    }
+                    return;
                 }
-                c.send(Settings.language.getSentence("channelError").print());
-                return;
             }
 
             // LEAVE CHANNEL
@@ -187,15 +211,10 @@ public class Cmd {
                 c.send(Settings.language.getSentence("channelError").print());
                 return;
             }
-            /*if (chan.getPassword() != null && (cmd.length == 2 || cmd[2].equals(chan.getPassword()))) {
-             c.send(Settings.language.getSentence("wrongChannelPassword").print());
-             return;
-             }*/
             c.setWritingChannel(chan);
             c.send(Settings.language.getSentence("writingOn").print(chan.getName()));
+            return;
         }
-        //if (c == null || c.getGroup() == Settings.groupAdmin) {
-        //questi sono i comandi esclusivi da amministratori
 
         // HASH A STRING
         if ((c == null || c.getGroup().can("hash")) && cmd[0].equalsIgnoreCase("/hash")) { //hash di una stringa

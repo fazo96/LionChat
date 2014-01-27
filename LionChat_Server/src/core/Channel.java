@@ -62,14 +62,14 @@ public class Channel {
     public void remove(ClientHandler ch) {
         if (clients.contains(ch)) {
             ch.send(Settings.language.getSentence("youExited").print(name));
-            ClientHandler.send(Settings.language.getSentence("guyExitedAdmin").print(ch.getScreenName(true), name), Settings.groupAdmin);
+            ClientHandler.send(Settings.language.getSentence("guyExitedAdmin").print(ch.getScreenName(true)+" "+name), Settings.groupAdmin);
         }
         ch.getJoinedChannels().remove(this);
         clients.remove(ch);
         if (clients.isEmpty()) {
             delete();
         } else {
-            send(Settings.language.getSentence("guyExited").print(ch.getScreenName(false),name));
+            send(Settings.language.getSentence("guyExited").print(ch.getScreenName(false)+" "+name));
         }
     }
 
@@ -110,8 +110,14 @@ public class Channel {
      * @param s il messaggio da inviare.
      */
     public void send(String s) {
-        for (ClientHandler c : clients) {
-            c.send("[ " + name + " ]" + s);
+        if (s.startsWith("[")) {
+            for (ClientHandler c : clients) {
+                c.send("[ " + name + " ]" + s);
+            }
+        } else {
+            for (ClientHandler c : clients) {
+                c.send("[ " + name + " ] " + s);
+            }
         }
     }
 
@@ -163,10 +169,7 @@ public class Channel {
      * @return wether the channel ha a password set or not.
      */
     public boolean isPrivate() {
-        if (password == null) {
-            return true;
-        }
-        return false;
+        return password!=null;
     }
 
     /**

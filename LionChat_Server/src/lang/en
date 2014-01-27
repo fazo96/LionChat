@@ -12,6 +12,7 @@
 --- English # This sets the "en" language's name to! "English". Only the first name given matters
 
 # Server sentences
+passwordCorrect: Password Correct!
 
 # Commands
 
@@ -22,12 +23,12 @@ wrongPassword: Wrong password
 passwordChangedSuccessfully: Password changed successfully
 nobodyOnline: Nobody online
 group: You are in the group "/A/".
-cUsage: Usage: /c list - lists the channel you joined/N/       /c <channel> - sets the channel you are writing on/N/       /c leave - leaves the channel you are writing on
+cUsage: Usage: /c list - lists the channel you joined/N/       /c join <channel> - join the given channel./N/       /c <channel> - sets the channel you are writing on/N/       /c leave - leaves the channel you are writing on
 yourChannels: You are in the following channels:/S/
 cantExitGlobal: You can't exit the global channel!
 channelError: The channel doesn't exist or that is not a correct channel command.
 writingOn: You are now writing on channel /A/
-wrongChannelPassword: Wrong channel password!
+wrongChannelPassword: Wrong or missing channel password!
 hashUsage: Usage: /hash string/N/Returns the hash of the given string.
 userNotFound: User not found
 setGroupUsage: Usage: /setGroup name newGroup
@@ -40,6 +41,8 @@ kickUsage: Usage: /kick name
 unknownCommand: Command not found or you don't have the permission to use it.
 
 # Channel
+createdChannel: The channel /A/ has been created!
+createdChannelWithPassword: The channel /A/ has been created! The channel is private, protected with password.
 youExited: You exited from channel /A/
 addUserError: Tried to add a user to channel /A/ that was already in there
 youEntered: You entered the channel /A/
