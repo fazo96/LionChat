@@ -1,1 +1,7 @@
 Hello, this is LionChat's default Admin Help Message.
+/setGroup - sets a group on a specific user
+/hash - you can get the hash of the given string
+/gc - call garbage collector on the server. Don't abuse this!
+/status - get important information on server status
+/stop - save and exit from the server
+/save - save server data on file

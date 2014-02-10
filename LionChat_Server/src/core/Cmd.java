@@ -99,8 +99,8 @@ public class Cmd {
                 return;
             }
             c.setPassword(cmd[2]);
-            c.send(Settings.language.getSentence("passwordChangedSuccessfully").print());
             c.save();
+            c.send(Settings.language.getSentence("passwordChangedSuccessfully").print());
             return;
         }
         //if (c == null || c.getGroup() == Settings.groupUser || c.getGroup() == Settings.groupAdmin) {
@@ -136,13 +136,13 @@ public class Cmd {
         }
 
         // CHANNEL COMMANDS
-        if (c != null && c.getGroup().can("c") && cmd[0].equals("/c")) {
+        if (c != null && c.getGroup().can("c") && (cmd[0].equals("/channel") || cmd[0].equals("/c"))) {
             if (l == 1) {
                 c.send(Settings.language.getSentence("cUsage").print());
                 return;
             }
 
-            // CHANNEL LIST
+            // (CHANNEL) > LIST
             if (cmd[1].equalsIgnoreCase("list")) {
                 String tosend = Settings.language.getSentence("yourChannels").print();
                 for (Channel ch : c.getJoinedChannels()) {
@@ -155,7 +155,7 @@ public class Cmd {
                 return;
             }
 
-            // JOIN CHANNEL
+            // (CHANNEL) > JOIN CHANNEL
             Channel chan;
             if (l >= 3 && cmd[1].equalsIgnoreCase("join")) {
                 chan = Channel.get(cmd[2]);
@@ -194,7 +194,7 @@ public class Cmd {
                 }
             }
 
-            // LEAVE CHANNEL
+            // (CHANNEL) > LEAVE CHANNEL
             if (cmd[1].equalsIgnoreCase("leave")) {
                 if (c.getWritingChannel() == Settings.globalChannel) {
                     c.send(Settings.language.getSentence("cantExitGlobal").print());
@@ -204,9 +204,12 @@ public class Cmd {
                 c.setWritingChannel(Settings.globalChannel);
                 return;
             }
-
-            // SET WRITING CHANNEL
+            
+            // (CHANNEL) > SET WRITING CHANNEL
+            // If the first parameter is not a command, try to set the writing channel for the user
             chan = Channel.get(cmd[1]);
+            //check if the channel exist and the user is a member of the channel
+            
             if (chan == null || !chan.getClients().contains(c)) {
                 c.send(Settings.language.getSentence("channelError").print());
                 return;
@@ -339,29 +342,28 @@ public class Cmd {
             return;
         }
 
-        // KICK A CLIENT OUT OF THE SERVER
+        // KICK
         if ((c == null || c.getGroup().can("kick")) && cmd[0].equalsIgnoreCase("/kick")) {
-            if (l == 1) {
+            if (l == 1) { // Kick all
                 if (c != null) {
                     c.send(Settings.language.getSentence("disconnectsEverybody").print(c.getScreenName(true)), Settings.groupAdmin);
                     if (c.getGroup() == Settings.groupUser) {
                         Settings.globalChannel.send(Settings.language.getSentence("disconnectsEverybody").print(c.getScreenName(false)));
                     }
-                } else {
-                    Server.out("Disconnecting everybody!");
                 }
+                Server.out("Disconnecting everybody!");
                 ClientHandler.disconnectAll();
                 return;
-            } else if (l == 2) {
+            } else if (l == 2) { // Kick specific user
                 ClientHandler ch;
                 if ((ch = ClientHandler.get(cmd[1])) != null) {
                     if (c != null) {
                         c.send(c.getScreenName(true) + " disconnects " + ch.getScreenName(true) + "\n", Settings.groupAdmin);
+                        Server.out(c.getScreenName(true)+" disconnects "+ch.getScreenName(true));
                     } else {
                         Server.out("Disconnecting " + ch.getScreenName(true));
                     }
                     ch.disconnect();
-                    return;
                 } else if (c == null) {
                     Server.out(Settings.language.getSentence("userNotFound").print());
                 } else {
@@ -374,6 +376,8 @@ public class Cmd {
             }
             return;
         }
+
+        //SAVE
         if ((c == null || c.getGroup().can("save")) && cmd[0].equalsIgnoreCase("/save")) {
             if (c != null) {
                 c.send("Saving server data...\n");
@@ -384,7 +388,8 @@ public class Cmd {
             }
             return;
         }
-        // End of commands.
+
+        // Command not found
         if (c == null) {
             Server.out("Unknown server command or command not usable by server console");
         } else {

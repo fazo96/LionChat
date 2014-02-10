@@ -63,6 +63,8 @@ public class Channel {
         if (clients.contains(ch)) {
             ch.send(Settings.language.getSentence("youExited").print(name));
             ClientHandler.send(Settings.language.getSentence("guyExitedAdmin").print(ch.getScreenName(true)+" "+name), Settings.groupAdmin);
+            ch.send(Settings.language.getSentence("youExited").print("\""+name+"\""));
+            ClientHandler.send(Settings.language.getSentence("guyExitedAdmin").print(ch.getScreenName(true)+" "+name), Settings.groupAdmin);
         }
         ch.getJoinedChannels().remove(this);
         clients.remove(ch);
