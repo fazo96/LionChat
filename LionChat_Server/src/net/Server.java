@@ -125,7 +125,7 @@ public class Server {
                 + "\nMemory used: " + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 100000) + "MB"
                 + " / " + (Runtime.getRuntime().totalMemory() / 100000) + "MB"
                 + "\nMax memory: " + (Runtime.getRuntime().maxMemory() / 100000) + "MB"
-                + "\nRunning threads (Should be 3 + 1 for every user): " + Thread.activeCount()
+                + "\nRunning threads (Should be 2 + 1 for every user): " + Thread.activeCount()
                 + "\nCPU Cores: " + Runtime.getRuntime().availableProcessors();
     }
 

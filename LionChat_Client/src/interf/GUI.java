@@ -42,7 +42,6 @@ public class GUI extends javax.swing.JFrame {
         //Give focus to the text input field
         textField.requestFocusInWindow();
         loadLanguage("en"); //load default english language into the program
-        append("WOW!\n");
         readSettings(); //read settings from file
         gui.setVisible(true); //make the window visible
         setLocationRelativeTo(null); //put window at the center of the screen
