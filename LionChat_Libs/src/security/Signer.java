@@ -9,6 +9,7 @@ import java.security.SecureRandom;
 import java.security.Signature;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.Cipher;
 
 /**
  *
@@ -69,6 +70,10 @@ public class Signer {
     }
 
     public String sign(String data) {
+        return null;
+    }
+
+    public String encrypt(String data) {
         return null;
     }
 
