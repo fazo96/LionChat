@@ -1,3 +1,5 @@
+**Notice:** this is a developement branch. Please have a look at "master" for the stable version
+
 # LionChat
 Multiplatform server/client socket based text chat written in Java with sophisticated features **already implemented**, such as:
 - Realtime text chat
@@ -11,14 +13,13 @@ Multiplatform server/client socket based text chat written in Java with sophisti
 - Headless server (no GUI required)
 
 **Working on:**
-- Fixing bugs and then checkout a developement branch, to maintain a stable branch.
+- Digital signatures and encryption
 
 **Planned:**
 - Italian translation
 - Fix the CLI client, improve output formatting
 - Anti spam tweaks
 - Settings files rewrite
-- Securing the program (need help with this!)
 - Server output logging management
 - Server bandwidth management
 - HTML formatted text
