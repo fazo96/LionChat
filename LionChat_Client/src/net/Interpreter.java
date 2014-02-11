@@ -2,6 +2,7 @@ package net;
 
 import interf.GUI;
 import java.util.ArrayList;
+import security.Security;
 import utilz.Utils;
 
 /**
@@ -23,11 +24,11 @@ public class Interpreter {
         ArrayList<String> ss = Utils.toList(s, " ");
         // don't send password, send hash instead to protect privacy
         if ((s.startsWith("/login") || s.startsWith("/password")) && ss.size() == 3) {
-            ss.set(2, Utils.getSecureHash(ss.get(2)));
+            ss.set(2, Security.hash(ss.get(2)));
         }
         if (s.startsWith("/password") && ss.size() == 3) {
-            ss.set(1, Utils.getSecureHash(ss.get(1)));
-            ss.set(2, Utils.getSecureHash(ss.get(2)));
+            ss.set(1, Security.hash(ss.get(1)));
+            ss.set(2, Security.hash(ss.get(2)));
         }
         return Utils.fromList(ss, " ");
     }

@@ -2,6 +2,7 @@ package core;
 
 import net.ClientHandler;
 import net.Server;
+import security.Security;
 import utilz.Utils;
 
 /**
@@ -230,9 +231,9 @@ public class Cmd {
                 return;
             }
             if (c == null) {
-                Server.out("hash of " + cmd[1] + ": " + Utils.getSecureHash(cmd[1]));
+                Server.out("hash of " + cmd[1] + ": " + Security.hash(cmd[1]));
             } else {
-                c.send("hash of " + cmd[1] + ": " + Utils.getSecureHash(cmd[1]) + "\n");
+                c.send("hash of " + cmd[1] + ": " + Security.hash(cmd[1]) + "\n");
             }
             return;
         }
