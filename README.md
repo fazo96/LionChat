@@ -11,7 +11,8 @@ Multiplatform server/client socket based text chat written in Java with sophisti
 - Headless server (no GUI required)
 
 **Working on:**
-- Fixing bugs and then checkout a developement branch, to maintain a stable branch.
+- Fixing bugs (stable branch)
+- Digital Signature and Encryption (developement branch)
 
 **Planned:**
 - Italian translation
