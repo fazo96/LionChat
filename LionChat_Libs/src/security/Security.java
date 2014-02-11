@@ -6,12 +6,8 @@
 package security;
 
 import java.io.UnsupportedEncodingException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.Signature;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import utilz.Utils;
@@ -21,45 +17,6 @@ import utilz.Utils;
  * @author fazo
  */
 public class Security {
-
-    private KeyPair pair;
-    private Signature signer;
-
-    public Security() {
-        this("DSA", "SHA1PRNG", "SHA1withDSA");
-    }
-
-    public Security(String keyAlgorithm, String randomAlgorithm, String signatureAlgorithm) {
-        KeyPairGenerator keyGen = null;
-        try {
-            keyGen = KeyPairGenerator.getInstance(keyAlgorithm);
-        } catch (NoSuchAlgorithmException ex) {
-            // FATAL: CAN'T FIND ALGORITHM
-            Logger.getLogger(Security.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(-4);
-        }
-        SecureRandom random = null;
-        try {
-            random = SecureRandom.getInstance(randomAlgorithm);
-        } catch (NoSuchAlgorithmException ex) {
-            // FATAL: CAN'T FIND ALGORITHM
-            Logger.getLogger(Security.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(-5);
-        }
-        keyGen.initialize(1024, random);
-        pair = keyGen.genKeyPair();
-        try {
-            signer = Signature.getInstance(signatureAlgorithm);
-        } catch (NoSuchAlgorithmException ex) {
-            // FATAL: CAN'T FIND ALGORITHM
-            Logger.getLogger(Security.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(-6);
-        }
-    }
-
-    public KeyPair getKeyPair() {
-        return pair;
-    }
 
     /**
      * Returns SHA512 hash of the given string (without trimming the string).

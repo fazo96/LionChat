@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package security;
 
 /**
@@ -11,13 +6,12 @@ package security;
  */
 public class Message {
 
-    private String certificateHash, text;
+    private String signature, text;
     private boolean encrypted;
 
-    public Message(String text, String certificateHash) {
-        this.certificateHash = certificateHash;
+    public Message(String text, String signature) {
+        this.signature = signature;
         this.text = text;
         encrypted = true;
     }
-
 }

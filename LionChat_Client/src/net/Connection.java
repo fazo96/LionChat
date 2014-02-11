@@ -7,8 +7,11 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.security.Signature;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import security.Message;
+import security.Security;
 import utilz.SyncObject;
 
 /**
@@ -18,7 +21,7 @@ import utilz.SyncObject;
  */
 public class Connection {
 
-    private static boolean connected = false; // wether or not the client is connected
+    private static boolean connected = false, useCryptography = true;
     // socket used to send and receive data
     private static Socket socket;
     // thread used to receive data
@@ -27,18 +30,21 @@ public class Connection {
     private static ObjectOutputStream oos;
     // object used to receive istances to server
     private static ObjectInputStream ois;
+    // Security object (from LionChat_Libs) used for cryptography
+    private static Security security;
 
     /**
      * Tries to connect to the server.
      *
-     * @param ip the IP address of the server. Hostnames will be resolved using DNS
+     * @param ip the IP address of the server. Hostnames will be resolved using
+     * DNS
      * @param port network port used.
      */
     public static void connect(final String ip, final int port) {
         receiver = new Thread() {
             @Override
             public void run() {
-                GUI.get().append(GUI.getLanguage().getSentence("tryConnect").print(ip+" "+port));
+                GUI.get().append(GUI.getLanguage().getSentence("tryConnect").print(ip + " " + port));
                 try {
                     socket = new Socket(ip, port);
                     connected = true;
@@ -58,11 +64,11 @@ public class Connection {
                     return;
                 }
                 /*try {
-                    // Set the timeout to 20 seconds. 20 seconds of silence = connection lost
-                    socket.setSoTimeout(20000);
-                } catch (SocketException ex) {
-                    Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-                }*/
+                 // Set the timeout to 20 seconds. 20 seconds of silence = connection lost
+                 socket.setSoTimeout(20000);
+                 } catch (SocketException ex) {
+                 Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+                 }*/
                 // Initialize istance streams
                 try {
                     oos = new ObjectOutputStream(socket.getOutputStream());
@@ -95,14 +101,14 @@ public class Connection {
                         o = ois.readObject();
                     } catch (IOException ex) {
                         // If this happens connection is probably dead
-                        GUI.get().append("[ERRORE] " + ex + "\nCan't read from server. Disconnection imminent\n"+GUI.getLanguage().getSentence("pressEnterToReconnect").print());
+                        GUI.get().append("[ERROR] " + ex + "\nCan't read from server. Disconnection imminent\n" + GUI.getLanguage().getSentence("pressEnterToReconnect").print());
                         Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                         connected = false;
                         Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                         break;
                     } catch (ClassNotFoundException ex) {
                         // An object from unknown class has been received, that's weird!
-                        GUI.get().append("[ERRORE] ClassNotFoundException.\nThis really shouldn't happen! Contact the developer\n");
+                        GUI.get().append("[ERROR] ClassNotFoundException.\nThis really shouldn't happen! Contact the developer\n");
                         Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                         continue;
                     }
@@ -112,7 +118,10 @@ public class Connection {
                     if (o instanceof String) {
                         // We got a string! What a surprise for a chat program
                         // Run it trough the interpreter, which will know what to do with it
-                        Interpreter.cmd((String)o);
+                        Interpreter.cmd((String) o);
+                    } else if (o instanceof Message) {
+                        // We got a Message object, it's probably encrypted
+                        GUI.get().append("[!] Received an encrypted message, but this version of LionChat can't handle that\n");
                     } else if (o instanceof SyncObject);
                     // We got a SyncObject! Means the connection is alive.
                 }
@@ -121,6 +130,7 @@ public class Connection {
             }
         };
         receiver.start(); // I freaked out for 20 mins because I forgot this...
+        security = new Security(); // Initialize Security object
     }
 
     /**
