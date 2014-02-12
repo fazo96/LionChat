@@ -1,33 +1,33 @@
 # LionChat
+
 Multiplatform server/client socket based text chat written in Java with sophisticated features **already implemented**, such as:
 - Realtime text chat
 - Works on Linux, Mac OS X and Windows (Only tested on linux and briefly on windows. Try it! Should work!)
 - Multilanguage support with easy to write language files, with english being the default
-- Secure account system with no password exposure (at least I think so. Have a look at the code!)
-- Extensive command system for dynamic server, account, groups and permission management (almost finished but usable)
-- Administrator users that can run server commands
-- Ability to join channels and password protect them
+- Channels (also password protected)
+- Secure account system with no password exposure
+- Full encryption
 - Easily configurable, comfortable GUI for the client
+- Extensive command system for dynamic server, account, groups and permission management
+- Remote server management
 - Headless server (no GUI required)
 
-**Working on:**
-- Fixing bugs (stable branch)
-- Digital Signature and Encryption (developement branch)
+**Currently working on:**
+- Client code reorganization, CLI client
+- Settings files revamp
+- Better console output handling
 
 **Planned:**
-- Client code reorganization (also CLI client)
 - Anti spam tweaks
-- Settings files rewrite
-- Better Server and Client output handling
 - Server bandwidth management
 - Logging
 
 **Non guaranteed long term goals:**
+- Voice Chat
 - HTML formatted text
-- GUI commands, more interactive client
-- Server command system rewrite
-- Voice chat
-- peer to peer (will probably be done by rewriting everything)
+- More interactive client (maybe)
+- Server command system rewrite (maybe)
+- peer to peer (will probably be done in a new project)
 
 How to use it
 ==============
@@ -48,19 +48,23 @@ Make sure you read the 'how to use it' paragraph. You need the *latest version* 
 
 If you don't know how to do the above or don't understand it, you *clearly* need to learn basic Git and Netbeans functionality before you can tinker with the program. Google may help you.
 
+Repo organization
+----
+You can find the latest stable commits on **master** and unstable versions on **dev** or other branches.
+
 Faq
 ----
-**But I love eclipse! How do you import in eclipse?**
+**How do you import in Eclipse?**
 
-I'm sorry, I don't like eclipse much. Of course you can code with eclipse, but it may be hard to get the project to work and I don't support it.
+I'm sorry, I don't like eclipse much, so no explanation. Just to the equivalent of the Netbeans explanation in Eclipse. If you want you can write an How to and send me a pull request.
 
-**But I don't use IDEs or I don't want to! How do I compile from command line?**
+**How do I compile without an IDE or in other ways?**
 
-I never tried it, but you should be able to do it if you have experiance with manually compiling. Just read the netbeans part and try. I don't support this though. Netbeans is free and open source for Windows, Mac and Linux, try it.
+I never tried it, so I don't know. If you want you can write a tutorial and send me a pull request.
 
 License
 ==============
-Copyright (C) 2013  Enrico Fasoli
+Copyright (C) 2013  Enrico Fasoli (fazius2009 at gmail dot com)
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

@@ -2,6 +2,7 @@ package core;
 
 import net.ClientHandler;
 import net.Server;
+import security.Security;
 import utilz.Utils;
 
 /**
@@ -9,7 +10,7 @@ import utilz.Utils;
  *
  * @author fazo
  */
-public class Cmd {
+public class Command {
 
     /**
      * Analyzes a string received from the given client, and acts as
@@ -20,7 +21,7 @@ public class Cmd {
      * @param c the client that sent that. Null if it came from the server
      * console.
      */
-    public static void cmd(String s, ClientHandler c) {
+    public static void execute(String s, ClientHandler c) {
         s = s.trim(); // trim string before analyzing it
         if (!Settings.isInit()) {
             Settings.init(); //initialize settings if needed.
@@ -56,6 +57,13 @@ public class Cmd {
         }
 
         // COMMANDS
+        
+        if (c != null && cmd[0].equalsIgnoreCase("/askKey")) {
+            // The client is asking for the encryption key
+            c.sendServerKey(); // Let's send the key
+            return;
+        }
+        
         // LOGIN
         if (c != null && c.getGroup().can("login") && cmd[0].equalsIgnoreCase("/login")) {
             if (l != 3) { //Wrong number of parameters
@@ -230,9 +238,9 @@ public class Cmd {
                 return;
             }
             if (c == null) {
-                Server.out("hash of " + cmd[1] + ": " + Utils.getSecureHash(cmd[1]));
+                Server.out("hash of " + cmd[1] + ": " + Security.hash(cmd[1]));
             } else {
-                c.send("hash of " + cmd[1] + ": " + Utils.getSecureHash(cmd[1]) + "\n");
+                c.send("hash of " + cmd[1] + ": " + Security.hash(cmd[1]) + "\n");
             }
             return;
         }
@@ -402,7 +410,7 @@ public class Cmd {
      *
      * @throws UnsupportedOperationException can't istance this class
      */
-    private Cmd() {
+    private Command() {
         throw new UnsupportedOperationException("can't istance this class");
     }
 }

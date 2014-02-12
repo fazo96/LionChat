@@ -1,11 +1,6 @@
 package utilz;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class offers various utilities shared by the LionChat client and server
@@ -14,40 +9,6 @@ import java.util.logging.Logger;
  * @author fazo
  */
 public class Utils {
-
-    /**
-     * Returns SHA512 hash of the given string (without trimming the string).
-     * IMPORTANT: newline characters are removed from the hash!
-     *
-     * @param x the string to hash.
-     * @return the hash of the given string.
-     */
-    public static String getSecureHash(String x) {
-        // I chose not to trim the string before hashing.
-        String hash = null;
-        MessageDigest md = null;
-        try {
-            md = MessageDigest.getInstance("SHA-512");
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("[LIB] IMPOSSIBLE ERROR: SHA-512 NON EXISTANT!");
-            return null;
-        }
-        md.reset();
-        try {
-            hash = new String(md.digest(x.getBytes("UTF-8")));
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("[LIB] IMPOSSIBLE ERROR: UTF-8 NON EXISTANT!");
-            return null;
-        }
-        if (hash.contains("\n")) {
-            System.out.println("[LIB][WARNING] Had to remove \\n from string hash");
-            hash = hash.replace("\n", ""); //rimuovo eventuali \n.
-        }
-        System.out.println("[LIB] Hash of " + x + ": " + hash);
-        return hash;
-    }
 
     /**
      * Converts nanoseconds given in seconds.

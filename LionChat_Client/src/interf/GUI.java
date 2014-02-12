@@ -51,6 +51,8 @@ public class GUI extends javax.swing.JFrame {
         Connection.connect(ip, port); //connect to the server :)
     }
 
+    
+    
     private void autoScroll() {
         ((DefaultCaret) textArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
     }
