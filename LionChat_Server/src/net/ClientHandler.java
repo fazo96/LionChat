@@ -1,7 +1,7 @@
 package net;
 
 import core.Channel;
-import core.Cmd;
+import core.Command;
 import core.Group;
 import core.Settings;
 import java.io.IOException;
@@ -9,7 +9,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,8 +16,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SealedObject;
 import utilz.Filez;
 import utilz.SyncObject;
@@ -31,28 +28,41 @@ import utilz.Utils;
  */
 public class ClientHandler {
 
+    // List of all the clients connected
     private static List<ClientHandler> clients = Collections.synchronizedList(new ArrayList<ClientHandler>());
+    // List of all the channels joined by this user
     private ArrayList<Channel> joined = new ArrayList<Channel>();
-    private Socket s;
+    // Socket that connects to this client
+    private Socket socket;
+    // Name and password strings for this Client
     private String name = null, password = null;
+    // Channel on which the client is writing its messages at the moment
     private Channel writingChannel;
+    // Variable used inside the Receiver thread
     private ClientHandler client = this;
+    // Stream that receives Objects from the client
     private ObjectInputStream ois;
+    // Stream that sends Objects to the client
     private ObjectOutputStream oos;
+    // Thread that handles incoming packets
     private Thread receiver;
+    // The user's group
     private Group group;
+    // Wether this user is connected or not
     private boolean connected = false;
+    // The user's public key, sent from him, used to encrypt messages destined to him
     private PublicKey clientKey;
+    // The Cipher that encrypts messages for the user
     private Cipher encrypter;
 
     /**
-     * Initializes a new client.
+     * Initializes a new client from the given connected Socket.
      *
-     * @param s a CONNECTED socket to use for communication. connesso e
+     * @param socket a CONNECTED socket to use for communication. connesso e
      * funzionante.
      */
-    public ClientHandler(final Socket s) {
-        this.s = s;
+    public ClientHandler(final Socket socket) {
+        this.socket = socket;
         Server.out(getIP() + " has connected!");
         try {
             encrypter = Cipher.getInstance("RSA");
@@ -62,12 +72,12 @@ public class ClientHandler {
         }
         connected = true;
         try {
-            ois = new ObjectInputStream(s.getInputStream()); //creo un oggetto in grado di ricevere le istanze delle classi inviate dal client
+            ois = new ObjectInputStream(socket.getInputStream()); //creo un oggetto in grado di ricevere le istanze delle classi inviate dal client
         } catch (IOException ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
-            oos = new ObjectOutputStream(s.getOutputStream()); //creo un oggetto in grado di inviare le istanze delle classi al client
+            oos = new ObjectOutputStream(socket.getOutputStream()); //creo un oggetto in grado di inviare le istanze delle classi al client
         } catch (IOException ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -77,13 +87,14 @@ public class ClientHandler {
             send(getIP() + " tried multiple connections!\n", Settings.groupAdmin);
             return;
         }
-        sendServerKey(); // Let's send the server key to the client
+        // Let's send the server key to the client, so he can send encrypted messages
+        sendServerKey();
         receiver = new Thread() {
             @Override
             public void run() {
                 Object o = null;
                 while (true) {
-                    try { //25 ms pause
+                    try { //25 ms pause between each check
                         sleep(25);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -98,18 +109,20 @@ public class ClientHandler {
                         Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     if (o instanceof PublicKey) {
-                        // Client just send us his encryption key
+                        // Client just send us his encryption key, save it
                         clientKey = (PublicKey) o;
                         try {
+                            // Make sure we use it to encrypt the next messages
                             encrypter.init(Cipher.ENCRYPT_MODE, clientKey);
                         } catch (InvalidKeyException ex) {
                             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-                    String s = null;
                     if (o instanceof SealedObject) {
+                        // The client sent us an encrypted Object.
                         Object oo = null;
                         try {
+                            // Try to Decrypt the Object contained and store it
                             oo = ((SealedObject) o).getObject(Settings.getKeyPair().getPrivate());
                         } catch (Exception ex) {
                             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -117,15 +130,16 @@ public class ClientHandler {
                             continue;
                         }
                         if (oo instanceof String) {
-                            Cmd.cmd((String) oo, client);
+                            // Object is a string from the client
+                            // Run the string into the interpreter
+                            Command.execute((String) oo, client);
                         }
                     }
                     if (o != null && o instanceof String && !((String) o).equals("")) {
-                        s = (String) o;
-                    } else {
-                        continue;
+                        // Object is a string.
+                        // Run the string into the interpreter
+                        Command.execute((String) o, client);
                     }
-                    Cmd.cmd(s, client);
                 }
             }
         };
@@ -144,7 +158,7 @@ public class ClientHandler {
             return;
         }
         try {
-            //Server.out("Sending: "+msg+" to "+s.getInetAddress());
+            Server.out("Server public key has been sent to " + getScreenName(true));
             oos.writeObject(Settings.getKeyPair().getPublic());
         } catch (IOException ex) {
             //Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -164,15 +178,13 @@ public class ClientHandler {
             return false;
         }
         try {
-            //Server.out("Sending: "+msg+" to "+s.getInetAddress());
             oos.writeObject(msg);
         } catch (IOException ex) {
-            //Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
             Server.out(getIP() + " error while sending UNENCRYPTED MESSAGE. Connection closed.");
             disconnect();
             return false;
         }
-        Server.out("This message to "+getScreenName(true)+" has just been sent unencrypted: "+msg);
+        Server.out("This message to " + getScreenName(true) + " has just been sent unencrypted: " + msg);
         return true;
     }
 
@@ -187,8 +199,8 @@ public class ClientHandler {
             return false;
         }
         if (clientKey == null) {
-            sendUnencrypted(msg); // No choice...
             sendUnencrypted("/askKey"); // Ask client for the key
+            sendUnencrypted(msg); // No choice: must sent the message unencrypted
             return false;
         }
         SealedObject o = null;
@@ -202,10 +214,9 @@ public class ClientHandler {
             return false;
         }
         try {
-            //Server.out("Sending: "+msg+" to "+s.getInetAddress());
+            //Server.out("Sending (encrypted): "+msg+" to "+getScreenName(true));
             oos.writeObject(msg);
         } catch (IOException ex) {
-            //Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
             Server.out(getScreenName(true) + " error while sending ENCRYPTED MESSAGE. Connection closed.");
             disconnect();
             return false;
@@ -269,11 +280,11 @@ public class ClientHandler {
     public static ClientHandler get(String name) {
         for (ClientHandler ch : clients) {
             if (ch.isConnected()) {
-                //Controllo se il nome combacia alla stringa data
+                // Check if the string matches any name
                 if (ch.getName() != null && ch.getName().equals(name)) {
                     return ch;
                 }
-                //Controllo se l'IP combacia alla stringa data
+                // Check if the string matches any IP
                 if (ch.getIP().equals(name)) {
                     return ch;
                 }
@@ -297,9 +308,6 @@ public class ClientHandler {
                 cl.send(msg);
             }
         }
-        /*if (g == null) {
-         Server.out("[SEND][ALL] " + msg);
-         } else Server.out("[SEND][" + g.getName() + "] " + msg);*/
     }
 
     /**
@@ -312,7 +320,6 @@ public class ClientHandler {
     public static void send(String msg, Group g, Group g2) {
         send(msg, g);
         send(msg, g2);
-        //Server.out("[SEND][" + g.getName() + "]["+g2.getName()+"] " + msg);
     }
 
     /**
@@ -327,7 +334,6 @@ public class ClientHandler {
         send(msg, g);
         send(msg, g2);
         send(msg, g3);
-        //Server.out("[SEND][" + g.getName() + "]["+g2.getName()+"]["+g3.getName()+"] " + msg);
     }
 
     /**
@@ -548,7 +554,7 @@ public class ClientHandler {
      * @return IP address as string
      */
     public final String getIP() {
-        return s.getInetAddress().getHostAddress();
+        return socket.getInetAddress().getHostAddress();
     }
 
     /**
@@ -577,7 +583,7 @@ public class ClientHandler {
      * @return the socket
      */
     public Socket getSocket() {
-        return s;
+        return socket;
     }
 
     /**

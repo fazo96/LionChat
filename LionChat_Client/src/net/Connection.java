@@ -61,7 +61,6 @@ public class Connection {
                     return;
                 }
                 Object o = null;
-                String s = "";
                 // Infinite loop of receiving data!
                 while (true) {
                     try {
@@ -185,9 +184,9 @@ public class Connection {
             connected = false;
             return;
         }
+        sendKey(); // Send our key as soon as possible
         // Looks like we're on
         GUI.get().append("Connected!\n");
-
         receiver.start(); // I freaked out for 20 mins because I forgot this...
     }
 

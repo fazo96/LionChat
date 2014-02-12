@@ -44,10 +44,6 @@ public class Security {
             System.out.println("[LIB] IMPOSSIBLE ERROR: UTF-8 NON EXISTANT!");
             return null;
         }
-        if (hash.contains("\n")) {
-            System.out.println("[LIB][WARNING] Had to remove \\n from string hash");
-            hash = hash.replace("\n", ""); //rimuovo eventuali \n.
-        }
         //System.out.println("[LIB] Hash of " + x + ": " + hash);
         System.out.println("[LIB] Hash function has been called");
         return hash;

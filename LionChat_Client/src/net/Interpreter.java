@@ -45,6 +45,7 @@ public class Interpreter {
             GUI.get().append(s);
             return;
         } else if (s.equals("/askKey")) {
+            // If the server asks for the key, send it
             Connection.sendKey();
         } else {
             // Unknown command

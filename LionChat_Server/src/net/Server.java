@@ -1,6 +1,6 @@
 package net;
 
-import core.Cmd;
+import core.Command;
 import core.Settings;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -89,7 +89,7 @@ public class Server {
         boolean b;
         while (true) {
             try { // read terminal commands
-                Cmd.cmd(t.readLine(), null); // execute
+                Command.execute(t.readLine(), null); // execute
             } catch (IOException ex) {
                 Server.out("[!] Could not read from console");
             }

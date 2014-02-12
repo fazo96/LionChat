@@ -10,7 +10,7 @@ import utilz.Utils;
  *
  * @author fazo
  */
-public class Cmd {
+public class Command {
 
     /**
      * Analyzes a string received from the given client, and acts as
@@ -21,7 +21,7 @@ public class Cmd {
      * @param c the client that sent that. Null if it came from the server
      * console.
      */
-    public static void cmd(String s, ClientHandler c) {
+    public static void execute(String s, ClientHandler c) {
         s = s.trim(); // trim string before analyzing it
         if (!Settings.isInit()) {
             Settings.init(); //initialize settings if needed.
@@ -410,7 +410,7 @@ public class Cmd {
      *
      * @throws UnsupportedOperationException can't istance this class
      */
-    private Cmd() {
+    private Command() {
         throw new UnsupportedOperationException("can't istance this class");
     }
 }
