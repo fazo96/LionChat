@@ -5,13 +5,17 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.security.Signature;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import security.Message;
-import security.Security;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SealedObject;
 import utilz.SyncObject;
 
 /**
@@ -30,8 +34,10 @@ public class Connection {
     private static ObjectOutputStream oos;
     // object used to receive istances to server
     private static ObjectInputStream ois;
-    // Security object (from LionChat_Libs) used for cryptography
-    private static Security security;
+    private static KeyPair keyPair;
+    private static KeyPairGenerator keyGen;
+    private static PublicKey serverKey;
+    private static Cipher encrypter;
 
     /**
      * Tries to connect to the server.
@@ -41,43 +47,11 @@ public class Connection {
      * @param port network port used.
      */
     public static void connect(final String ip, final int port) {
+        keyPair = null;
+        serverKey = null;
         receiver = new Thread() {
             @Override
             public void run() {
-                GUI.get().append(GUI.getLanguage().getSentence("tryConnect").print(ip + " " + port));
-                try {
-                    socket = new Socket(ip, port);
-                    connected = true;
-                } catch (UnknownHostException ex) {
-                    // IP doesn't exist
-                    Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-                    GUI.get().append("[ERROR] No machine is turned on at the given address (UnknownHostException)\n");
-                    connected = false;
-                } catch (IOException ex) {
-                    // Port closed or connection refused
-                    Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-                    GUI.get().append("[ERROR] \n" + ex + "\n\n");
-                    connected = false;
-                }
-                if (!connected) {
-                    GUI.get().append(GUI.getLanguage().getSentence("pressEnterToReconnect").print());
-                    return;
-                }
-                /*try {
-                 // Set the timeout to 20 seconds. 20 seconds of silence = connection lost
-                 socket.setSoTimeout(20000);
-                 } catch (SocketException ex) {
-                 Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-                 }*/
-                // Initialize istance streams
-                try {
-                    oos = new ObjectOutputStream(socket.getOutputStream());
-                } catch (IOException ex) {
-                    Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-                    GUI.get().append("Connection failed!\n");
-                    connected = false;
-                    return;
-                }
                 try {
                     ois = new ObjectInputStream(socket.getInputStream());
                 } catch (IOException ex) {
@@ -86,8 +60,6 @@ public class Connection {
                     connected = false;
                     return;
                 }
-                // Looks like we're on
-                GUI.get().append("Connected!\n");
                 Object o = null;
                 String s = "";
                 // Infinite loop of receiving data!
@@ -119,9 +91,46 @@ public class Connection {
                         // We got a string! What a surprise for a chat program
                         // Run it trough the interpreter, which will know what to do with it
                         Interpreter.cmd((String) o);
-                    } else if (o instanceof Message) {
-                        // We got a Message object, it's probably encrypted
-                        GUI.get().append("[!] Received an encrypted message, but this version of LionChat can't handle that\n");
+                    } else if (o instanceof PublicKey) {
+                        System.out.println("[!][DEBUG] Received server key\n");
+                        serverKey = (PublicKey) o;
+                        try {
+                            encrypter.init(Cipher.ENCRYPT_MODE, serverKey);
+                        } catch (InvalidKeyException ex) {
+                            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    } else if (o instanceof SealedObject) {
+                        // We just got something encrypted
+                        if (serverKey == null) {
+                            GUI.get().append("[!] Can't decrypt message from server: no key\n");
+                            send("/askKey"); // Send request for key
+                            continue;
+                        }
+                        Object oo = null;
+                        try {
+                            oo = ((SealedObject) o).getObject(keyPair.getPrivate());
+                        } catch (IOException ex) {
+                            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+                            continue;
+                        } catch (ClassNotFoundException ex) {
+                            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+                            GUI.get().append("[ERROR][ENCRYPTED] ClassNotFoundException.\nThis really shouldn't happen! Contact the developer\n");
+                            continue;
+                        } catch (NoSuchAlgorithmException ex) {
+                            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+                            GUI.get().append("[ERROR][ENCRYPTED] IMPOSSIBLE ERROR: NO SUCH ALGORTHM\n");
+                            continue;
+                        } catch (InvalidKeyException ex) {
+                            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+                            GUI.get().append("[ERROR][ENCRYPTED] Can't decrypt message: invalid key\n");
+                            continue;
+                        }
+                        if (oo == null) {
+                            continue;
+                        }
+                        if (oo instanceof String) {
+                            Interpreter.cmd((String) oo);
+                        }
                     } else if (o instanceof SyncObject);
                     // We got a SyncObject! Means the connection is alive.
                 }
@@ -129,8 +138,57 @@ public class Connection {
                 GUI.get().append("Disconnected!\n");
             }
         };
+
+        // KEY GENERATION
+        if (keyGen == null) {
+            try {
+                keyGen = KeyPairGenerator.getInstance("RSA");
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+                System.exit(-1);
+            }
+        }
+        keyPair = keyGen.genKeyPair();
+        // Init encrypter and decrypter
+        try {
+            encrypter = Cipher.getInstance("RSA");
+        } catch (Exception ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(-1);
+        }
+
+        GUI.get().append(GUI.getLanguage().getSentence("tryConnect").print(ip + " " + port));
+        try {
+            socket = new Socket(ip, port);
+            connected = true;
+        } catch (UnknownHostException ex) {
+            // IP doesn't exist
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            GUI.get().append("[ERROR] No machine is turned on at the given address (UnknownHostException)\n");
+            connected = false;
+        } catch (IOException ex) {
+            // Port closed or connection refused
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            GUI.get().append("[ERROR] \n" + ex + "\n\n");
+            connected = false;
+        }
+        if (!connected) {
+            GUI.get().append(GUI.getLanguage().getSentence("pressEnterToReconnect").print());
+            return;
+        }
+        // Initialize istance streams
+        try {
+            oos = new ObjectOutputStream(socket.getOutputStream());
+        } catch (IOException ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            GUI.get().append("Connection failed!\n");
+            connected = false;
+            return;
+        }
+        // Looks like we're on
+        GUI.get().append("Connected!\n");
+
         receiver.start(); // I freaked out for 20 mins because I forgot this...
-        security = new Security(); // Initialize Security object
     }
 
     /**
@@ -143,8 +201,37 @@ public class Connection {
         connected = false;
     }
 
+    public static void sendKey() {
+        try {
+            oos.writeObject(keyPair.getPublic()); // SEND PUBLIC KEY
+        } catch (IOException ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            GUI.get().append("[ERROR] Could not send PUBLIC KEY to server!\nConnection declared dead.\n");
+            disconnect();
+        }
+    }
+
     /**
-     * Sends string to server.
+     * Sends string to server, without encryption
+     *
+     * @param s the string to send.
+     */
+    public static void sendUnencrypted(String s) {
+        if (!connected) {
+            return; // Can't send if not connected :(
+        }
+        try {
+            oos.writeObject(Interpreter.fixToSend(s));
+        } catch (IOException ex) { //Invio fallito, connessione probabilmente morta
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            GUI.get().append("[ERROR] Could not send UNENCRYPTED DATA to server!\nConnection declared dead.\n");
+            disconnect();
+        }
+        GUI.get().append("This message has been sent as unencrypted: "+s);
+    }
+
+    /**
+     * Sends string to server (using encryption).
      *
      * @param s the string to send.
      */
@@ -152,12 +239,25 @@ public class Connection {
         if (!connected) {
             return; // Can't send if not connected :(
         }
+        if (serverKey == null) {
+            sendUnencrypted(s); // No choice, we didn't get the server key yet
+            sendUnencrypted("/askKey"); // Ask for the key
+            GUI.get().append("[ERROR] NO SERVER KEY! Asking for it...\n");
+            return;
+        }
+        SealedObject o = null;
         try {
-            //Tento la scrittura di una stringa via socket
-            oos.writeObject(Interpreter.fixToSend(s));
+            o = new SealedObject(Interpreter.fixToSend(s), encrypter);
+        } catch (Exception ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            GUI.get().append("[ERROR][FATAL] Could not ENCRYPT MESSAGE!\n");
+            return;
+        }
+        try {
+            oos.writeObject(o);
         } catch (IOException ex) { //Invio fallito, connessione probabilmente morta
             Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-            GUI.get().append("[ERROR] Could not send data to server!\nConnection declared dead.\n");
+            GUI.get().append("[ERROR] Could not send ENCRYPTED DATA to server!\nConnection declared dead.\n");
             disconnect();
         }
     }

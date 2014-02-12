@@ -44,9 +44,11 @@ public class Interpreter {
         if (!s.startsWith("/")) {
             GUI.get().append(s);
             return;
+        } else if (s.equals("/askKey")) {
+            Connection.sendKey();
         } else {
-            // There are not yet server commands.
-            System.out.println("[!] Server just sent a mysterious command!");
+            // Unknown command
+            GUI.get().append("[!] Server just sent a mysterious command:\n" + s);
         }
     }
 }

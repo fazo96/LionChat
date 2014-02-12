@@ -1,5 +1,13 @@
 package core;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
 import parsing.Language;
 import net.Server;
 import utilz.Filez;
@@ -17,9 +25,12 @@ public class Settings {
     public static Group groupGuest, groupUser, groupAdmin;
     public static Channel globalChannel;
     private static boolean init = false;
+    private static KeyPair keyPair;
+    private static Cipher decrypter;
 
     /**
-     * Initializes everything. Uses settings from file if they're there, or defaults instead.
+     * Initializes everything. Uses settings from file if they're there, or
+     * defaults instead.
      */
     public static void init() {
         if (init) {
@@ -30,7 +41,7 @@ public class Settings {
         helpMsg = "HELP";
         adminHelpMsg = "ADMINHELP";
         motd = "MOTD";
-        languageID="en";
+        languageID = "en";
         load(); // Try to load from file.
         // Set default groups
         // Please don't remove these assignments.
@@ -40,6 +51,25 @@ public class Settings {
         // Defining the global channel
         globalChannel = new Channel("Global");
         globalChannel.setAutodelete(false);
+
+        // SECURITY STUFF
+        
+        KeyPairGenerator keyGen = null;
+        try {
+            keyGen = KeyPairGenerator.getInstance("RSA");
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(-1);
+        }
+        keyPair = keyGen.genKeyPair();
+        try {
+            decrypter = Cipher.getInstance("RSA");
+            decrypter.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
+        } catch (Exception ex) {
+            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(-1);
+        }
+
         init = true;
     }
 
@@ -100,7 +130,7 @@ public class Settings {
      * @return the "help" message
      */
     public static String getHelpMsg() {
-        return "\n"+helpMsg+"\n";
+        return "\n" + helpMsg + "\n";
     }
 
     /**
@@ -108,7 +138,7 @@ public class Settings {
      * @return the "adminHelp" message
      */
     public static String getAdminHelpMsg() {
-        return "\n"+adminHelpMsg+"\n";
+        return "\n" + adminHelpMsg + "\n";
     }
 
     /**
@@ -116,7 +146,7 @@ public class Settings {
      * @return the message of the day.
      */
     public static String getMotd() {
-        return "\n"+motd+"\n";
+        return "\n" + motd + "\n";
     }
 
     /**
@@ -134,4 +164,9 @@ public class Settings {
     public static int getPort() {
         return port;
     }
+
+    public static KeyPair getKeyPair() {
+        return keyPair;
+    }
+
 }

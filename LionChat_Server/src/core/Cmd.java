@@ -57,6 +57,13 @@ public class Cmd {
         }
 
         // COMMANDS
+        
+        if (c != null && cmd[0].equalsIgnoreCase("/askKey")) {
+            // The client is asking for the encryption key
+            c.sendServerKey(); // Let's send the key
+            return;
+        }
+        
         // LOGIN
         if (c != null && c.getGroup().can("login") && cmd[0].equalsIgnoreCase("/login")) {
             if (l != 3) { //Wrong number of parameters
