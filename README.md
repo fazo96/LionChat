@@ -15,16 +15,19 @@ Multiplatform server/client socket based text chat written in Java with sophisti
 - Digital Signature and Encryption (developement branch)
 
 **Planned:**
-- Italian translation
-- Fix the CLI client, improve output formatting
+- Client code reorganization (also CLI client)
 - Anti spam tweaks
 - Settings files rewrite
-- Securing the program (need help with this!)
-- Server output logging management
+- Better Server and Client output handling
 - Server bandwidth management
+- Logging
+
+**Non guaranteed long term goals:**
 - HTML formatted text
-- Server command system rewrite (maybe)
-- Voice chat (maybe)
+- GUI commands, more interactive client
+- Server command system rewrite
+- Voice chat
+- peer to peer (will probably be done by rewriting everything)
 
 How to use it
 ==============
@@ -55,7 +58,7 @@ I'm sorry, I don't like eclipse much. Of course you can code with eclipse, but i
 
 I never tried it, but you should be able to do it if you have experiance with manually compiling. Just read the netbeans part and try. I don't support this though. Netbeans is free and open source for Windows, Mac and Linux, try it.
 
-Licence
+License
 ==============
 Copyright (C) 2013  Enrico Fasoli
 
