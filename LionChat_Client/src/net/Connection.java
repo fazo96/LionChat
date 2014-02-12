@@ -14,7 +14,6 @@ import java.security.PublicKey;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SealedObject;
 import utilz.SyncObject;
 
@@ -25,7 +24,7 @@ import utilz.SyncObject;
  */
 public class Connection {
 
-    private static boolean connected = false, useCryptography = true;
+    private static boolean connected = false;
     // socket used to send and receive data
     private static Socket socket;
     // thread used to receive data
