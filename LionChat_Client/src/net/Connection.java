@@ -1,6 +1,6 @@
 package net;
 
-import interf.GUI;
+import UI.GUI;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

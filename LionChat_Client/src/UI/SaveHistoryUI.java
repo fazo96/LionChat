@@ -1,4 +1,4 @@
-package interf;
+package UI;
 
 /**
  * A window used to save the output history to file.
@@ -34,9 +34,7 @@ public class SaveHistoryUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Salva Cronologia");
-        setMaximumSize(new java.awt.Dimension(400, 150));
         setMinimumSize(new java.awt.Dimension(400, 150));
-        setPreferredSize(new java.awt.Dimension(400, 150));
         setResizable(false);
 
         fileNameLabel.setText("Nome del file (estensione aggiunta in automatico)");

@@ -1,6 +1,6 @@
 package net;
 
-import interf.GUI;
+import UI.GUI;
 import java.util.ArrayList;
 import security.Security;
 import utilz.Utils;
