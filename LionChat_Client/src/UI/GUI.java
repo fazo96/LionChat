@@ -1,10 +1,7 @@
 package UI;
 
-import utilz.Filez;
-import java.util.ArrayList;
 import javax.swing.text.DefaultCaret;
-import parsing.Language;
-import net.Connection;
+import utilz.Out;
 import utilz.Utils;
 
 /**
@@ -14,10 +11,6 @@ import utilz.Utils;
  */
 public class GUI extends javax.swing.JFrame {
 
-    private String ip = "localhost", languageID = "en";
-    private int port = 7777;
-    private static Language language = null;
-    private static GUI gui;
     private static SettingsUI settingsUI;
     private static SaveHistoryUI saveHistoryUI;
 
@@ -26,49 +19,61 @@ public class GUI extends javax.swing.JFrame {
      */
     public GUI() {
         initComponents(); //intialization of graphical components
-    }
-
-    /**
-     * Starts up the GUI and initializes all the stuff. Very important, must be
-     * run once when the program starts
-     */
-    private void start() {
         setTitle("LionChat Client");
         System.out.println("GUI Started");
         //set text area autoscrolling and line wrapping
         textArea.setLineWrap(true);
-        autoScroll();
-        gui = this; //configure static pointer to this instance
+        autoScroll(); // Activate auto scroll
         //Give focus to the text input field
         textField.requestFocusInWindow();
-        loadLanguage("en"); //load default english language into the program
-        readSettings(); //read settings from file
-        gui.setVisible(true); //make the window visible
+        setVisible(true); //make the window visible
         setLocationRelativeTo(null); //put window at the center of the screen
         //Prepare other windows
         settingsUI = new SettingsUI();
         saveHistoryUI = new SaveHistoryUI();
-        Connection.connect(ip, port); //connect to the server :)
     }
 
-    
-    
+    /**
+     * Set the Out object from which the GUI reads messages to print to the
+     * message area. This GUI will add his listener to the Out object.
+     *
+     * @see Out
+     * @param outputHandler the Out object
+     */
+    public void setOutputHandler(Out outputHandler) {
+        outputHandler.getListeners().add(new Out.IOListener() {
+
+            @Override
+            public void onInfo(String info) {
+                append(info);
+            }
+
+            @Override
+            public void onError(String error) {
+                append(error);
+            }
+        });
+    }
+
     private void autoScroll() {
         ((DefaultCaret) textArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
     }
 
-    public static GUI get() { //ritorno l'istanza in esecuzione.
-        return gui;
-    }
-
-    public void append(String text) {
-        //scrivo un messaggio alla gui e in console senza andare a capo
+    /**
+     * Write a message to the GUI's output area
+     *
+     * @param text the message
+     */
+    private void append(String text) {
         textArea.append(text);
         autoScroll();
         System.out.print(text);
     }
 
-    public void clear() { //svuoto la textArea
+    /**
+     * Clear output area.
+     */
+    public void clear() {
         textArea.setText("");
     }
 
@@ -204,18 +209,21 @@ public class GUI extends javax.swing.JFrame {
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
         // This is the "send button" function
-        if (Connection.isConnected()) {
+        if(Client.get().getConnection()==null){
+            Client.get().startConnection();
+        }
+        if (Client.get().getConnection().isConnected()) {
             if (textField.getText() != "" && Utils.isValid(textField.getText())) {
                 // Valid text
-                Connection.send(textField.getText().trim());
+                Client.get().getConnection().send(textField.getText().trim());
             } else {
                 // Text is not valid
                 //append(language.getSentence("invalidString").print());
             }
         } else {
             // Send has been pressed while not connected
-            append(language.getSentence("tryReconnect").print());
-            Connection.connect(ip, port); //try to reconnect
+            append(Client.get().getLanguage().getSentence("tryReconnect").print());
+            Client.get().getConnection().connect(Client.get().getIP(), Client.get().getPort()); //try to reconnect
         }
         textField.setText(""); //Empty the field and request focus on it
         textField.requestFocusInWindow();
@@ -244,7 +252,7 @@ public class GUI extends javax.swing.JFrame {
 
     private void saveHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveHistoryActionPerformed
         saveHistoryUI.setVisible(true);
-        saveHistoryUI.setLabelText(language.getSentence("youllFindFile").print());
+        saveHistoryUI.setLabelText(Client.get().getLanguage().getSentence("youllFindFile").print());
         saveHistoryUI.applyLanguage();
     }//GEN-LAST:event_saveHistoryActionPerformed
 
@@ -252,37 +260,6 @@ public class GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_textFieldActionPerformed
 
-    /**
-     * Entry point of the program. Istantiates the GUI and starts it up.
-     *
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (Exception ex) {
-            System.out.println("[FATAL] Can't load look and feel");
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                gui = new GUI();
-                gui.start(); //Start the GUI up!
-            }
-        });
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenuItem exit;
@@ -298,104 +275,11 @@ public class GUI extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     /**
-     * Read settings from the file, autoconfiguring it if it's missing.
-     */
-    public void readSettings() {
-        ArrayList<String> cnt = null;
-        //read the file and read the content
-        append(language.getSentence("tryReadSettings").print());
-        for (int i = 0; i < 2; i++) {
-            append(language.getSentence("tryNumber").print("" + (i + 1)));
-            cnt = Utils.toList(Filez.getFileContent("settings.txt"), " ");
-            if (cnt == null) { // If the list is null, it means the read failed
-                append(language.getSentence("settingsNotFound").print());
-                Filez.writeFile("settings.txt", ip + " " + port + " " + languageID);
-                continue; //Nothing to do anymore
-            }
-            append(language.getSentence("readSuccessfull").print());
-            break;
-        }
-        if (cnt == null) {
-            append(language.getSentence("settingsReadFailed").print());
-        } else if (cnt.size() != 3) { //There must be 3 elements for the file to be valid
-            append(language.getSentence("settingsWrongParamNumber").print(cnt.size() + ""));
-            // Rewrite the settings
-            Filez.writeFile("settings.txt", ip + " " + port + " " + languageID);
-            return; //nothing to do anymore.
-        }
-        // Finally assign the parameters
-        ip = cnt.get(0);
-        try {
-            port = Integer.parseInt(cnt.get(1));
-        } catch (Exception ex) { // Port number is not valid!
-            port = 7777;
-        }
-        String oldLang = languageID;
-        languageID = cnt.get(2);
-        if (oldLang != languageID) {
-            loadLanguage(languageID);
-        }
-    }
-
-    public String getIP() {
-        return ip;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    /**
      * Returns the text inside the output area
      *
      * @return text as string
      */
     public String getHistory() {
         return textArea.getText();
-    }
-
-    /**
-     * Loads up a language file and applies it automatically
-     *
-     * @param lang
-     * @return if the loading of given language fails, the method outputs an
-     * error message and loads english and returns true. If loading english also
-     * fails, it returns false
-     */
-    private boolean loadLanguage(String lang) {
-        append("Loading language \""+lang+"\"\n");
-        language = new Language(lang);
-        if (!language.isLoaded()) {
-            if (lang.equals("en")) {
-                return false;
-            }
-            append("[!] Could not load language \"" + lang + "\", trying english instead\n");
-            // If the language given can't be loaded, just load english instead
-            return loadLanguage("en");
-        }
-        System.out.println(language.getLangInfo(true));
-        //Apply the language to this GUI
-        fileMenu.setText(language.getSentence("fileMenu").print());
-        editMenu.setText(language.getSentence("editMenu").print());
-        settingsMenu.setText(language.getSentence("settingsTitle").print());
-        exit.setText(language.getSentence("exit").print());
-        saveHistory.setText(language.getSentence("saveHistoryTitle").print());
-        sendButton.setText(language.getSentence("send").print());
-        /*if (settingsUI != null) {
-            settingsUI.applyLanguage();
-        }
-        if (saveHistoryUI != null) {
-            saveHistoryUI.applyLanguage();
-        }*/
-        return true;
-    }
-
-    /**
-     * Return the language the program is speaking in
-     *
-     * @return the language of the program.
-     */
-    public static Language getLanguage() {
-        return language;
     }
 }

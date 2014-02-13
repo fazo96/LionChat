@@ -1,6 +1,6 @@
 package net;
 
-import UI.GUI;
+import UI.Client;
 import java.util.ArrayList;
 import security.Security;
 import utilz.Utils;
@@ -42,14 +42,13 @@ public class Interpreter {
     public static void cmd(String s) {
         //s = s.trim();
         if (!s.startsWith("/")) {
-            GUI.get().append(s);
-            return;
+            Client.get().out().info(s);
         } else if (s.equals("/askKey")) {
             // If the server asks for the key, send it
-            Connection.sendKey();
+            Client.get().getConnection().sendKey();
         } else {
             // Unknown command
-            GUI.get().append("[!] Server just sent a mysterious command:\n" + s);
+            Client.get().out().error("[!] Server just sent a mysterious command:\n" + s);
         }
     }
 }

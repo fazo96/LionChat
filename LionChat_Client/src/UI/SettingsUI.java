@@ -15,15 +15,14 @@ public class SettingsUI extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
-        applyLanguage();
     }
 
     /**
      * Applies the current language sentences on the window's text.
      */
-    public void applyLanguage() {
-        setTitle(GUI.getLanguage().getSentence("settingsTitle").print());
-        undoButton.setText(GUI.getLanguage().getSentence("undoButton").print());
+    public final void applyLanguage() {
+        setTitle(Client.get().getLanguage().getSentence("settingsTitle").print());
+        undoButton.setText(Client.get().getLanguage().getSentence("undoButton").print());
     }
 
     /**
@@ -184,16 +183,16 @@ public class SettingsUI extends javax.swing.JFrame {
      */
     public void applySettings() {
         System.out.println("New settings wrote to file.");
-        Filez.writeFile("settings.txt", ipField.getText() + " " + portField.getText()+" "+languageField.getText());
+        Filez.writeFile("settings.txt", ipField.getText() + " " + portField.getText() + " " + languageField.getText());
     }
 
     /**
      * Reads settings again from file and updates them in the current process.
      */
     public void updateFields() {
-        GUI.get().readSettings();
-        ipField.setText(GUI.get().getIP());
-        portField.setText("" + GUI.get().getPort());
+        Client.get().loadSettings();
+        ipField.setText(Client.get().getIP());
+        portField.setText("" + Client.get().getPort());
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField ipField;

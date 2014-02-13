@@ -13,7 +13,6 @@ public class SaveHistoryUI extends javax.swing.JFrame {
     public SaveHistoryUI() {
         initComponents();
         setLocationRelativeTo(null);
-        applyLanguage();
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
     }
 
@@ -101,10 +100,10 @@ public class SaveHistoryUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void saveFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveFileActionPerformed
-        if (utilz.Filez.writeFile("./" + fileName.getText() + ".txt", GUI.get().getHistory())) {
-            label.setText(GUI.getLanguage().getSentence("fileSavedSuccessfully").print());
+        if (utilz.Filez.writeFile("./" + fileName.getText() + ".txt", Client.get().getGUI().getHistory())) {
+            label.setText(Client.get().getLanguage().getSentence("fileSavedSuccessfully").print());
         } else {
-            label.setText(GUI.getLanguage().getSentence("fileSaveError").print());
+            label.setText(Client.get().getLanguage().getSentence("fileSaveError").print());
         }
     }//GEN-LAST:event_saveFileActionPerformed
 
@@ -125,10 +124,9 @@ public class SaveHistoryUI extends javax.swing.JFrame {
      * Applies the current language sentences on the window's text.
      */
     public void applyLanguage() {
-        //setTitle(GUI.getLanguage().getSentence("saveHistoryTitle").print());
-        fileNameLabel.setText(GUI.getLanguage().getSentence("fileNameLabel").print());
-        label.setText(GUI.getLanguage().getSentence("youllFindFile").print());
-        saveFile.setText(GUI.getLanguage().getSentence("saveButton").print());
+        fileNameLabel.setText(Client.get().getLanguage().getSentence("fileNameLabel").print());
+        label.setText(Client.get().getLanguage().getSentence("youllFindFile").print());
+        saveFile.setText(Client.get().getLanguage().getSentence("saveButton").print());
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField fileName;
