@@ -1,3 +1,21 @@
+/*
+ LionChat
+ Copyright (C) 2014 Enrico Fasoli ( fazius2009 at gmail dot com )
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package utilz;
 
 import java.io.BufferedReader;
@@ -52,9 +70,11 @@ public class Filez {
 
     /**
      * Writes a file at the given relative path, replacing its original content
-     * with the given string. If the file doesn't exist it is automatically created.
+     * with the given string. If the file doesn't exist it is automatically
+     * created.
      *
-     * @param filepath the file path containing the filename. It hasn't been tested with absolute paths.
+     * @param filepath the file path containing the filename. It hasn't been
+     * tested with absolute paths.
      * @param content the content to write into the file.
      * @return true if the operation has been successfull.
      */
@@ -95,13 +115,16 @@ public class Filez {
     }
 
     /**
-     * Returns a string representing the content of the file at the given filepath.
+     * Returns a string representing the content of the file at the given
+     * filepath.
      *
-     * @param filepath the file's filepath with file name and extension included.
-     * @return the content of the file as a string. Returns a null String if the operation failed for some reason.
+     * @param filepath the file's filepath with file name and extension
+     * included.
+     * @return the content of the file as a string. Returns a null String if the
+     * operation failed for some reason.
      */
     public static String getFileContent(String filepath) { //ritorna il contenuto di un file sottoforma di stringa
-        System.out.println("[LIB] Accessing file at "+filepath+" ...");
+        System.out.println("[LIB] Accessing file at " + filepath + " ...");
         FileReader fr;
         try {
             fr = new FileReader(filepath);
@@ -133,7 +156,7 @@ public class Filez {
                 break;
             }
         }
-        System.out.println("[LIB] "+i+" lines have been read successfully!");
+        System.out.println("[LIB] " + i + " lines have been read successfully!");
         try {
             fr.close();
         } catch (IOException ex) {

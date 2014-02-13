@@ -1,3 +1,21 @@
+/*
+ LionChat
+ Copyright (C) 2014 Enrico Fasoli ( fazius2009 at gmail dot com )
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package core;
 
 import java.util.ArrayList;
@@ -62,16 +80,16 @@ public class Channel {
     public void remove(ClientHandler ch) {
         if (clients.contains(ch)) {
             ch.send(Settings.language.getSentence("youExited").print(name));
-            ClientHandler.send(Settings.language.getSentence("guyExitedAdmin").print(ch.getScreenName(true)+" "+name), Settings.groupAdmin);
-            ch.send(Settings.language.getSentence("youExited").print("\""+name+"\""));
-            ClientHandler.send(Settings.language.getSentence("guyExitedAdmin").print(ch.getScreenName(true)+" "+name), Settings.groupAdmin);
+            ClientHandler.send(Settings.language.getSentence("guyExitedAdmin").print(ch.getScreenName(true) + " " + name), Settings.groupAdmin);
+            ch.send(Settings.language.getSentence("youExited").print("\"" + name + "\""));
+            ClientHandler.send(Settings.language.getSentence("guyExitedAdmin").print(ch.getScreenName(true) + " " + name), Settings.groupAdmin);
         }
         ch.getJoinedChannels().remove(this);
         clients.remove(ch);
         if (clients.isEmpty()) {
             delete();
         } else {
-            send(Settings.language.getSentence("guyExited").print(ch.getScreenName(false)+" "+name));
+            send(Settings.language.getSentence("guyExited").print(ch.getScreenName(false) + " " + name));
         }
     }
 
@@ -171,7 +189,7 @@ public class Channel {
      * @return wether the channel ha a password set or not.
      */
     public boolean isPrivate() {
-        return password!=null;
+        return password != null;
     }
 
     /**

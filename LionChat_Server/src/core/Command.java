@@ -1,3 +1,21 @@
+/*
+ LionChat
+ Copyright (C) 2014 Enrico Fasoli ( fazius2009 at gmail dot com )
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package core;
 
 import net.ClientHandler;
@@ -57,13 +75,12 @@ public class Command {
         }
 
         // COMMANDS
-        
         if (c != null && cmd[0].equalsIgnoreCase("/askKey")) {
             // The client is asking for the encryption key
             c.sendServerKey(); // Let's send the key
             return;
         }
-        
+
         // LOGIN
         if (c != null && c.getGroup().can("login") && cmd[0].equalsIgnoreCase("/login")) {
             if (l != 3) { //Wrong number of parameters
@@ -212,12 +229,12 @@ public class Command {
                 c.setWritingChannel(Settings.globalChannel);
                 return;
             }
-            
+
             // (CHANNEL) > SET WRITING CHANNEL
             // If the first parameter is not a command, try to set the writing channel for the user
             chan = Channel.get(cmd[1]);
             //check if the channel exist and the user is a member of the channel
-            
+
             if (chan == null || !chan.getClients().contains(c)) {
                 c.send(Settings.language.getSentence("channelError").print());
                 return;
@@ -367,7 +384,7 @@ public class Command {
                 if ((ch = ClientHandler.get(cmd[1])) != null) {
                     if (c != null) {
                         c.send(c.getScreenName(true) + " disconnects " + ch.getScreenName(true) + "\n", Settings.groupAdmin);
-                        Server.out(c.getScreenName(true)+" disconnects "+ch.getScreenName(true));
+                        Server.out(c.getScreenName(true) + " disconnects " + ch.getScreenName(true));
                     } else {
                         Server.out("Disconnecting " + ch.getScreenName(true));
                     }
