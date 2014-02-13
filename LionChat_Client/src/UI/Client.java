@@ -41,16 +41,20 @@ public class Client {
     private Language language = null;
 
     public static void main(String args[]) {
+        // Start the Client
         instance = new Client(true);
+        // Load language
         instance.loadLanguage(instance.languageID);
+        // Load settings
         instance.loadSettings();
-        
+        // Start the connection
+        instance.startConnection();
     }
 
     public Client(boolean useGUI) {
         this.useGUI = useGUI;
         out = new Out();
-        out.info("Started Client with "+(useGUI?"GUI enabled":"GUI disabled")+".");
+        out.info("Started Client with " + (useGUI ? "GUI enabled" : "GUI disabled") + ".");
         if (useGUI) {
             // Set the Nimbus look and feel
             //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -115,7 +119,7 @@ public class Client {
         }
         String oldLang = languageID;
         languageID = cnt.get(2);
-        if (oldLang != languageID) {
+        if (!oldLang.equals(languageID)) {
             loadLanguage(languageID);
         }
     }
