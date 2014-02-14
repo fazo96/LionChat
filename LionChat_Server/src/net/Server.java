@@ -8,7 +8,7 @@
  of the License, or (at your option) any later version.
 
  This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
+ but WITHOUT ANY WARRANTY; without.info even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
@@ -30,19 +30,21 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import utilz.Out;
 
 /**
  * This is the Server main class and entry point.
  *
  * @author fazo
  */
-public class Server {
+public class Server implements Out.IOListener {
 
     private static Thread listener; //thread that accepts client connections
     private static Thread keepAlive; //thread that keeps connections alive.
     private static Date startDate = null;
     private static boolean autoGC = false;
     private static Long offset = 0L;
+    private static Out out;
 
     /**
      * Main (entry point)
@@ -51,11 +53,13 @@ public class Server {
      */
     public static void main(String args[]) {
         Thread.currentThread().setName("Main Thread");
-        Server.out("TimeZone: " + Locale.ITALY);
+        out = new Out();
+
+        Server.out.info("TimeZone: " + Locale.ITALY);
         startDate = Calendar.getInstance(Locale.ITALY).getTime();
-        Server.out("loading settings...");
+        Server.out.info("loading settings...");
         Settings.init();
-        Server.out("Server using port " + Settings.getPort());
+        Server.out.info("Server using port " + Settings.getPort());
         keepAlive = new Thread() {
             public void run() {
                 offset = System.currentTimeMillis() / 1000;
@@ -68,11 +72,11 @@ public class Server {
                     }
                     if (((System.currentTimeMillis() / 1000) - offset) > 500) {
                         if (autoGC) {
-                            out("Calling out gc...");
+                            out.info("Calling out.info gc...");
                             System.gc();
-                            out("Done");
+                            out.info("Done");
                         } else {
-                            out("AutoGC is disabled: skipping\n");
+                            out.info("AutoGC is disabled: skipping\n");
                         }
                         offset = System.currentTimeMillis() / 1000;
                     }
@@ -86,7 +90,7 @@ public class Server {
             public void run() { // this runs in the listener thread
                 ServerSocket ss = null;
                 try {
-                    System.out.println("Awating a new connection...");
+                    out.info("Awating a new connection...");
                     ss = new ServerSocket(Settings.getPort());
                 } catch (IOException ex) {
                     Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
@@ -109,7 +113,7 @@ public class Server {
             try { // read terminal commands
                 Command.execute(t.readLine(), null); // execute
             } catch (IOException ex) {
-                Server.out("[!] Could not read from console");
+                Server.out.info("[!] Could not read from console");
             }
         }
     }
@@ -134,7 +138,7 @@ public class Server {
 
     /**
      *
-     * @return information about the server status
+     * @return information about.info the server status
      */
     public static String getStatus() {
         return "Server started at: " + Server.getStartDate().toString()
@@ -151,10 +155,10 @@ public class Server {
      * Save everything on file.
      */
     public static void save() {
-        System.out.println("Saving everything...");
+        out.info("Saving everything...");
         ClientHandler.saveAll();
         Settings.save();
-        System.out.println("Done");
+        out.info("Done");
     }
 
     /**
@@ -162,20 +166,26 @@ public class Server {
      */
     public static void stop() {
         save();
-        System.out.println("Shutting down...");
+        out.info("Shutting down...");
         Runtime.getRuntime().exit(0);
     }
 
-    /**
-     * Prints on the console (I suggest you use this, not System.out.print)
-     *
-     * @param s the string to print
-     */
-    public static void out(String s) {
-        if (s.endsWith("\n")) {
-            System.out.print(s);
-        } else {
-            System.out.println(s);
-        }
+    @Override
+    public void onInfo(String info) {
+        System.out.println(info);
+    }
+
+    @Override
+    public void onError(String error) {
+        System.err.println(error);
+    }
+
+    @Override
+    public void onLog(String log, int level) {
+        //System.out.println(log);
+    }
+
+public static Out out() {
+        return out;
     }
 }

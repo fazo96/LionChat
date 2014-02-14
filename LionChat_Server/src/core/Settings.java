@@ -67,17 +67,17 @@ public class Settings {
         globalChannel = new Channel("Global");
         globalChannel.setAutodelete(false);
         // Generating key pair
-        Server.out("Generating key pair...");
+        Server.out().info("Generating key pair...");
         KeyPairGenerator keyGen = null;
         try {
             keyGen = KeyPairGenerator.getInstance("RSA");
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
-            Server.out("[FATAL] Key generation has failed. This should never happen.");
+            Server.out().info("[FATAL] Key generation has failed. This should never happen.");
             System.exit(-1);
         }
         keyPair = keyGen.genKeyPair();
-        Server.out("Key Pair generated!");
+        Server.out().info("Key Pair generated!");
         init = true;
     }
 
@@ -96,34 +96,34 @@ public class Settings {
      */
     public static void load() {
         try {
-            Server.out("Loading network settings");
+            Server.out().info("Loading network settings");
             port = Integer.parseInt(Filez.getFileContent("./settings/net.txt"));
             if (port <= 0 || port > 65535) {
                 port = 7777;
             }
         } catch (Exception ex) {
-            Server.out("Failed. Creating file...");
+            Server.out().info("Failed. Creating file...");
             Filez.writeFile("./settings/net.txt", "" + port);
             port = 7777;
         }
         String a, b, c;
-        Server.out("Loading helpMsg");
+        Server.out().info("Loading helpMsg");
         a = Filez.getFileContent("./settings/helpMsg.txt");
         if (a == null) {
-            Server.out("Failed. Creating file...");
+            Server.out().info("Failed. Creating file...");
             Filez.writeFile("./settings/helpMsg.txt", helpMsg);
         } else {
             helpMsg = a;
         }
-        Server.out("Loading adminHelpMsg");
+        Server.out().info("Loading adminHelpMsg");
         b = Filez.getFileContent("./settings/adminHelpMsg.txt");
         if (b == null) {
-            Server.out("Failed. Creating file...");
+            Server.out().info("Failed. Creating file...");
             Filez.writeFile("./settings/adminHelpMsg.txt", adminHelpMsg);
         } else {
             adminHelpMsg = b;
         }
-        Server.out("Loading adminHelpMsg");
+        Server.out().info("Loading adminHelpMsg");
         c = Filez.getFileContent("./settings/motd.txt");
         if (c == null) {
             Filez.writeFile("./settings/motd.txt", motd);

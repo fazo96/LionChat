@@ -45,7 +45,7 @@ public class Command {
             Settings.init(); //initialize settings if needed.
         }
         if (!Utils.isValid(s)) {
-            Server.out("[!] INVALID STRING RECEIVED! Very strange!");
+            Server.out().info("[!] INVALID STRING RECEIVED! Very strange!");
             if (c != null) {
                 //c.send("/err Invalid string\n");
             }
@@ -53,14 +53,14 @@ public class Command {
         }
         if (!s.startsWith("/")) { // it's a message, not a command
             if (c == null) {
-                Server.out("[ Server ]: " + s);
+                Server.out().info("[ Server ]: " + s);
                 Settings.globalChannel.send("[ Server ]: " + s + "\n");
                 return;
             }
             if (!c.getGroup().can("chat")) {
                 c.send("[!] You can't use the chat.");
             } else {
-                Server.out("[" + c.getWritingChannel().getName() + "][ " + c.getScreenName(true) + " ]: " + s);
+                Server.out().info("[" + c.getWritingChannel().getName() + "][ " + c.getScreenName(true) + " ]: " + s);
                 c.getWritingChannel().send("[ " + c.getScreenName(false) + " ]: " + s + "\n");
                 /*ClientHandler.send("[ " + c.getScreenName(false) + " ]: " + s + "\n", Settings.groupGuest, Settings.groupUser);
                  ClientHandler.send("[ " + c.getScreenName(true) + " ]: " + s + "\n", Settings.groupAdmin);*/
@@ -94,7 +94,7 @@ public class Command {
         // ACCOUNT
         if (cmd[0].equalsIgnoreCase("/account")) {
             if (c == null) {
-                Server.out("You're operating from console! You don't have nor need an account\n");
+                Server.out().info("You're operating from console! You don't have nor need an account\n");
             } else {
                 c.send(Settings.language.getSentence("accountInfo").print(c.getScreenName(false) + " " + c.getGroup().getName() + " " + c.getIP()));
             }
@@ -134,7 +134,7 @@ public class Command {
         if ((c == null || c.getGroup().can("who")) && cmd[0].equalsIgnoreCase("/who")) { // Prints users list
             if (ClientHandler.getClients().isEmpty()) {
                 if (c == null) {
-                    Server.out("");
+                    Server.out().info("");
                 } else {
                     c.send(Settings.language.getSentence("nobodyOnline").print());
                 }
@@ -147,7 +147,7 @@ public class Command {
                 list = ClientHandler.getClientList(false);
             }
             if (c == null) {
-                Server.out(list);
+                Server.out().info(list);
             } else {
                 c.send(list);
             }
@@ -188,7 +188,7 @@ public class Command {
                     chan = new Channel(cmd[2]);
                     if (l == 4) {
                         chan.setPassword(cmd[3]);
-                        Server.out("Password for chanel \"" + chan.getName() + "\": " + cmd[3]);
+                        Server.out().info("Password for chanel \"" + chan.getName() + "\": " + cmd[3]);
                     }
                     chan.add(c);
                     if (chan.isPrivate()) { // Channel created is private
@@ -248,14 +248,14 @@ public class Command {
         if ((c == null || c.getGroup().can("hash")) && cmd[0].equalsIgnoreCase("/hash")) { //hash di una stringa
             if (cmd.length != 2) {
                 if (c == null) {
-                    Server.out(Settings.language.getSentence("hashUsage").print());
+                    Server.out().info(Settings.language.getSentence("hashUsage").print());
                 } else {
                     c.send(Settings.language.getSentence("hashUsage").print());
                 }
                 return;
             }
             if (c == null) {
-                Server.out("hash of " + cmd[1] + ": " + Security.hash(cmd[1]));
+                Server.out().info("hash of " + cmd[1] + ": " + Security.hash(cmd[1]));
             } else {
                 c.send("hash of " + cmd[1] + ": " + Security.hash(cmd[1]) + "\n");
             }
@@ -275,13 +275,13 @@ public class Command {
         // MANUAL GARBAGE COLLECTOR CALL
         if ((c == null || c.getGroup().can("gc")) && cmd[0].equalsIgnoreCase("/gc")) {
             if (c == null) {
-                Server.out("Calling garbage collector...");
+                Server.out().info("Calling garbage collector...");
             } else {
                 c.send("Calling garbage collector...\n");
             }
             Runtime.getRuntime().gc();
             if (c == null) {
-                Server.out("Done.");
+                Server.out().info("Done.");
             } else {
                 c.send("Done.\n");
             }
@@ -292,7 +292,7 @@ public class Command {
         if ((c == null || c.getGroup().can("setgroup")) && cmd[0].equalsIgnoreCase("/setGroup")) {
             if (l != 3) {
                 if (c == null) {
-                    Server.out(Settings.language.getSentence("setGroupUsage").print());
+                    Server.out().info(Settings.language.getSentence("setGroupUsage").print());
                 } else {
                     c.send(Settings.language.getSentence("setGroupUsage").print());
                 }
@@ -301,7 +301,7 @@ public class Command {
             ClientHandler ch;
             if ((ch = ClientHandler.get(cmd[1])) == null) {
                 if (c == null) {
-                    Server.out(Settings.language.getSentence("userNotFound").print());
+                    Server.out().info(Settings.language.getSentence("userNotFound").print());
                 } else {
                     c.send(Settings.language.getSentence("userNotFound").print());
                 }
@@ -310,21 +310,21 @@ public class Command {
             Group g = Group.get(cmd[2]);
             if (g == null) {
                 if (c == null) {
-                    Server.out(Settings.language.getSentence("groupNotFound").print());
+                    Server.out().info(Settings.language.getSentence("groupNotFound").print());
                 } else {
                     c.send(Settings.language.getSentence("groupNotFound").print());
                 }
                 return;
             } else if (g == ch.getGroup()) {
                 if (c == null) {
-                    Server.out(Settings.language.getSentence("alreadyIsInGroup").print(c.getScreenName(false) + " " + g.getName()));
+                    Server.out().info(Settings.language.getSentence("alreadyIsInGroup").print(c.getScreenName(false) + " " + g.getName()));
                 } else {
                     c.send(Settings.language.getSentence("alreadyIsInGroup").print(c.getScreenName(false) + " " + g.getName()));
                 }
                 return;
             } else if (g == Settings.groupGuest) { // user must be logged out.
                 if (c == null) {
-                    Server.out("Forcing logout for " + ch.getScreenName(true));
+                    Server.out().info("Forcing logout for " + ch.getScreenName(true));
                 }
                 ClientHandler.send("Forcing logout for " + ch.getScreenName(false) + "\n", Settings.groupAdmin);
                 ch.save();
@@ -332,7 +332,7 @@ public class Command {
                 return;
             } else { //everything fine.
                 if (c == null) {
-                    Server.out(ch.getScreenName(true) + " is now part of group " + g.getName());
+                    Server.out().info(ch.getScreenName(true) + " is now part of group " + g.getName());
                 }
                 ClientHandler.send(ch.getScreenName(true) + " is now part of group " + g.getName() + "\n", Settings.groupAdmin);
                 ch.setGroup(g);
@@ -345,7 +345,7 @@ public class Command {
         if ((c == null || c.getGroup().can("status")) && cmd[0].equalsIgnoreCase("/status")) {
             //Date d= Server.getTimePassed();
             if (c == null) {
-                Server.out(Server.getStatus());
+                Server.out().info(Server.getStatus());
             } else {
                 c.send(Server.getStatus() + "\n");
             }
@@ -355,7 +355,7 @@ public class Command {
         // STOP THE SERVER
         if ((c == null || c.getGroup().can("stop")) && cmd[0].equalsIgnoreCase("/stop")) {
             if (c == null) {
-                Server.out("Server shutting down by console command");
+                Server.out().info("Server shutting down by console command");
             } else {
                 c.send("Server shutting down by your command\n");
                 if (c.getGroup() == Settings.groupUser) {
@@ -376,7 +376,7 @@ public class Command {
                         Settings.globalChannel.send(Settings.language.getSentence("disconnectsEverybody").print(c.getScreenName(false)));
                     }
                 }
-                Server.out("Disconnecting everybody!");
+                Server.out().info("Disconnecting everybody!");
                 ClientHandler.disconnectAll();
                 return;
             } else if (l == 2) { // Kick specific user
@@ -384,18 +384,18 @@ public class Command {
                 if ((ch = ClientHandler.get(cmd[1])) != null) {
                     if (c != null) {
                         c.send(c.getScreenName(true) + " disconnects " + ch.getScreenName(true) + "\n", Settings.groupAdmin);
-                        Server.out(c.getScreenName(true) + " disconnects " + ch.getScreenName(true));
+                        Server.out().info(c.getScreenName(true) + " disconnects " + ch.getScreenName(true));
                     } else {
-                        Server.out("Disconnecting " + ch.getScreenName(true));
+                        Server.out().info("Disconnecting " + ch.getScreenName(true));
                     }
                     ch.disconnect();
                 } else if (c == null) {
-                    Server.out(Settings.language.getSentence("userNotFound").print());
+                    Server.out().info(Settings.language.getSentence("userNotFound").print());
                 } else {
                     c.send(Settings.language.getSentence("userNotFound").print());
                 }
             } else if (c == null) {
-                Server.out(Settings.language.getSentence("kickUsage").print());
+                Server.out().info(Settings.language.getSentence("kickUsage").print());
             } else {
                 c.send(Settings.language.getSentence("kickUsage").print());
             }
@@ -416,7 +416,7 @@ public class Command {
 
         // Command not found
         if (c == null) {
-            Server.out("Unknown server command or command not usable by server console");
+            Server.out().info("Unknown server command or command not usable by server console");
         } else {
             c.send(Settings.language.getSentence("unknownCommand").print());
         }

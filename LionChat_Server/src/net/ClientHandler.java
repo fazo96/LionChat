@@ -81,12 +81,12 @@ public class ClientHandler {
      */
     public ClientHandler(final Socket socket) {
         this.socket = socket;
-        Server.out(getIP() + " has connected!");
+        Server.out().info(getIP() + " has connected!");
         try {
             encrypter = Cipher.getInstance("RSA");
         } catch (Exception ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
-            Server.out(getIP() + " could not get Cipher instance! This should never ever happen");
+            Server.out().info(getIP() + " could not get Cipher instance! This should never ever happen");
         }
         connected = true;
         try {
@@ -101,7 +101,7 @@ public class ClientHandler {
         }
         if (!getIP().equals("127.0.0.1") && get(getIP()) != null) { //Questo IP e' già connesso! (non vale per localhost che può connettersi piu volte)
             send(Settings.language.getSentence("ipAlreadyConnected").print(getIP()));
-            Server.out(getIP() + " tried multiple connections!");
+            Server.out().info(getIP() + " tried multiple connections!");
             send(getIP() + " tried multiple connections!\n", Settings.groupAdmin);
             return;
         }
@@ -122,7 +122,7 @@ public class ClientHandler {
                     } catch (IOException ex) {
                         //Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                         disconnect();
-                        Server.out(getScreenName(true) + " error reading input. Connection closed");
+                        Server.out().info(getScreenName(true) + " error reading input. Connection closed");
                     } catch (ClassNotFoundException ex) {
                         Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -144,7 +144,7 @@ public class ClientHandler {
                             oo = ((SealedObject) o).getObject(Settings.getKeyPair().getPrivate());
                         } catch (Exception ex) {
                             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
-                            Server.out(getScreenName(true) + " error while decrypting a message. Should never happen!");
+                            Server.out().info(getScreenName(true) + " error while decrypting a message. Should never happen!");
                             continue;
                         }
                         if (oo instanceof String) {
@@ -176,11 +176,11 @@ public class ClientHandler {
             return;
         }
         try {
-            Server.out("Server public key has been sent to " + getScreenName(true));
+            Server.out().info("Server public key has been sent to " + getScreenName(true));
             oos.writeObject(Settings.getKeyPair().getPublic());
         } catch (IOException ex) {
             //Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
-            Server.out(getIP() + " error while sending PUBLIC KEY. Connection closed.");
+            Server.out().info(getIP() + " error while sending PUBLIC KEY. Connection closed.");
             disconnect();
         }
     }
@@ -198,11 +198,11 @@ public class ClientHandler {
         try {
             oos.writeObject(msg);
         } catch (IOException ex) {
-            Server.out(getIP() + " error while sending UNENCRYPTED MESSAGE. Connection closed.");
+            Server.out().info(getIP() + " error while sending UNENCRYPTED MESSAGE. Connection closed.");
             disconnect();
             return false;
         }
-        Server.out("This message to " + getScreenName(true) + " has just been sent unencrypted: " + msg);
+        Server.out().info("This message to " + getScreenName(true) + " has just been sent unencrypted: " + msg);
         return true;
     }
 
@@ -226,16 +226,16 @@ public class ClientHandler {
             o = new SealedObject(msg, encrypter);
         } catch (Exception ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
-            Server.out(getScreenName(true) + " CLIENT KEY is not valid! Requesting key. Message will be sent unencrypted!");
+            Server.out().info(getScreenName(true) + " CLIENT KEY is not valid! Requesting key. Message will be sent unencrypted!");
             sendUnencrypted("/askKey"); // Ask client for the key
             sendUnencrypted(msg);
             return false;
         }
         try {
-            //Server.out("Sending (encrypted): "+msg+" to "+getScreenName(true));
+            //Server.out().info("Sending (encrypted): "+msg+" to "+getScreenName(true));
             oos.writeObject(msg);
         } catch (IOException ex) {
-            Server.out(getScreenName(true) + " error while sending ENCRYPTED MESSAGE. Connection closed.");
+            Server.out().info(getScreenName(true) + " error while sending ENCRYPTED MESSAGE. Connection closed.");
             disconnect();
             return false;
         }
@@ -267,11 +267,11 @@ public class ClientHandler {
         }
         Channel.removeFromAll(this, true);
         if (name == null) {
-            Server.out("Disconnecting " + getIP());
+            Server.out().info("Disconnecting " + getIP());
             send(Settings.language.getSentence("guyDisconnected").print(getScreenName(true)), Settings.groupAdmin);
             send(Settings.language.getSentence("somebodyDisconnected").print(), Settings.groupUser, Settings.groupGuest);
         } else {
-            Server.out("Disconnecting " + getScreenName(true));
+            Server.out().info("Disconnecting " + getScreenName(true));
             Settings.globalChannel.send(Settings.language.getSentence("guyDisconnected").print(getScreenName(false)));
         }
         connected = false;
@@ -369,7 +369,7 @@ public class ClientHandler {
                     + "\n" + group.getName()
                     + "\n" + getIP());
         } catch (Exception ex) {
-            Server.out("Could not save user file for " + getScreenName(true));
+            Server.out().info("Could not save user file for " + getScreenName(true));
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -406,7 +406,7 @@ public class ClientHandler {
      */
     public void keepAlive() {
         if (oos == null || connected == false) {
-            Server.out("[DEBUG] Can't keep alive dead connection\n");
+            Server.out().info("[DEBUG] Can't keep alive dead connection\n");
             disconnect();
             return;
         }
@@ -414,7 +414,7 @@ public class ClientHandler {
             oos.writeObject(new SyncObject());
         } catch (IOException ex) {
             //Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
-            Server.out("Could not keep " + getScreenName(true) + " alive. Disconnecting");
+            Server.out().info("Could not keep " + getScreenName(true) + " alive. Disconnecting");
             disconnect();
         }
     }
@@ -431,7 +431,7 @@ public class ClientHandler {
     public boolean login(String lname, String pass) {
         send("Logging you in...\n");
         if (lname == null || pass == null) {
-            Server.out("[BUG DETECT] Weird bug on login! This should never happen\n");
+            Server.out().info("[BUG DETECT] Weird bug on login! This should never happen\n");
             return false;
         }
         ArrayList<String> ff = Utils.toList(Filez.getFileContent("./users/" + lname + ".dat"), "\n");
@@ -442,12 +442,12 @@ public class ClientHandler {
             setGroup(Settings.groupUser);
             save();
             ClientHandler.send("New user registered: " + getName() /*+ " with password " + getPassword()*/ + "\n", Settings.groupAdmin);
-            Server.out("New user registered: " + getName() + " with password " + getPassword() + "\n");
+            Server.out().info("New user registered: " + getName() + " with password " + getPassword() + "\n");
             send(Settings.language.getSentence("registeredAs").print(getName()));
             return true;
         } else if (get(lname) != null) { // User is already logged in
             send(Settings.language.getSentence("alreadyLoggedIn").print());
-            Server.out(getIP() + " tried logging in as " + get(lname).getScreenName(true));
+            Server.out().info(getIP() + " tried logging in as " + get(lname).getScreenName(true));
             send(getIP() + " tried logging in as " + get(lname).getScreenName(true) + "\n", Settings.groupAdmin);
             return false;
         } else if (pass.equals(ff.get(1))) { //user wasn't logged in and password is correct
@@ -541,7 +541,7 @@ public class ClientHandler {
      * Calls disconnect() on everybody.
      */
     public static void disconnectAll() {
-        Server.out("Disconnecting everyone...");
+        Server.out().info("Disconnecting everyone...");
         for (ClientHandler c : clients) {
             c.disconnect();
         }
@@ -551,7 +551,7 @@ public class ClientHandler {
      * Calls save() on everybody.
      */
     public static void saveAll() {
-        Server.out("Saving everyone...");
+        Server.out().info("Saving everyone...");
         for (ClientHandler c : clients) {
             c.save();
         }
@@ -581,7 +581,7 @@ public class ClientHandler {
      * @return the user's password
      */
     public String getPassword() {
-        Server.out("[DEBUG] Password for " + getScreenName(true) + " is " + password);
+        Server.out().info("[DEBUG] Password for " + getScreenName(true) + " is " + password);
         return password;
     }
 
@@ -591,7 +591,7 @@ public class ClientHandler {
      * @param password the new password for the user
      */
     public void setPassword(String password) {
-        Server.out("[DEBUG] Password for " + getScreenName(true) + " went from " + this.password + " to " + password);
+        Server.out().info("[DEBUG] Password for " + getScreenName(true) + " went from " + this.password + " to " + password);
         this.password = password;
     }
 

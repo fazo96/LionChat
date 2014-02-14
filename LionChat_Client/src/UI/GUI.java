@@ -70,6 +70,11 @@ public class GUI extends javax.swing.JFrame {
             public void onError(String error) {
                 append(error);
             }
+
+            @Override
+            public void onLog(String log, int level) {
+                //append(log);
+            }
         });
     }
 

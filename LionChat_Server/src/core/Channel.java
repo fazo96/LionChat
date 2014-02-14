@@ -63,7 +63,7 @@ public class Channel {
      */
     public void add(ClientHandler ch) {
         if (clients.contains(ch)) {
-            Server.out(Settings.language.getSentence("addUserError").print());
+            Server.out().info(Settings.language.getSentence("addUserError").print());
         }
         ch.send(Settings.language.getSentence("youEntered").print(name));
         send(Settings.language.getSentence("guyEntered").print(ch.getScreenName(false)));

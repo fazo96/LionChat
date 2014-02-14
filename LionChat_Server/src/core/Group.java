@@ -48,7 +48,7 @@ public class Group {
             setDefaultGroup(this);
         }
         groups.add(this); // add the group to the list
-        Server.out("Intitializing group:" + name);
+        Server.out().info("Intitializing group:" + name);
     }
 
     /**
@@ -107,7 +107,7 @@ public class Group {
      */
     public static void setDefaultGroup(Group defaultGroup) {
         Group.defaultGroup = defaultGroup;
-        Server.out(defaultGroup.getName() + " is now the default group.");
+        Server.out().info(defaultGroup.getName() + " is now the default group.");
     }
 
     /**

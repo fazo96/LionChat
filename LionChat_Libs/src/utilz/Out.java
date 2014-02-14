@@ -18,7 +18,6 @@
  */
 package utilz;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 
 /**
@@ -27,13 +26,10 @@ import java.util.ArrayList;
  * @author fazo
  */
 public class Out {
-
     private ArrayList<IOListener> listeners;
-    private boolean writeOnConsole = true;
 
     /**
-     * Create a new Output Handler that also writes to Stdout and Stderr by
-     * default.
+     * Create a new Output Handler
      */
     public Out() {
         listeners = new ArrayList<IOListener>();
@@ -45,9 +41,6 @@ public class Out {
      * @param s string describing
      */
     public void error(String s) {
-        if (writeOnConsole) {
-            write("[!] " + s, System.err);
-        }
         for (IOListener l : listeners) {
             if (l == null) {
                 listeners.remove(l);
@@ -64,9 +57,6 @@ public class Out {
      * @param s
      */
     public void info(String s) {
-        if (writeOnConsole) {
-            write(s, System.out);
-        }
         for (IOListener l : listeners) {
             if (l == null) {
                 listeners.remove(l);
@@ -76,11 +66,19 @@ public class Out {
         }
     }
 
-    private void write(String s, PrintStream ps) {
-        if (s.endsWith("\n")) {
-            ps.print(s);
-        } else {
-            ps.println(s);
+    /**
+     * Write a log message of the given verbosity level
+     *
+     * @param s the message
+     * @param level the level of verbosity
+     */
+    public void log(String s, int level) {
+        for (IOListener l : listeners) {
+            if (l == null) {
+                listeners.remove(l);
+            } else {
+                l.onLog(s, level);
+            }
         }
     }
 
@@ -91,25 +89,6 @@ public class Out {
      */
     public ArrayList<IOListener> getListeners() {
         return listeners;
-    }
-
-    /**
-     * If the Out instance is also writing on Stoud and Stderr
-     *
-     * @return
-     */
-    public boolean isWritingOnConsole() {
-        return writeOnConsole;
-    }
-
-    /**
-     * Decide if the messages should be written to Stdout e Stderr (default is
-     * yes)
-     *
-     * @param writeOnConsole
-     */
-    public void setWriteOnConsole(boolean writeOnConsole) {
-        this.writeOnConsole = writeOnConsole;
     }
 
     /**
@@ -131,5 +110,13 @@ public class Out {
          * @param error the string
          */
         public void onError(String error);
+
+        /**
+         * Handle a onLog / debug message of the given verbosity level
+         *
+         * @param log the string
+         * @param level the level of verbosity
+         */
+        public void onLog(String log, int level);
     }
 }
