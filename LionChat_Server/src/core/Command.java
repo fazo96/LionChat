@@ -75,7 +75,7 @@ public class Command {
         }
 
         // COMMANDS
-        if (c != null && cmd[0].equalsIgnoreCase("/askKey")) {
+        if (c != null && cmd[0].equalsIgnoreCase(Security.publicKeyRequest)) {
             // The client is asking for the encryption key
             c.sendServerKey(); // Let's send the key
             return;

@@ -61,9 +61,11 @@ public class Interpreter {
         //s = s.trim();
         if (!s.startsWith("/")) {
             Client.get().out().info(s);
-        } else if (s.equals("/askKey")) {
+        } else if (s.equals(Security.publicKeyRequest)) {
             // If the server asks for the key, send it
-            Client.get().getConnection().sendKey();
+            Client.get().getConnection().sendRSAPublicKey();
+        } else if (s.equals(Security.aesKeyRequest)) {
+            Client.get().getConnection().sendAESkey();
         } else {
             // Unknown command
             Client.get().out().error("[!] Server just sent a mysterious command:\n" + s);

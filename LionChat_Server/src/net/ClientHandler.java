@@ -27,6 +27,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +37,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.Cipher;
 import javax.crypto.SealedObject;
+import security.Security;
 import utilz.Filez;
 import utilz.SyncObject;
 import utilz.Utils;
@@ -69,9 +72,9 @@ public class ClientHandler {
     // Wether this user is connected or not
     private boolean connected = false;
     // The user's public key, sent from him, used to encrypt messages destined to him
-    private PublicKey clientKey;
+    private Key aesKey;
     // The Cipher that encrypts messages for the user
-    private Cipher encrypter;
+    private Cipher aesEncrypter;
 
     /**
      * Initializes a new client from the given connected Socket.
@@ -83,7 +86,7 @@ public class ClientHandler {
         this.socket = socket;
         Server.out().info(getIP() + " has connected!");
         try {
-            encrypter = Cipher.getInstance("RSA");
+            aesEncrypter = Cipher.getInstance("AES");
         } catch (Exception ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
             Server.out().info(getIP() + " could not get Cipher instance! This should never ever happen");
@@ -105,7 +108,7 @@ public class ClientHandler {
             send(getIP() + " tried multiple connections!\n", Settings.groupAdmin);
             return;
         }
-        // Let's send the server key to the client, so he can send encrypted messages
+        // Let's send the server key to the client, so he can send the AES key encrypted
         sendServerKey();
         receiver = new Thread() {
             @Override
@@ -127,30 +130,42 @@ public class ClientHandler {
                         Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     if (o instanceof PublicKey) {
-                        // Client just send us his encryption key, save it
-                        clientKey = (PublicKey) o;
-                        try {
-                            // Make sure we use it to encrypt the next messages
-                            encrypter.init(Cipher.ENCRYPT_MODE, clientKey);
-                        } catch (InvalidKeyException ex) {
-                            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                        // No interest in a public key since we use AES for encryption
                     }
                     if (o instanceof SealedObject) {
                         // The client sent us an encrypted Object.
                         Object oo = null;
+                        if (aesKey != null) {
+                            try {
+                                oo = ((SealedObject) o).getObject(aesKey);
+                            } catch (Exception ex) {
+                                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                                Server.out().info(getScreenName(true) + " error while decrypting a message using AES!");
+                            }
+                            // We got our encrypted object!
+                            if (oo instanceof String) {
+                                // Object is a string from the client
+                                // Run the string into the interpreter
+                                Command.execute((String) oo, client);
+                            }
+                            continue;
+                        } else {
+                            // We need the AES key. Request it!
+                            sendUnencrypted(Security.aesKeyRequest);
+                        }
+                        // Object was not AES encrypted!
                         try {
-                            // Try to Decrypt the Object contained and store it
+                            // The object is probably an AES key, encrypted using RSA
+                            // Try to Decrypt the Object contained using RSA
                             oo = ((SealedObject) o).getObject(Settings.getKeyPair().getPrivate());
                         } catch (Exception ex) {
                             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
-                            Server.out().info(getScreenName(true) + " error while decrypting a message. Should never happen!");
+                            Server.out().info(getScreenName(true) + " error while decrypting AES key using RSA! Should never happen!");
                             continue;
                         }
-                        if (oo instanceof String) {
-                            // Object is a string from the client
-                            // Run the string into the interpreter
-                            Command.execute((String) oo, client);
+                        if (oo instanceof Key) {
+                            // We got the aes key
+                            aesKey = (Key) oo;
                         }
                     }
                     if (o != null && o instanceof String && !((String) o).equals("")) {
@@ -216,18 +231,18 @@ public class ClientHandler {
         if (!connected) {
             return false;
         }
-        if (clientKey == null) {
-            sendUnencrypted("/askKey"); // Ask client for the key
+        if (aesKey == null) {
+            sendUnencrypted(Security.aesKeyRequest); // Ask client for the key
             sendUnencrypted(msg); // No choice: must sent the message unencrypted
             return false;
         }
         SealedObject o = null;
         try {
-            o = new SealedObject(msg, encrypter);
+            o = new SealedObject(msg, aesEncrypter);
         } catch (Exception ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
             Server.out().info(getScreenName(true) + " CLIENT KEY is not valid! Requesting key. Message will be sent unencrypted!");
-            sendUnencrypted("/askKey"); // Ask client for the key
+            sendUnencrypted(Security.publicKeyRequest); // Ask client for the key
             sendUnencrypted(msg);
             return false;
         }

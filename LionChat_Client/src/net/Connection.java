@@ -25,12 +25,19 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SealedObject;
+import security.Security;
 import utilz.SyncObject;
 
 /**
@@ -50,13 +57,18 @@ public class Connection {
     // object used to receive istances to server
     private ObjectInputStream ois;
     // The client generated key pair for encryption
-    private KeyPair keyPair;
+    private KeyPair rsaKeyPair;
     // The key pair generator
-    private KeyPairGenerator keyGen;
+    private KeyPairGenerator rsaKeyGen;
     // The server's public key
-    private PublicKey serverKey;
-    // The encrypter object
-    private Cipher encrypter;
+    private PublicKey rsaServerKey;
+    // The AES key
+    private Key aesKey;
+    // The AES key pair generator
+    private KeyGenerator aesKeyGen;
+    // The encrypter objects
+    private Cipher rsaEncrypter;
+    private Cipher aesEncrypter;
 
     public Connection(final String ip, final int port) {
         connect(ip, port);
@@ -73,8 +85,8 @@ public class Connection {
         if (connected) {
             disconnect(); // Must disconnect before reconnecting
         }
-        keyPair = null;
-        serverKey = null;
+        rsaKeyPair = null;
+        rsaServerKey = null;
         receiver = new Thread() {
             @Override
             public void run() {
@@ -114,24 +126,24 @@ public class Connection {
                         Interpreter.cmd((String) o);
                     } else if (o instanceof PublicKey) {
                         System.out.println("[!][DEBUG] Received server key\n");
-                        serverKey = (PublicKey) o;
+                        rsaServerKey = (PublicKey) o;
                         try {
-                            encrypter.init(Cipher.ENCRYPT_MODE, serverKey);
+                            rsaEncrypter.init(Cipher.ENCRYPT_MODE, rsaServerKey);
                         } catch (InvalidKeyException ex) {
                             // Something wrong with the key, send a request
-                            serverKey = null;
-                            Client.get().getConnection().send("/askkey");
+                            rsaServerKey = null;
+                            Client.get().getConnection().send(Security.publicKeyRequest);
                         }
                     } else if (o instanceof SealedObject) {
                         // We just got something encrypted
-                        if (serverKey == null) {
+                        if (rsaServerKey == null) {
                             Client.get().out().info("[!] Can't decrypt message from server: no key\n");
-                            send("/askKey"); // Send request for key
+                            send(Security.publicKeyRequest); // Send request for key
                             continue;
                         }
                         Object oo = null;
                         try {
-                            oo = ((SealedObject) o).getObject(keyPair.getPrivate());
+                            oo = ((SealedObject) o).getObject(rsaKeyPair.getPrivate());
                         } catch (IOException ex) {
                             continue;
                         } catch (ClassNotFoundException ex) {
@@ -157,24 +169,8 @@ public class Connection {
                 Client.get().out().info("Disconnected!\n");
             }
         };
-
-        // KEY GENERATION
-        Client.get().out().info("Generating Key Pair...\n");
-        if (keyGen == null) {
-            try {
-                keyGen = KeyPairGenerator.getInstance("RSA");
-            } catch (NoSuchAlgorithmException ex) {
-                System.exit(-1);
-            }
-        }
-        keyPair = keyGen.genKeyPair();
-        // Init encrypter and decrypter
-        try {
-            encrypter = Cipher.getInstance("RSA");
-        } catch (Exception ex) {
-            System.exit(-1);
-        }
-        Client.get().out().info("Key Pair generated!\n");
+        initRSA();
+        initAES();
         Client.get().out().info(Client.get().getLanguage().getSentence("tryConnect").print(ip + " " + port));
         try {
             socket = new Socket(ip, port);
@@ -200,10 +196,91 @@ public class Connection {
             connected = false;
             return;
         }
-        sendKey(); // Send our key as soon as possible
+        sendRSAPublicKey(); // Send our key as soon as possible
         // Looks like we're on
         Client.get().out().info("Connected!\n");
         receiver.start(); // I freaked out for 20 mins because I forgot this...
+    }
+
+    public void initRSA() {
+        // RSA KEY PAIR GENERATION
+        Client.get().out().info("Generating Key Pair...\n");
+        if (rsaKeyGen == null) {
+            try {
+                rsaKeyGen = KeyPairGenerator.getInstance("RSA");
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+                System.exit(-1);
+            }
+        }
+        // Init RSA encrypter
+        try {
+            rsaEncrypter = Cipher.getInstance("RSA");
+        } catch (Exception ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(-1);
+        }
+        Client.get().out().info("Key Pair generated!\n");
+        rsaKeyPair = rsaKeyGen.genKeyPair();
+    }
+
+    public void initAES() {
+        Client.get().out().info("Generating AES key...\n");
+        if (aesKeyGen == null) {
+            try {
+                aesKeyGen = KeyGenerator.getInstance("AES");
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+                System.exit(-1);
+            }
+        }
+        aesKeyGen.init(117);
+        aesKey = aesKeyGen.generateKey();
+        if (aesEncrypter == null) {
+            try {
+                aesEncrypter = Cipher.getInstance("AES");
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+                System.exit(-1);
+            } catch (NoSuchPaddingException ex) {
+                Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+                System.exit(-1);
+            }
+        }
+        try {
+            aesEncrypter.init(Cipher.ENCRYPT_MODE, aesKey);
+        } catch (InvalidKeyException ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(-1);
+        }
+    }
+
+    public boolean tryAES() {
+        Client.get().out().info("Trying cipher...\n");
+        try {
+            aesEncrypter.init(Cipher.ENCRYPT_MODE, aesKey);
+        } catch (InvalidKeyException ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        SealedObject so = null;
+        String s = null, ss = null;
+        try {
+            so = new SealedObject(s = "If this message if displayed, then encryption works correctly\n", aesEncrypter);
+        } catch (Exception ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        try {
+            ss = (String) so.getObject(aesKey);
+        } catch (Exception ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        if (ss != null && ss.equals(s)) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -212,17 +289,38 @@ public class Connection {
     public void disconnect() {
         receiver.stop();
         receiver = null;
-        keyPair = null;
-        serverKey = null;
+        rsaKeyPair = null;
+        rsaServerKey = null;
         connected = false;
     }
 
-    public void sendKey() {
+    public void sendRSAPublicKey() {
         try {
-            oos.writeObject(keyPair.getPublic()); // SEND PUBLIC KEY
+            oos.writeObject(rsaKeyPair.getPublic()); // SEND PUBLIC KEY
         } catch (IOException ex) {
             Client.get().out().info("Could not send PUBLIC KEY to server!\nConnection declared dead.\n");
             disconnect();
+        }
+    }
+
+    public void sendAESkey() {
+        SealedObject sealedKey;
+        if(rsaServerKey==null){
+            // We need that key, if we don't have it we need to request it
+            sendUnencrypted(Security.publicKeyRequest);
+            return;
+        }
+        try {
+            sealedKey = new SealedObject(aesKey, rsaEncrypter);
+        } catch (Exception ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            return;
+        }
+        try {
+            oos.writeObject(sealedKey);
+        } catch (IOException ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            return;
         }
     }
 
@@ -254,15 +352,15 @@ public class Connection {
         if (!connected) {
             return; // Can't send if not connected :(
         }
-        if (serverKey == null) {
+        if (aesKey == null) {
             sendUnencrypted(s); // No choice, we didn't get the server key yet
-            sendUnencrypted("/askKey"); // Ask for the key
-            Client.get().out().error("[ERROR] NO SERVER KEY! Asking for it...\n");
+            Client.get().out().error("[ERROR] NO AES KEY! Initializing AES...\n");
+            initAES();
             return;
         }
         SealedObject o = null;
         try {
-            o = new SealedObject(Interpreter.fixToSend(s), encrypter);
+            o = new SealedObject(Interpreter.fixToSend(s), aesEncrypter);
         } catch (Exception ex) {
             Client.get().out().error("[ERROR][FATAL] Could not ENCRYPT MESSAGE!\n");
             return;

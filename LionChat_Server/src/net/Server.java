@@ -54,7 +54,23 @@ public class Server implements Out.IOListener {
     public static void main(String args[]) {
         Thread.currentThread().setName("Main Thread");
         out = new Out();
+        out.getListeners().add(new Out.IOListener() {
 
+            @Override
+            public void onInfo(String info) {
+                System.out.println(info);
+            }
+
+            @Override
+            public void onError(String error) {
+                System.err.println(error);
+            }
+
+            @Override
+            public void onLog(String log, int level) {
+                System.out.println("[LOG:" + level + "] " + log);
+            }
+        });
         Server.out.info("TimeZone: " + Locale.ITALY);
         startDate = Calendar.getInstance(Locale.ITALY).getTime();
         Server.out.info("loading settings...");
@@ -185,7 +201,7 @@ public class Server implements Out.IOListener {
         //System.out.println(log);
     }
 
-public static Out out() {
+    public static Out out() {
         return out;
     }
 }

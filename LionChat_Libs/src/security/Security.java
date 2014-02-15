@@ -30,7 +30,7 @@ import utilz.Utils;
  * @author fazo
  */
 public class Security {
-
+public static final String publicKeyRequest="/rsa",aesKeyRequest="/aes";
     /**
      * Returns SHA512 hash of the given string (without trimming the string).
      * IMPORTANT: newline characters are removed from the hash!
