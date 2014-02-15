@@ -5,6 +5,7 @@
 *.jar
 *.war
 *.ear
+*.zip
 
 # LionChat Stuff
 *.dat
@@ -13,8 +14,6 @@ LionChat_Server/src/utenti/
 LionChat_Client/src/settings.conf
 LionChat_Server/src/users/
 
-# LionChat's multilanguage stuff
-#LionChat_Server/src/lang/
 
 # Netbeans stuff
 LionChat_Client/nbproject/private/
