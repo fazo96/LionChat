@@ -159,7 +159,7 @@ public class Connection {
         };
 
         // KEY GENERATION
-        Client.get().out().info("Generating Key Pair...");
+        Client.get().out().info("Generating Key Pair...\n");
         if (keyGen == null) {
             try {
                 keyGen = KeyPairGenerator.getInstance("RSA");
@@ -174,7 +174,7 @@ public class Connection {
         } catch (Exception ex) {
             System.exit(-1);
         }
-        Client.get().out().info("Key Pair generated!");
+        Client.get().out().info("Key Pair generated!\n");
         Client.get().out().info(Client.get().getLanguage().getSentence("tryConnect").print(ip + " " + port));
         try {
             socket = new Socket(ip, port);
