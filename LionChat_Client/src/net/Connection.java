@@ -33,7 +33,6 @@ import java.security.PublicKey;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SealedObject;
@@ -127,6 +126,14 @@ public class Connection {
                     } else if (o instanceof PublicKey) {
                         System.out.println("[!][DEBUG] Received server key\n");
                         rsaServerKey = (PublicKey) o;
+                        if (rsaEncrypter == null) {
+                            try {
+                                rsaEncrypter = Cipher.getInstance("RSA");
+                            } catch (Exception ex) {
+                                Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+                                System.exit(-1);
+                            }
+                        }
                         try {
                             rsaEncrypter.init(Cipher.ENCRYPT_MODE, rsaServerKey);
                         } catch (InvalidKeyException ex) {
@@ -169,7 +176,6 @@ public class Connection {
                 Client.get().out().info("Disconnected!\n");
             }
         };
-        initRSA();
         initAES();
         Client.get().out().info(Client.get().getLanguage().getSentence("tryConnect").print(ip + " " + port));
         try {
@@ -196,7 +202,6 @@ public class Connection {
             connected = false;
             return;
         }
-        sendRSAPublicKey(); // Send our key as soon as possible
         // Looks like we're on
         Client.get().out().info("Connected!\n");
         receiver.start(); // I freaked out for 20 mins because I forgot this...
@@ -213,6 +218,8 @@ public class Connection {
                 System.exit(-1);
             }
         }
+        rsaKeyGen.initialize(2048);
+        rsaKeyPair = rsaKeyGen.genKeyPair();
         // Init RSA encrypter
         try {
             rsaEncrypter = Cipher.getInstance("RSA");
@@ -221,7 +228,6 @@ public class Connection {
             System.exit(-1);
         }
         Client.get().out().info("Key Pair generated!\n");
-        rsaKeyPair = rsaKeyGen.genKeyPair();
     }
 
     public void initAES() {
@@ -234,7 +240,7 @@ public class Connection {
                 System.exit(-1);
             }
         }
-        aesKeyGen.init(117);
+        aesKeyGen.init(256);
         aesKey = aesKeyGen.generateKey();
         if (aesEncrypter == null) {
             try {
@@ -305,7 +311,7 @@ public class Connection {
 
     public void sendAESkey() {
         SealedObject sealedKey;
-        if(rsaServerKey==null){
+        if (rsaServerKey == null) {
             // We need that key, if we don't have it we need to request it
             sendUnencrypted(Security.publicKeyRequest);
             return;

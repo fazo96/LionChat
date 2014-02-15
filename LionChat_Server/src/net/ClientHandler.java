@@ -75,6 +75,7 @@ public class ClientHandler {
     private Key aesKey;
     // The Cipher that encrypts messages for the user
     private Cipher aesEncrypter;
+    private Cipher aesDecrypter;
 
     /**
      * Initializes a new client from the given connected Socket.
@@ -87,6 +88,7 @@ public class ClientHandler {
         Server.out().info(getIP() + " has connected!");
         try {
             aesEncrypter = Cipher.getInstance("AES");
+            aesDecrypter = Cipher.getInstance("AES");
         } catch (Exception ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
             Server.out().info(getIP() + " could not get Cipher instance! This should never ever happen");
@@ -137,7 +139,7 @@ public class ClientHandler {
                         Object oo = null;
                         if (aesKey != null) {
                             try {
-                                oo = ((SealedObject) o).getObject(aesKey);
+                                oo = ((SealedObject) o).getObject(aesDecrypter);
                             } catch (Exception ex) {
                                 Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                                 Server.out().info(getScreenName(true) + " error while decrypting a message using AES!");
@@ -166,6 +168,13 @@ public class ClientHandler {
                         if (oo instanceof Key) {
                             // We got the aes key
                             aesKey = (Key) oo;
+                            try {
+                                aesEncrypter.init(Cipher.ENCRYPT_MODE, aesKey);
+                                aesDecrypter.init(Cipher.DECRYPT_MODE, aesKey);
+                            } catch (InvalidKeyException ex) {
+                                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                                aesKey=null;
+                            }
                         }
                     }
                     if (o != null && o instanceof String && !((String) o).equals("")) {
