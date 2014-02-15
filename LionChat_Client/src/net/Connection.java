@@ -143,14 +143,9 @@ public class Connection {
                         }
                     } else if (o instanceof SealedObject) {
                         // We just got something encrypted
-                        if (rsaServerKey == null) {
-                            Client.get().out().info("[!] Can't decrypt message from server: no key\n");
-                            send(Security.publicKeyRequest); // Send request for key
-                            continue;
-                        }
                         Object oo = null;
                         try {
-                            oo = ((SealedObject) o).getObject(rsaKeyPair.getPrivate());
+                            oo = ((SealedObject) o).getObject(aesKey);
                         } catch (IOException ex) {
                             continue;
                         } catch (ClassNotFoundException ex) {

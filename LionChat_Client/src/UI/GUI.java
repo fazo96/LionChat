@@ -19,6 +19,7 @@
 package UI;
 
 import javax.swing.text.DefaultCaret;
+import parsing.Language;
 import utilz.Out;
 import utilz.Utils;
 
@@ -304,5 +305,16 @@ public class GUI extends javax.swing.JFrame {
      */
     public String getHistory() {
         return textArea.getText();
+    }
+
+    public void applyLanguage(Language language) {
+        editMenu.setText(language.getSentence("editMenu").print());
+        fileMenu.setText(language.getSentence("fileMenu").print());
+        saveHistory.setText(language.getSentence("saveHistoryTitle").print());
+        sendButton.setText(language.getSentence("send").print());
+        settingsMenu.setText(language.getSentence("settingsTitle").print());
+        exit.setText(language.getSentence("exit").print());
+        settingsUI.applyLanguage();
+        saveHistoryUI.applyLanguage();
     }
 }

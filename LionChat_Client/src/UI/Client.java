@@ -144,6 +144,9 @@ public class Client {
             return loadLanguage("en");
         }
         //out.info(language.getLangInfo(true));
+        if(useGUI){
+            gui.applyLanguage(language);
+        }
         return true;
     }
 

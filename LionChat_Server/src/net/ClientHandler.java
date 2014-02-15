@@ -148,6 +148,7 @@ public class ClientHandler {
                             if (oo instanceof String) {
                                 // Object is a string from the client
                                 // Run the string into the interpreter
+                                Server.out().info("RECEIVED AES STRING\n");
                                 Command.execute((String) oo, client);
                             }
                             continue;
